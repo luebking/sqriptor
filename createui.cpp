@@ -280,6 +280,12 @@ void Sqriptor::createUI()
         });
     act->setShortcut(tr("Ctrl+M"));
     ADD_ACT
+
+    menu->addSeparator();
+
+    act = new QAction(tr("&Settings..."), this);
+    connect(act, SIGNAL(triggered()), SLOT(showSettings()));
+    menu->addAction(act);
     
     menu = m_syntaxMenu = menuBar()->addMenu(tr("&Syntax"));
     QActionGroup *group = new QActionGroup(this);

@@ -79,6 +79,7 @@ private slots:
     int addTab();
     bool closeTab(int idx = -1);
     bool toggleComment();
+    void showSettings();
 
 private:
     void createUI();

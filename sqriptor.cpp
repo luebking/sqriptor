@@ -278,6 +278,27 @@ void Sqriptor::readSettings()
 
 void Sqriptor::writeSettings()
 {
+    QSettings settings("sqriptor");
+    settings.beginGroup("font");
+    settings.setValue("family", config.font.family());
+    settings.setValue("size", config.font.pointSize());
+    settings.endGroup();
+    settings.beginGroup("tab");
+    settings.setValue("isTab", config.tab.isTab);
+    settings.setValue("width", config.tab.width);
+    settings.endGroup();
+    settings.beginGroup("color");
+    settings.setValue("background", config.color.bg);
+    settings.setValue("foreground", config.color.fg);
+    settings.setValue("string", config.color.string);
+    settings.setValue("char", config.color.character);
+    settings.setValue("comment", config.color.comment);
+    settings.setValue("preproc", config.color.preproc);
+    settings.setValue("number", config.color.number);
+    settings.setValue("operator", config.color.operateur);
+    settings.setValue("keyword", config.color.keyword);
+    settings.setValue("error", config.color.error);
+    settings.endGroup();
 }
 
 bool Sqriptor::maybeSave(int idx)

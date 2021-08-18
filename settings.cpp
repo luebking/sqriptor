@@ -94,6 +94,12 @@ void Sqriptor::showSettings()
                 // todo: update syntax lexers w/ new palette
             }
         });
+        gs_ui->tabIsTab->setChecked(config.tab.isTab);
+        connect (gs_ui->tabIsTab, &QCheckBox::stateChanged,
+                                        [=](int s) {config_bak.tab.isTab = s;});
+        gs_ui->tabWidth->setValue(config.tab.width);
+        connect (gs_ui->tabWidth, QOverload<int>::of(&QSpinBox::valueChanged),
+                                        [=](int v) {config_bak.tab.width = v;});
     }
     config_bak = config;
     updateTiles();

@@ -254,7 +254,6 @@ void Sqriptor::indicateCurrentSyntax()
     }
 }
 
-// html: <!-- Write your comments here -->
 // php: # = //, /**/
 // cmake: # and #[[ ]]
 // pascal: //, {}, (**) - lol… boobies
@@ -268,27 +267,41 @@ bool Sqriptor::toggleComment()
     QString name = lexer->metaObject()->className();
     name.remove("QsciLexer");
     if (name == "CPP" || name == "CSharp" || name == "Java" ||  name == "CSS" ||
-        name == "JavaScript" || name == "D") { // D also supports /++/
+        name == "JavaScript" || name == "D" || name == "HTML" || name == "XML") { // D also supports /++/
+        QString head = "/*", tail = "*/";
+        if (name == "HTML" || name == "XML") {
+            head = "<!--"; tail = "-->";
+        }
+#define COMMENT_SEGMENT head.length(), text.length() - (head.length() + tail.length())
         QString text = doc->selectedText();
         if (!text.isEmpty()) {
-            if (text.startsWith("/*") && text.endsWith("*/"))
-                doc->replaceSelectedText(text.mid(2,text.length()-4).trimmed());
+            if (text.startsWith(head) && text.endsWith(tail))
+                doc->replaceSelectedText(text.mid(COMMENT_SEGMENT).trimmed());
             else
-                doc->replaceSelectedText("/* " + text + " */");
+                doc->replaceSelectedText(head + " " + text + " " + tail);
             return true;
         }
         int line, index;
         doc->getCursorPosition(&line, &index);
         text = doc->text(line);
         int begin, end;
-        if ((begin = text.lastIndexOf("/*", index)) > -1 && (end = text.indexOf("*/", index)) > -1) {
-            doc->setSelection(line, begin, line, end + 2);
+        if ((begin = text.lastIndexOf(head, index)) > -1 && (end = text.indexOf(tail, index)) > -1) {
+            doc->setSelection(line, begin, line, end + tail.length());
             text = doc->selectedText();
-            doc->replaceSelectedText(text.mid(2,text.length()-4).trimmed());
+            text = text.mid(COMMENT_SEGMENT);
+            if (begin > 0) // clumsy line comment, only option for css, html & xml
+                text = text.trimmed(); // unconditionally, we'd likely nuke indention
+            doc->replaceSelectedText(text);
             return true;
         }
-        if (name == "CSS") // only supports /**/ syntax
-            return false;
+
+        if (name == "CSS" || name == "HTML" || name == "XML") {
+            // only supports /**/, <!-- --> syntax
+            doc->insertAt(tail, line, text.length()-1);
+            doc->insertAt(head, line, 0);
+            return true;
+        }
+
         if (text.midRef(index, 2) == "//") {
             doc->setSelection(line, index, line, index + 2);
             doc->removeSelectedText();
@@ -303,32 +316,35 @@ bool Sqriptor::toggleComment()
     }
 
     if (name == "Bash" || name == "Python" || name == "Ruby" || name == "Perl" || 
-        name == "Makefile" || name == "TCL") { // tcltk might or not require ;# inline
+        name == "Makefile" || name == "CMake" || name.startsWith("Fortran") ||
+        name == "TCL") { // tcltk might or not require ";#" inline
+        const QChar bang = name.startsWith("Fortran") ? '!' : '#';
         QString text = doc->selectedText();
         if (!text.isEmpty()) {
-            if (text.startsWith("#"))
+            if (text.startsWith(bang))
                 doc->replaceSelectedText(text.mid(1,text.length()-1));
             else
-                doc->replaceSelectedText("#" + text);
+                doc->replaceSelectedText(bang + text);
             return true;
         }
         int line, index;
         doc->getCursorPosition(&line, &index);
         text = doc->text(line);
-        int begin = text.lastIndexOf("#", index >= text.size() ? -1 : index);
+        int begin = text.lastIndexOf(bang, index >= text.size() ? -1 : index);
         if (begin > 2) // full line has better cursor management
             index = begin; // caught next line
-        if (text.midRef(index, 1) == "#") {
+        if (text.midRef(index, 1) == bang) {
             doc->setSelection(line, index, line, index + 1);
             doc->removeSelectedText();
-        } else if (text.midRef(0, 1) == "#") {
+        } else if (text.midRef(0, 1) == bang) {
             doc->setSelection(line, 0, line, 1);
             doc->removeSelectedText();
             doc->setCursorPosition(line, index - 1);
         } else {
-            doc->insertAt("#", line, 0);
+            doc->insertAt(bang, line, 0);
         }
         return true;
     }
+
     return false;
 }

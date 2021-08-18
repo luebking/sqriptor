@@ -1,0 +1,12 @@
+#define COLOR(_TYPE_,_DEFAULT_) settings.value(_TYPE_, QColor(_DEFAULT_)).value<QColor>()
+
+#define COLOR_BACKGROUND COLOR("background", 0xfafafa)
+#define COLOR_FOREGROUND COLOR("foreground", 0x272727)
+#define COLOR_STRING COLOR("string", 0x8CD000)
+#define COLOR_CHAR COLOR("char", 0x00A513)
+#define COLOR_COMMENT COLOR("comment", 0x999999)
+#define COLOR_PREPROC COLOR("preproc", 0xFF3DB5)
+#define COLOR_NUMBER COLOR("number", 0x1793D0)
+#define COLOR_OPERATOR COLOR("operator", 0xFF8F00)
+#define COLOR_KEYWORD COLOR("keyword", 0x5566A4)
+#define COLOR_ERROR COLOR("error", 0x990000)

@@ -385,8 +385,11 @@ void Sqriptor::readStdin()
     if (input->open(stdin, QFile::ReadOnly)) {
         QSocketNotifier *snr = new QSocketNotifier(input->handle(), QSocketNotifier::Read, input);
         connect (snr, &QSocketNotifier::activated, [=](){
-            if (!(textEdit()->length() || textEdit()->isModified())) {
-                textEdit()->setText(QString::fromLocal8Bit(input->readAll()));
+            QsciScintilla *doc = textEdit();
+            if (!(doc->length() || doc->isModified())) {
+                doc->setText(QString::fromLocal8Bit(input->readAll()));
+                if (doc->property("sqriptor_syntax").toInt() == Syntax::None)
+                    setSyntax(Syntax::Auto);
             }
             input->close();
             delete input;

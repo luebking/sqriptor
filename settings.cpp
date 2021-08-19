@@ -102,6 +102,8 @@ void Sqriptor::showSettings()
                     doc->setTabWidth(config.tab.width);
                     int syntax = doc->property("sqriptor_syntax").toInt();
                     setSyntax(static_cast<Syntax>(syntax), doc);
+                    doc->setMarginsFont(config.font);
+                    doc->setMarginWidth(0, "14444");
                 }
             }
         });

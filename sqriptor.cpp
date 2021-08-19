@@ -146,7 +146,8 @@ int Sqriptor::addTab()
     doc->setMarkerForegroundColor(config.color.bg, 1);
     doc->setMarkerBackgroundColor(palette().color(QPalette::Link), 1);
     doc->setWrapVisualFlags(QsciScintilla::WrapFlagNone, QsciScintilla::WrapFlagInMargin, 0);
-    doc->setMarginWidth(0, "9999");
+    doc->setMarginsFont(config.font);
+    doc->setMarginWidth(0, "14444");
     doc->setMarginWidth(1, 16);
     
     doc->setAutoCompletionSource(QsciScintilla::AcsAll);

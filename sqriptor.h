@@ -56,8 +56,9 @@ class Sqriptor : public QMainWindow
 
 public:
     Sqriptor();
-    void open(QString fileName);
+    void open(QString fileName, bool forceNewTab = false);
     QsciScintilla *textEdit(int idx = -1) const;
+    void newFile(QString name = QString(), bool forceNewTab = false);
     void readStdin();
     typedef Syntax::Lexer Syntax;
     static Config config;
@@ -69,7 +70,6 @@ signals:
     void copyAvailable(bool);
 
 private slots:
-    void newFile();
     bool save();
     bool saveAs();
     void about();

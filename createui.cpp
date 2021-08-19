@@ -44,7 +44,7 @@ void Sqriptor::createUI()
 
     act = new QAction(tr("&New"), this);
     act->setShortcut(tr("Ctrl+N"));
-    connect(act, SIGNAL(triggered()), SLOT(newFile()));
+    connect(act, &QAction::triggered, [=](){ newFile(); });
     ADD_ACT
 
     act = new QAction(tr("&Open..."), this);

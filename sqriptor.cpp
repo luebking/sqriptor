@@ -107,25 +107,25 @@ void Sqriptor::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-void Sqriptor::newFile()
+void Sqriptor::newFile(QString name, bool forceNewTab)
 {
     QsciScintilla *doc = textEdit();
-    if (doc->length() > 0 || doc->isModified()) {
+    if (forceNewTab || doc->length() > 0 || doc->isModified()) {
         m_documents->setCurrentIndex(addTab());
-        setCurrentFile("");
+        setCurrentFile(name);
     } else {
         textEdit()->clear();
-        setCurrentFile("");
+        setCurrentFile(name);
     }
 }
 
-void Sqriptor::open(QString fileName)
+void Sqriptor::open(QString fileName, bool forceNewTab)
 {
     if (fileName.isEmpty())
         return;
 
     QsciScintilla *doc = textEdit();
-    if (doc->length() > 0 || doc->isModified())
+    if (forceNewTab || doc->length() > 0 || doc->isModified())
         m_documents->setCurrentIndex(addTab());
     loadFile(fileName);
 }
@@ -404,10 +404,19 @@ int main(int argc, char **argv)
     Sqriptor sqriptor;
     sqriptor.show();
     bool getStdin = true;
+    int counter = 0;
     for (int i = 1; i < argc; ++i) {
-        if (QFile::exists(argv[i])) {
-            sqriptor.open(argv[i]);
+        QString arg(argv[i]);
+        if (arg.startsWith('-')) {
+            continue;
+        }
+        if (QFile::exists(arg)) {
+            sqriptor.open(arg, counter > 0);
             getStdin = false;
+            ++counter;
+        } else {
+            sqriptor.newFile(arg, counter > 0);
+            ++counter;
         }
     }
     if (getStdin)

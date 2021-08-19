@@ -33,6 +33,8 @@
 #include <QTextStream>
 
 #include <Qsci/qsciscintilla.h>
+#include <Qsci/qscicommandset.h>
+#include <Qsci/qscicommand.h>
 
 #include "sqriptor.h"
 
@@ -144,9 +146,8 @@ int Sqriptor::addTab()
     doc->setMarkerForegroundColor(config.color.bg, 1);
     doc->setMarkerBackgroundColor(palette().color(QPalette::Link), 1);
     doc->setWrapVisualFlags(QsciScintilla::WrapFlagNone, QsciScintilla::WrapFlagInMargin, 0);
-    doc->setMarginWidth(0, 16);
+    doc->setMarginWidth(0, "9999");
     doc->setMarginWidth(1, 16);
-    doc->setMarginWidth(0, 24);
     
     doc->setAutoCompletionSource(QsciScintilla::AcsAll);
     doc->setAutoCompletionThreshold(3);
@@ -160,7 +161,13 @@ int Sqriptor::addTab()
     doc->setIndentationsUseTabs(config.tab.isTab);
     doc->setTabWidth(config.tab.width);
     doc->setTabDrawMode(QsciScintilla::TabStrikeOut);
+
+    if (QsciCommand *cmd = doc->standardCommands()->boundTo(Qt::CTRL + Qt::Key_D))
+        cmd->setKey(0); // nobody uses that and I want it for the comment toggle
     
+//    foreach(QsciCommand *cmd, doc->standardCommands()->commands())
+//        qDebug() << QKeySequence(cmd->key()).toString() << cmd->description();
+
     connect(doc, SIGNAL(copyAvailable(bool)), SIGNAL(copyAvailable(bool)));
     connect(doc, &QsciScintilla::modificationChanged, [=](){
         m_documents->tabBar()->setTabTextColor(m_documents->indexOf(doc),

@@ -259,7 +259,7 @@ void Sqriptor::createUI()
     menu->addSeparator();
     
     act = new QAction(tr("Toggle &Comment"), this);
-    act->setShortcut(tr("Alt+D"));
+    act->setShortcut(tr("Ctrl+D"));
     connect(act, SIGNAL(triggered()), SLOT(toggleComment()));
     ADD_ACT
     

@@ -143,6 +143,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
             QString shebang = document->text(0).section("\n",0,0);
             if (shebang.startsWith("#!"))
                 syntax = Sqriptor::syntax(shebang);
+            else if (shebang.startsWith("diff --git"))
+                syntax = Syntax::Diff;
         }
         if (syntax == Syntax::Auto)
             return;

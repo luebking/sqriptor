@@ -3,6 +3,8 @@
 #include <QDropEvent>
 #include <QMimeData>
 
+#include <Qsci/qsciscintilla.h>
+
 #include <QDebug>
 
 #include "sqriptor.h"
@@ -95,8 +97,11 @@ void Sqriptor::showSettings()
                 for (int syntax = Syntax::Auto + 1; syntax < Syntax::Count; ++syntax)
                     setSyntax(static_cast<Syntax>(syntax), nullptr, true); // updateColorsOnly
                 for (int i = 0; i < m_documents->count(); ++i) {
-                    int syntax = m_documents->widget(i)->property("sqriptor_syntax").toInt();
-                    setSyntax(static_cast<Syntax>(syntax), textEdit(i));
+                    QsciScintilla *doc = textEdit(i);
+                    doc->setIndentationsUseTabs(config_bak.tab.isTab);
+                    doc->setTabWidth(config_bak.tab.width);
+                    int syntax = doc->property("sqriptor_syntax").toInt();
+                    setSyntax(static_cast<Syntax>(syntax), doc);
                 }
             }
         });

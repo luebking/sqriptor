@@ -271,10 +271,13 @@ bool Sqriptor::toggleComment()
     QString name = lexer->metaObject()->className();
     name.remove("QsciLexer");
     if (name == "CPP" || name == "CSharp" || name == "Java" ||  name == "CSS" ||
-        name == "JavaScript" || name == "D" || name == "HTML" || name == "XML") { // D also supports /++/
+        name == "JavaScript" || name == "D" || // D also supports /++/
+        name == "HTML" || name == "XML" || name == "Pascal") {
         QString head = "/*", tail = "*/";
         if (name == "HTML" || name == "XML") {
             head = "<!--"; tail = "-->";
+        } else if (name == "Pascal") {
+            head = "{"; tail = "}";
         }
 #define COMMENT_SEGMENT head.length(), text.length() - (head.length() + tail.length())
         QString text = doc->selectedText();
@@ -306,6 +309,7 @@ bool Sqriptor::toggleComment()
             return true;
         }
 
+        // Not "pascal", but delphi supports this style
         if (text.midRef(index, 2) == "//") {
             doc->setSelection(line, index, line, index + 2);
             doc->removeSelectedText();

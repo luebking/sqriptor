@@ -265,7 +265,7 @@ void Sqriptor::indicateCurrentSyntax()
     }
 }
 
-// php: # = //, /**/
+// php: # = //, /**/ - todo: the html lexer does php, but we need different brace treatment
 // cmake: # and #[[ ]]
 // pascal: //, {}, (**) - lol… boobies
 
@@ -277,11 +277,17 @@ bool Sqriptor::toggleComment()
         return false;
     QString name = lexer->metaObject()->className();
     name.remove("QsciLexer");
+    bool isHtml = false;
     if (name == "CPP" || name == "CSharp" || name == "Java" ||  name == "CSS" ||
         name == "JavaScript" || name == "D" || // D also supports /++/
-        name == "HTML" || name == "XML" || name == "Pascal") {
+        (isHtml = (name == "HTML")) || name == "XML" || name == "Pascal") {
+        if (isHtml) {
+//            QString suffix = doc->property("sqriptor_filename").toString().section('.', -1);
+//            isHtml = !(suffix.startsWith("php") || suffix == "phtml");
+            // And what do we do with hybrids that are mostly html with some php code inside?
+        }
         QString head = "/*", tail = "*/";
-        if (name == "HTML" || name == "XML") {
+        if (isHtml || name == "XML") {
             head = "<!--"; tail = "-->";
         } else if (name == "Pascal") {
             head = "{"; tail = "}";
@@ -309,7 +315,7 @@ bool Sqriptor::toggleComment()
             return true;
         }
 
-        if (name == "CSS" || name == "HTML" || name == "XML") {
+        if (isHtml || name == "CSS" || name == "XML") {
             // only supports /**/, <!-- --> syntax
             doc->insertAt(tail, line, text.length()-1);
             doc->insertAt(head, line, 0);

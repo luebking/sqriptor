@@ -49,6 +49,12 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffixes["cs"] = Syntax::CSharp;
     suffixes["html"] = Syntax::HTML;
     suffixes["htm"] = Syntax::HTML;
+    suffixes["php"] = Syntax::HTML;
+    suffixes["php3"] = Syntax::HTML;
+    suffixes["php4"] = Syntax::HTML;
+    suffixes["php5"] = Syntax::HTML;
+    suffixes["phps"] = Syntax::HTML;
+    suffixes["phtml"] = Syntax::HTML;
     suffixes["xml"] = Syntax::XML;
     suffixes["sh"] = Syntax::Bash;
     suffixes["bash"] = Syntax::Bash; // shebang

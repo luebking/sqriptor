@@ -270,7 +270,16 @@ void Sqriptor::createUI()
         textEdit()->setWrapMode(checked ? QsciScintilla::WrapWhitespace : QsciScintilla::WrapNone);
         });
     menu->addAction(act);
-        
+
+    act = new QAction(tr("&EOL"), this);
+    act->setCheckable(true);
+    connect(act, &QAction::triggered, [=](bool checked){
+        textEdit()->setEolVisibility(checked);
+        });
+    menu->addAction(act);
+
+//    void 	setEolMode (EolMode mode)
+
     act = new QAction(tr("Show &Menu"), this);
     act->setCheckable(true);
     act->setChecked(true);

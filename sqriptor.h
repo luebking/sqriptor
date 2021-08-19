@@ -81,6 +81,7 @@ private slots:
     bool closeTab(int idx = -1);
     bool toggleComment();
     void showSettings();
+    void checkTimestamp();
 
 private:
     void createUI();
@@ -92,6 +93,7 @@ private:
     void setCurrentFile(const QString &fileName);
     Syntax syntax(QString suffix) const;
     void indicateCurrentSyntax();
+    void updateTimestamp(QObject *o);
 
     QTabWidget *m_documents;
     QMenu *m_syntaxMenu;

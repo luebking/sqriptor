@@ -19,6 +19,7 @@
 
 #include <QApplication>
 #include <QCloseEvent>
+#include <QDateTime>
 #include <QFile>
 #include <QFileInfo>
 #include <QFileDialog>
@@ -79,6 +80,7 @@ Sqriptor::Sqriptor()
         setWindowModified(textEdit()->isModified());
         setWindowTitle(tr("%1[*]").arg(m_documents->tabText(idx)));
         indicateCurrentSyntax();
+        checkTimestamp();
     });
     m_documents->setTabPosition(QTabWidget::West);
     m_documents->setTabBarAutoHide(true);
@@ -86,6 +88,12 @@ Sqriptor::Sqriptor()
 
     createUI();
     addTab();
+
+    connect(qApp, &QApplication::focusChanged, [=](QWidget *old, QWidget *now) {
+        Q_UNUSED(old)
+        if (now == m_documents->currentWidget())
+            checkTimestamp();
+    });
 
     setCurrentFile("");
 }
@@ -315,7 +323,7 @@ void Sqriptor::writeSettings()
 bool Sqriptor::maybeSave(int idx)
 {
     if (textEdit(idx)->isModified()) {
-        int ret = QMessageBox::warning(this, tr("Application"),
+        int ret = QMessageBox::warning(this, tr("Sqriptor"),
                      tr("The document has been modified.\n"
                         "Do you want to save your changes?"),
                      QMessageBox::Yes | QMessageBox::Default,
@@ -326,20 +334,58 @@ bool Sqriptor::maybeSave(int idx)
         else if (ret == QMessageBox::Cancel)
             return false;
     }
+    QString fileName = textEdit(idx)->property("sqriptor_filename").toString();
+    if (!fileName.isEmpty() && !QFileInfo::exists(fileName)) {
+        int ret = QMessageBox::warning(this, tr("Sqriptor"),
+                     tr("The documents file no longer exists!\n"
+                        "Do you want to save it?"),
+                     QMessageBox::Save | QMessageBox::Default,
+                     QMessageBox::Discard,
+                     QMessageBox::Cancel | QMessageBox::Escape);
+        if (ret == QMessageBox::Save)
+            return save();
+        else if (ret == QMessageBox::Cancel)
+            return false;
+    }
     return true;
+}
+
+void Sqriptor::updateTimestamp(QObject *o)
+{
+    o->setProperty("sqriptor_timestamp", QDateTime::currentDateTime());
+}
+
+void Sqriptor::checkTimestamp()
+{
+    QsciScintilla *doc = textEdit();
+    QDateTime date = doc->property("sqriptor_timestamp").toDateTime();
+    QString fileName = doc->property("sqriptor_filename").toString();
+    QFileInfo info(fileName);
+    if (info.exists() && info.lastModified() > date) {
+        int ret = QMessageBox::warning(this, tr("Sqriptor"),
+                     tr("The document file was updated outside Sqriptor.\n"
+                        "Do you want to reload it?"),
+                     QMessageBox::Yes,
+                     QMessageBox::No | QMessageBox::Default);
+        if (ret == QMessageBox::Yes)
+            loadFile(fileName);
+        else
+            updateTimestamp(doc); // otherwise we'll be asked forever
+    }
 }
 
 void Sqriptor::loadFile(const QString &fileName)
 {
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly)) {
-        QMessageBox::warning(this, tr("Application"),
+        QMessageBox::warning(this, tr("Sqriptor"),
                              tr("Cannot read file %1:\n%2.")
                              .arg(fileName)
                              .arg(file.errorString()));
         return;
     }
 
+    updateTimestamp(textEdit());
     QTextStream in(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
     textEdit()->setText(in.readAll());
@@ -352,7 +398,7 @@ bool Sqriptor::saveFile(const QString &fileName)
 {
     QFile file(fileName);
     if (!file.open(QFile::WriteOnly)) {
-        QMessageBox::warning(this, tr("Application"),
+        QMessageBox::warning(this, tr("Sqriptor"),
                              tr("Cannot write file %1:\n%2.")
                              .arg(fileName)
                              .arg(file.errorString()));
@@ -365,6 +411,7 @@ bool Sqriptor::saveFile(const QString &fileName)
     QApplication::restoreOverrideCursor();
 
     setCurrentFile(fileName);
+    updateTimestamp(textEdit());
     return true;
 }
 

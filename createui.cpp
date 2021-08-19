@@ -134,35 +134,32 @@ void Sqriptor::createUI()
     searchBar->addAction(act);
     
     QLineEdit *findLine = new QLineEdit(searchBar);
-    connect(findLine, &QLineEdit::returnPressed, [=]() {
+    auto l_search = [=](bool jump) {
         int line, index, dummy;
-        if (searchForward->isChecked())
-            textEdit()->getSelection(&dummy, &dummy, &line, &index);
-        else
-            textEdit()->getSelection(&line, &index, &dummy, &dummy);
-        textEdit()->findFirst(  findLine->text(),
-                                searchRegExp->isChecked(),
-                                searchCaseSens->isChecked(),
-                                searchWord->isChecked(),
-                                true,
-                                searchForward->isChecked(),
-                                line, index);
-    });
-    connect(findLine, &QLineEdit::textEdited, [=]() {
-        int line, index, dummy;
-        if (searchForward->isChecked())
+        jump = jump ? searchForward->isChecked() : !searchForward->isChecked();
+        if (jump)
             textEdit()->getSelection(&line, &index, &dummy, &dummy);
         else
             textEdit()->getSelection(&dummy, &dummy, &line, &index);
-        textEdit()->findFirst(  findLine->text(),
-                                searchRegExp->isChecked(),
-                                searchCaseSens->isChecked(),
-                                searchWord->isChecked(),
-                                true,
-                                searchForward->isChecked(),
-                                line, index);
-    });
-    
+        bool found = textEdit()->findFirst( findLine->text(),
+                                            searchRegExp->isChecked(),
+                                            searchCaseSens->isChecked(),
+                                            searchWord->isChecked(),
+                                            true,
+                                            searchForward->isChecked(),
+                                            line, index);
+        if (found || findLine->text().isEmpty()) {
+            findLine->setPalette(QPalette());
+        } else {
+            QPalette pal = findLine->palette();
+            pal.setColor(findLine->foregroundRole(), config.color.error);
+            findLine->setPalette(pal);
+        }
+    };
+
+    connect(findLine, &QLineEdit::returnPressed, [=]() { l_search(false); });
+    connect(findLine, &QLineEdit::textEdited, [=]() { l_search(true); });
+
     QLineEdit *replaceLine = new QLineEdit(searchBar);
     connect(replaceLine, &QLineEdit::returnPressed, [=]() {
         textEdit()->replace(replaceLine->text());

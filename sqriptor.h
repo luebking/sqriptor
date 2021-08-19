@@ -76,7 +76,7 @@ private slots:
     void toggleBookmark();
     void nextBookmark();
     void prevBookmark();
-    void setSyntax(Syntax syntax = Syntax::Auto, QsciScintilla *document = nullptr);
+    void setSyntax(Syntax syntax = Syntax::Auto, QsciScintilla *document = nullptr, bool updateColorsOnly = false);
     int addTab();
     bool closeTab(int idx = -1);
     bool toggleComment();

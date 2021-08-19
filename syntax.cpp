@@ -132,12 +132,12 @@ static void resetColors(QsciScintilla *document) {
     document->setCaretLineBackgroundColor(bg);
 }
 
-void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document)
+void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColorsOnly)
 {
-    if (!document)
+    if (!document && !updateColorsOnly)
         document = textEdit();
 
-    if (syntax == Syntax::Auto) {
+    if (syntax == Syntax::Auto && !updateColorsOnly) {
         syntax = Sqriptor::syntax(document->property("sqriptor_filename").toString());
         if (syntax == Syntax::Auto) {
             QString shebang = document->text(0).section("\n",0,0);
@@ -148,8 +148,9 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document)
             return;
     }
 
-    if (syntaxDict[syntax]) {
+    if (syntaxDict[syntax] && !updateColorsOnly) {
         document->setLexer(syntaxDict[syntax]);
+        document->setProperty("sqriptor_syntax", syntax);
         resetColors(document);
         return;
     }
@@ -164,7 +165,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document)
             setColors##_TYPE_(static_cast<QsciLexer##_TYPE_ * >(syntaxDict[syntax])); \
             break;
     
-    QsciLexer *hook = nullptr;
+    QsciLexer *hook = syntaxDict[syntax];
     switch (syntax) {
         case Syntax::None:
             document->setFont(config.font);
@@ -232,7 +233,10 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document)
         default:
             break;
     }
+    if (updateColorsOnly)
+        return; // we're not touching the document here at all
     document->setLexer(syntaxDict[syntax]);
+    document->setProperty("sqriptor_syntax", syntax);
     if (document == textEdit())
         indicateCurrentSyntax();
     resetColors(document);

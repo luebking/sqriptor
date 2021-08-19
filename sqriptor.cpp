@@ -28,6 +28,7 @@
 #include <QScrollBar>
 #include <QSettings>
 #include <QSize>
+#include <QSocketNotifier>
 #include <QStatusBar>
 #include <QTabBar>
 #include <QTextStream>
@@ -376,6 +377,23 @@ void Sqriptor::setCurrentFile(const QString &fileName)
     setSyntax(Syntax::Auto);
 }
 
+void Sqriptor::readStdin()
+{
+    QFile *input = new QFile;
+    if (input->open(stdin, QFile::ReadOnly)) {
+        QSocketNotifier *snr = new QSocketNotifier(input->handle(), QSocketNotifier::Read, input);
+        connect (snr, &QSocketNotifier::activated, [=](){
+            if (!(textEdit()->length() || textEdit()->isModified())) {
+                textEdit()->setText(QString::fromLocal8Bit(input->readAll()));
+            }
+            input->close();
+            delete input;
+        });
+    } else {
+        delete input;
+        input = nullptr;
+    }
+}
 // ===========================================
 
 int main(int argc, char **argv)
@@ -390,14 +408,8 @@ int main(int argc, char **argv)
             getStdin = false;
         }
     }
-    if (getStdin) {
-        QFile input;
-        if (input.open(stdin, QIODevice::ReadOnly)) {
-            QString text = input.readAll();
-            sqriptor.textEdit()->setText(text);
-            input.close();
-        }
-    }
+    if (getStdin)
+        sqriptor.readStdin();
     QMetaObject::invokeMethod(sqriptor.textEdit(), "setFocus", Qt::QueuedConnection);
     return app.exec();
 }

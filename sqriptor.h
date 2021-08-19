@@ -58,6 +58,7 @@ public:
     Sqriptor();
     void open(QString fileName);
     QsciScintilla *textEdit(int idx = -1) const;
+    void readStdin();
     typedef Syntax::Lexer Syntax;
     static Config config;
 

@@ -29,7 +29,6 @@
 #include <QSettings>
 #include <QSize>
 #include <QSocketNotifier>
-#include <QStatusBar>
 #include <QTabBar>
 #include <QTextStream>
 
@@ -57,6 +56,7 @@ protected:
 
 Sqriptor::Sqriptor()
 {
+    setStatusBar(nullptr); // useless waste of screen estate
     readSettings();
 
     QPalette pal = qApp->palette();
@@ -86,7 +86,6 @@ Sqriptor::Sqriptor()
     addTab();
 
     setCurrentFile("");
-    statusBar()->showMessage(tr("Ready"));
 }
 
 QsciScintilla *Sqriptor::textEdit(int idx) const
@@ -160,6 +159,7 @@ int Sqriptor::addTab()
     doc->setBackspaceUnindents(true);
     doc->setIndentationsUseTabs(config.tab.isTab);
     doc->setTabWidth(config.tab.width);
+    doc->setTabDrawMode(QsciScintilla::TabStrikeOut);
     
     connect(doc, SIGNAL(copyAvailable(bool)), SIGNAL(copyAvailable(bool)));
     connect(doc, &QsciScintilla::modificationChanged, [=](){
@@ -338,7 +338,6 @@ void Sqriptor::loadFile(const QString &fileName)
     QApplication::restoreOverrideCursor();
 
     setCurrentFile(fileName);
-    statusBar()->showMessage(tr("File loaded"), 2000);
 }
 
 bool Sqriptor::saveFile(const QString &fileName)
@@ -358,7 +357,6 @@ bool Sqriptor::saveFile(const QString &fileName)
     QApplication::restoreOverrideCursor();
 
     setCurrentFile(fileName);
-    statusBar()->showMessage(tr("File saved"), 2000);
     return true;
 }
 

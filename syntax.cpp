@@ -127,9 +127,14 @@ static void resetColors(QsciScintilla *document) {
     // accentuate background color
     bg = bg.value() < fg.value() ? bg.darker(120) : bg.lighter(120);
     document->setMarginsBackgroundColor(bg);
+    document->setCaretLineBackgroundColor(bg);
     fg = QColor((bg.red()+fg.red())/2, (bg.green()+fg.green())/2, (bg.green()+fg.green())/2);
     document->setMarginsForegroundColor(fg);
-    document->setCaretLineBackgroundColor(bg);
+    fg = QColor((2*bg.red()+fg.red())/3, (2*bg.green()+fg.green())/3, (2*bg.green()+fg.green())/3);
+    document->setIndentationGuidesBackgroundColor(fg);
+    document->setIndentationGuidesForegroundColor(fg);
+    document->setEdgeColor(fg);
+    document->setWhitespaceForegroundColor(fg);
 }
 
 void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColorsOnly)

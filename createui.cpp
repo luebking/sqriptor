@@ -169,10 +169,13 @@ void Sqriptor::createUI()
     QSpinBox *gotoLine = new QSpinBox(searchBar);
     connect(qApp, &QApplication::focusChanged, [=]() {
         if (gotoLine->hasFocus())
-            gotoLine->setRange(0, textEdit()->lines());
+            gotoLine->setRange(1, textEdit()->lines());
     });
     connect(gotoLine, QOverload<int>::of(&QSpinBox::valueChanged), [=](int i) {
-        textEdit()->setCursorPosition(i, 0);
+        textEdit()->setCursorPosition(i-1, 0); // humans start counting at 0...
+    });
+    connect(gotoLine, &QSpinBox::editingFinished, [=]() {
+        textEdit()->setFocus();
     });
     
     QHBoxLayout *layout = new QHBoxLayout(searchBar);

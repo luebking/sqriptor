@@ -381,11 +381,23 @@ void Sqriptor::setCurrentFile(const QString &fileName)
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    Sqriptor mainWin;
-    mainWin.show();
-    for (int i = 1; i < argc; ++i)
-        if (QFile::exists(argv[i]))
-            mainWin.open(argv[i]);
-    QMetaObject::invokeMethod(mainWin.textEdit(), "setFocus", Qt::QueuedConnection);
+    Sqriptor sqriptor;
+    sqriptor.show();
+    bool getStdin = true;
+    for (int i = 1; i < argc; ++i) {
+        if (QFile::exists(argv[i])) {
+            sqriptor.open(argv[i]);
+            getStdin = false;
+        }
+    }
+    if (getStdin) {
+        QFile input;
+        if (input.open(stdin, QIODevice::ReadOnly)) {
+            QString text = input.readAll();
+            sqriptor.textEdit()->setText(text);
+            input.close();
+        }
+    }
+    QMetaObject::invokeMethod(sqriptor.textEdit(), "setFocus", Qt::QueuedConnection);
     return app.exec();
 }

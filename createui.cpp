@@ -50,7 +50,9 @@ void Sqriptor::createUI()
     act = new QAction(tr("&Open..."), this);
     act->setShortcut(tr("Ctrl+O"));
     connect(act, &QAction::triggered, [=](){
-        foreach (QString name, QFileDialog::getOpenFileNames(this))
+        QString path = textEdit()->property("sqriptor_filename").toString();
+        path = QFileInfo(path).absolutePath();
+        foreach (QString name, QFileDialog::getOpenFileNames(this, QString(), path))
             open(name);
     });
     ADD_ACT

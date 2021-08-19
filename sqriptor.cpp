@@ -203,7 +203,9 @@ bool Sqriptor::save()
 
 bool Sqriptor::saveAs()
 {
-    QString fileName = QFileDialog::getSaveFileName(this);
+    QString path = textEdit()->property("sqriptor_filename").toString();
+    path = QFileInfo(path).absolutePath();
+    QString fileName = QFileDialog::getSaveFileName(this, QString(), path);
     if (fileName.isEmpty())
         return false;
 

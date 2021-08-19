@@ -164,7 +164,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
 
 #define MAKE_LEXER(_TYPE_) case Syntax::_TYPE_ : \
             if (!hook) syntaxDict[syntax] = new QsciLexer##_TYPE_(this); \
-            syntaxDict[syntax]->setFont(QFont("monospace", 9));\
+            syntaxDict[syntax]->setFont(config.font);\
             syntaxDict[syntax]->setDefaultPaper(COLOR_BACKGROUND);\
             syntaxDict[syntax]->setPaper(COLOR_BACKGROUND);\
             syntaxDict[syntax]->setDefaultColor(COLOR_FOREGROUND);\

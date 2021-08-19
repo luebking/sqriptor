@@ -98,8 +98,8 @@ void Sqriptor::showSettings()
                     setSyntax(static_cast<Syntax>(syntax), nullptr, true); // updateColorsOnly
                 for (int i = 0; i < m_documents->count(); ++i) {
                     QsciScintilla *doc = textEdit(i);
-                    doc->setIndentationsUseTabs(config_bak.tab.isTab);
-                    doc->setTabWidth(config_bak.tab.width);
+                    doc->setIndentationsUseTabs(config.tab.isTab);
+                    doc->setTabWidth(config.tab.width);
                     int syntax = doc->property("sqriptor_syntax").toInt();
                     setSyntax(static_cast<Syntax>(syntax), doc);
                 }
@@ -111,6 +111,12 @@ void Sqriptor::showSettings()
         gs_ui->tabWidth->setValue(config.tab.width);
         connect (gs_ui->tabWidth, QOverload<int>::of(&QSpinBox::valueChanged),
                                         [=](int v) {config_bak.tab.width = v;});
+        gs_ui->font->setCurrentFont(config.font);
+        connect (gs_ui->font, &QFontComboBox::currentFontChanged,
+                                        [=](const QFont &font) {config_bak.font.setFamily(font.family());});
+        gs_ui->fontSize->setValue(config.font.pointSize());
+        connect (gs_ui->fontSize, QOverload<int>::of(&QSpinBox::valueChanged),
+                                        [=](int v) {config_bak.font.setPointSize(v);});
     }
     config_bak = config;
     updateTiles();

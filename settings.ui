@@ -62,6 +62,9 @@
           </layout>
          </item>
          <item>
+          <widget class="QSpinBox" name="fontSize"/>
+         </item>
+         <item>
           <spacer name="horizontalSpacer_3">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -358,7 +361,7 @@
              <string>Indent with ASCII 0x09 - the tab - instead of blanks</string>
             </property>
             <property name="text">
-             <string>0x09 \t</string>
+             <string>Indention 0x9</string>
             </property>
            </widget>
           </item>

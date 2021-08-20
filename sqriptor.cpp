@@ -192,7 +192,7 @@ int Sqriptor::addTab()
 
 bool Sqriptor::closeTab(int idx)
 {
-    if (idx < m_documents->count())
+    if (idx < 0)
         idx = m_documents->currentIndex();
     if (maybeSave(idx)) {
         if (m_documents->count() > 1) {

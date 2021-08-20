@@ -181,8 +181,10 @@ void Sqriptor::createUI()
 
     QLineEdit *replaceLine = new QLineEdit(searchBar);
     connect(replaceLine, &QLineEdit::returnPressed, [=]() {
+        if (textEdit()->selectedText().isEmpty())
+            textEdit()->cancelFind(); // user clicked forward, voids the replace, we search on
         textEdit()->replace(replaceLine->text());
-        textEdit()->findNext();
+        l_search(false);
     });
     
     QSpinBox *gotoLine = new QSpinBox(searchBar);
@@ -237,6 +239,12 @@ void Sqriptor::createUI()
         btn->show();
         findLine->show();
         replaceLine->show();
+        textEdit()->cancelFind(); // clear previous finds to no replace them
+        QString text = textEdit()->selectedText();
+        if (!text.isEmpty()) {
+            findLine->setText(text);
+            l_search(true); // initialize find results
+        }
         findLine->setFocus();
         findLine->selectAll();
         SHOW_STUFF

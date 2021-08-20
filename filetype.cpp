@@ -105,6 +105,8 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffixes["tclsh"] = Syntax::TCL; // shebang
     suffixes["coffee"] = Syntax::CoffeeScript;
     suffixes["avs"] = Syntax::AVS;
+    suffixes["ini"] = Syntax::Properties;
+    suffixes["conf"] = Syntax::Properties;
     
     suffixes["Makefile"] = Syntax::Makefile;
 

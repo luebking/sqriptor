@@ -298,6 +298,15 @@ void Sqriptor::createUI()
 
     menu->addSeparator();
 
+    act = new QAction(tr("&Toggle 0x9-Indentation"), this);
+    act->setShortcut(tr("Alt+T"));
+    connect(act, &QAction::triggered, [=](){
+        textEdit()->setIndentationsUseTabs(!textEdit()->indentationsUseTabs());
+    });
+    ADD_ACT
+
+    menu->addSeparator();
+
     act = new QAction(tr("&Settings..."), this);
     connect(act, SIGNAL(triggered()), SLOT(showSettings()));
     menu->addAction(act);

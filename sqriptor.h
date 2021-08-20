@@ -72,7 +72,6 @@ signals:
 private slots:
     bool save();
     bool saveAs();
-    void about();
     void toggleBookmark();
     void nextBookmark();
     void prevBookmark();

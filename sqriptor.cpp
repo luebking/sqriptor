@@ -173,9 +173,6 @@ int Sqriptor::addTab()
 
     if (QsciCommand *cmd = doc->standardCommands()->boundTo(Qt::CTRL + Qt::Key_D))
         cmd->setKey(0); // nobody uses that and I want it for the comment toggle
-    
-//    foreach(QsciCommand *cmd, doc->standardCommands()->commands())
-//        qDebug() << QKeySequence(cmd->key()).toString() << cmd->description();
 
     connect(doc, SIGNAL(copyAvailable(bool)), SIGNAL(copyAvailable(bool)));
     connect(doc, &QsciScintilla::modificationChanged, [=](){
@@ -227,16 +224,6 @@ bool Sqriptor::saveAs()
 
     return saveFile(fileName);
 }
-
-void Sqriptor::about()
-{
-   QMessageBox::about(this, tr("About Application"),
-            tr("The <b>Application</b> example demonstrates how to "
-               "write modern GUI applications using Qt, with a menu bar, "
-               "toolbars, and a status bar."));
-}
-
-
 
 void Sqriptor::toggleBookmark()
 {

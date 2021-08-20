@@ -22,13 +22,17 @@
 #include <QLineEdit>
 #include <QMenu>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QSpinBox>
+#include <QTextEdit>
 #include <QToolButton>
 #include <QHBoxLayout>
 
 #include <QDebug>
 
 #include <Qsci/qsciscintilla.h>
+#include <Qsci/qscicommandset.h>
+#include <Qsci/qscicommand.h>
 
 #include "sqriptor.h"
 
@@ -317,17 +321,48 @@ void Sqriptor::createUI()
     ADD_SYNTAX(SQL); ADD_SYNTAX(TCL); ADD_SYNTAX(TeX); ADD_SYNTAX(Verilog);
     ADD_SYNTAX(VHDL); ADD_SYNTAX(XML); ADD_SYNTAX(YAML);
 
-/*
+    menuBar()->addSeparator();
+
     menu = menuBar()->addMenu(tr("&Help"));
 
     act = new QAction(tr("&About"), this);
-    act->setStatusTip(tr("Show the application's About box"));
-    connect(act, SIGNAL(triggered()), this, SLOT(about()));
+    connect(act, &QAction::triggered, [=](){
+       QMessageBox::about(this, tr("About Sqriptor"),
+                                tr("Best editor in the world. Tribute."));
+    });
     menu->addAction(act);
 
-    act = new QAction(tr("About &Qt"), this);
+    static QDialog *shortcutHelp = nullptr;
+    act = new QAction(tr("Scintilla &Shortcuts"), this);
+    connect(act, &QAction::triggered, [=](){
+        if (shortcutHelp) {
+            shortcutHelp->show();
+            return;
+        }
+        QsciScintilla *doc = textEdit();
+        QString text("<html><table>");
+        foreach(QsciCommand *cmd, doc->standardCommands()->commands()) {
+            if (!cmd->key())
+                continue;
+            text += "<tr><td align=center style='font-weight:bold;'>" + QKeySequence(cmd->key()).toString() + 
+                    "</td><td align=left>" + cmd->description() + "</td></tr>";
+        }
+        text += "</table></html>";
+        shortcutHelp = new QDialog(this);
+        shortcutHelp->setWindowTitle(tr("Scintilla Shortcuts"));
+        QHBoxLayout *layout = new QHBoxLayout(shortcutHelp);
+        shortcutHelp->setLayout(layout);
+        QTextEdit *display = new QTextEdit(shortcutHelp);
+        display->setReadOnly(true);
+        display->setText(text);
+        layout->addWidget(display);
+        shortcutHelp->resize(640,480);
+        shortcutHelp->show();
+    });
+    menu->addAction(act);
+
+/*     act = new QAction(tr("About &Qt"), this);
     act->setStatusTip(tr("Show the Qt library's About box"));
     connect(act, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    menu->addAction(act);
-*/
+    menu->addAction(act); */
 }

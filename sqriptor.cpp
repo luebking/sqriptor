@@ -382,21 +382,35 @@ void Sqriptor::loadFile(const QString &fileName)
     QTextStream in(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
     doc->setText(in.readAll());
-//    QString vimHints = doc->text(0);
-//    qDebug() << vimHints;
-//    if (vimHints.contains("vim:")) {
-//        QStringList vimmodes = vimHints.split(QRegExp("[\\s:]]"));
-//        qDebug() << vimmodes;
-//        if (vimmodes.contains("noexpandtab") || vimmodes.contains("noet"))
-//            doc->setIndentationsUseTabs(true);
-//        if (vimmodes.contains("expandtab") || vimmodes.contains("et"))
-//            doc->setIndentationsUseTabs(false);
-//        qDebug() << vimmodes.indexOf(QRegExp("(tabstop|ts)=.*"));
-//        if (vimmodes.contains("tabstop") || vimmodes.contains("ts"))
-//        if (vimmodes.contains("shiftwidth") || vimmodes.contains("sw"))
-//        doc->setTabWidth(config.tab.width);
-//        vim: ft=zsh sw=2 ts=2 et
-//    }
+
+    QString vimHints;
+    for (int i = 0; i < doc->lines(); ++i) {
+        vimHints = doc->text(i);
+        if (vimHints.contains("vim:")) {
+            bool isModeline = false; // could be some random line talking about "vim: great editor"
+            QStringList vimmodes = vimHints.split(QRegExp("[\\s:]"));
+            if ((isModeline = (vimmodes.contains("noexpandtab") || vimmodes.contains("noet"))))
+                doc->setIndentationsUseTabs(true);
+            else if ((isModeline = (vimmodes.contains("expandtab") || vimmodes.contains("et"))))
+                doc->setIndentationsUseTabs(false);
+            if (!doc->indentationsUseTabs()) { // if we use tabs, we honor the users width preference
+                int tabstop = vimmodes.indexOf(QRegExp("(tabstop|ts)=.*"));
+                if (tabstop > -1) {
+                    bool ok;
+                    tabstop = vimmodes.at(tabstop).section('=',-1).toInt(&ok);
+                    if (ok) {
+                        isModeline = true;
+                        doc->setTabWidth(tabstop);
+                    }
+                }
+                // if (vimmodes.contains("shiftwidth") || vimmodes.contains("sw"))
+                // nobody cares about the stupid shiftwidth
+            }
+            // TODO: apply ft/filetype?
+            if (isModeline)
+                break;
+        }
+    }
     QApplication::restoreOverrideCursor();
 
     setCurrentFile(fileName);

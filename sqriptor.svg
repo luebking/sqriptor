@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 135.46667 135.46667"
+   version="1.1"
+   id="svg5"
+   inkscape:export-filename="/home/loki/MyFiles/Code/sqriptor/sqriptor.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:version="1.1 (c4e8f9ed74, 2021-05-24)"
+   sodipodi:docname="sqriptor.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#2e2e2e"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="false"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="0.48828125"
+     inkscape:cx="109.568"
+     inkscape:cy="256"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="opacity:1;fill:#00d2e2;stroke-width:1.00213"
+       id="path846"
+       cx="25.929167"
+       cy="109.53751"
+       r="25.929167" />
+    <path
+       sodipodi:type="star"
+       style="opacity:1;fill:#666666;stroke-width:3.77953"
+       id="path870"
+       inkscape:flatsided="true"
+       sodipodi:sides="3"
+       sodipodi:cx="241.664"
+       sodipodi:cy="35.84"
+       sodipodi:r1="196.8745"
+       sodipodi:r2="98.437241"
+       sodipodi:arg1="1.5707963"
+       sodipodi:arg2="2.6179939"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="M 241.66401,232.7145 71.165682,-62.597244 l 340.996628,-9e-6 z"
+       transform="matrix(0.19312235,0.19312235,-0.19312235,0.19312235,43.779987,-1.654757)"
+       inkscape:transform-center-x="-6.9583017"
+       inkscape:transform-center-y="-6.9583028" />
+  </g>
+</svg>

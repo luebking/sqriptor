@@ -97,6 +97,7 @@ private:
 
     QTabWidget *m_documents;
     QMenu *m_syntaxMenu;
+    QAction *m_tabMenu;
 };
 
 #endif

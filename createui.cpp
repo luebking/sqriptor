@@ -42,6 +42,21 @@ void Sqriptor::createUI()
 {
     QMenu *menu;
     QAction *act;
+
+    menu = menuBar()->addMenu("(·)");
+    m_tabMenu = menu->menuAction();
+    m_tabMenu->setVisible(false);
+    connect(menu, &QMenu::aboutToShow, [=]() {
+        menu->clear();
+        QAction *a;
+        for (int i = 0; i < m_documents->count(); ++i) {
+            a = new QAction(m_documents->tabText(i), menu);
+            connect(a, &QAction::triggered, [=](){
+                m_documents->setCurrentIndex(i);
+            });
+            menu->addAction(a);
+        }
+    });
     
     // FILE
     menu = menuBar()->addMenu(tr("&File"));

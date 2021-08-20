@@ -16,7 +16,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-
+#include <QAction>
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDateTime>
@@ -186,6 +186,7 @@ int Sqriptor::addTab()
     setSyntax(Syntax::None, doc);
     doc->setFocus();
 
+    m_tabMenu->setVisible(m_documents->count() > 6); // soon gonna be 8+
     return m_documents->addTab(doc, "");
 }
 
@@ -196,6 +197,7 @@ bool Sqriptor::closeTab(int idx)
     if (maybeSave(idx)) {
         if (m_documents->count() > 1) {
             delete m_documents->widget(idx);
+            m_tabMenu->setVisible(m_documents->count() > 7); // still 8+
         } else {
             textEdit()->clear();
             setCurrentFile("");

@@ -409,11 +409,13 @@ void Sqriptor::setCurrentFile(const QString &fileName)
     setWindowModified(false);
 
     QString shownName;
-    if (fileName.isEmpty())
-        shownName = "untitled.txt";
-    else
+    if (fileName.isEmpty()) {
+        static const char *leet[4] = {"5cr4tchp4d", "$¢r@t¢hp@d", "unt1tl3d", "n3w_f1l3"};
+        shownName = leet[rand() % 4];
+    }
+    else {
         shownName = QFileInfo(fileName).fileName();
-
+    }
     m_documents->setTabText(m_documents->currentIndex(), shownName);
     setWindowTitle(tr("%1[*]").arg(shownName));
     setSyntax(Syntax::Auto);

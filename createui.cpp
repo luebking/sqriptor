@@ -246,10 +246,30 @@ void Sqriptor::createUI()
     act = new QAction(tr("Find &Next"), this);
     act->setShortcut(tr("F3"));
     connect(act, &QAction::triggered, [=]() {
-        textEdit()->findNext();
+        textEdit()->findFirst(  findLine->text(),
+                                searchRegExp->isChecked(),
+                                searchCaseSens->isChecked(),
+                                searchWord->isChecked(),
+                                true,
+                                true /*forward*/);
     });
     menu->addAction(act);
-    
+
+    act = new QAction(tr("Find &Prev"), this);
+    act->setShortcut(tr("Ctrl+F3"));
+    connect(act, &QAction::triggered, [=]() {
+        int line, index, dummy;
+        textEdit()->getSelection(&line, &index, &dummy, &dummy);
+        textEdit()->findFirst(  findLine->text(),
+                                searchRegExp->isChecked(),
+                                searchCaseSens->isChecked(),
+                                searchWord->isChecked(),
+                                true,
+                                false /*backward*/,
+                                line, index);
+    });
+    menu->addAction(act);
+
     act = new QAction(tr("&Goto Line"), this);
     act->setShortcut(tr("Ctrl+G"));
     connect(act, &QAction::triggered, [=]() {

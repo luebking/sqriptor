@@ -47,6 +47,7 @@ typedef struct Config
         QColor  bg, fg, string, character, comment, preproc,
                 number, operateur, keyword, error;
     } color;
+    bool changed;
 } Config;
 
 

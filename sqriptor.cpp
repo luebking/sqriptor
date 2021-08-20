@@ -61,6 +61,7 @@ Sqriptor::Sqriptor()
 {
     setStatusBar(nullptr); // useless waste of screen estate
     readSettings();
+    config.changed = false;
 
     QPalette pal = qApp->palette();
     pal.setColor(QPalette::Window, config.color.bg);
@@ -284,6 +285,8 @@ void Sqriptor::readSettings()
 
 void Sqriptor::writeSettings()
 {
+    if (!config.changed)
+        return;
     QSettings settings("sqriptor");
     settings.beginGroup("font");
     settings.setValue("family", config.font.family());

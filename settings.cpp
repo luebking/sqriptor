@@ -93,6 +93,7 @@ void Sqriptor::showSettings()
             cd->hide();
             if (result == QDialog::Accepted) {
                 config = config_bak;
+                config.changed = true;
                 // todo: update syntax lexers w/ new palette
                 for (int syntax = Syntax::Auto + 1; syntax < Syntax::Count; ++syntax)
                     setSyntax(static_cast<Syntax>(syntax), nullptr, true); // updateColorsOnly

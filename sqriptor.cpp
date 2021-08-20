@@ -297,16 +297,16 @@ void Sqriptor::writeSettings()
     settings.setValue("width", config.tab.width);
     settings.endGroup();
     settings.beginGroup("color");
-    settings.setValue("background", config.color.bg);
-    settings.setValue("foreground", config.color.fg);
-    settings.setValue("string", config.color.string);
-    settings.setValue("char", config.color.character);
-    settings.setValue("comment", config.color.comment);
-    settings.setValue("preproc", config.color.preproc);
-    settings.setValue("number", config.color.number);
-    settings.setValue("operator", config.color.operateur);
-    settings.setValue("keyword", config.color.keyword);
-    settings.setValue("error", config.color.error);
+    settings.setValue("background", config.color.bg.name(QColor::HexRgb));
+    settings.setValue("foreground", config.color.fg.name(QColor::HexRgb));
+    settings.setValue("string", config.color.string.name(QColor::HexRgb));
+    settings.setValue("char", config.color.character.name(QColor::HexRgb));
+    settings.setValue("comment", config.color.comment.name(QColor::HexRgb));
+    settings.setValue("preproc", config.color.preproc.name(QColor::HexRgb));
+    settings.setValue("number", config.color.number.name(QColor::HexRgb));
+    settings.setValue("operator", config.color.operateur.name(QColor::HexRgb));
+    settings.setValue("keyword", config.color.keyword.name(QColor::HexRgb));
+    settings.setValue("error", config.color.error.name(QColor::HexRgb));
     settings.endGroup();
 }
 

@@ -20,7 +20,7 @@ static void setColorsLua(QsciLexerLua *lexer)
     lexer->setColor(c, QsciLexerCPP::UUID);
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerLua::Operator);
-    lexer->setColor(c, QsciLexerLua::UnclosedString);
+    lexer->setColor(COLOR_ERROR, QsciLexerLua::UnclosedString);
     c = COLOR_KEYWORD;
     lexer->setColor(c, QsciLexerLua::Keyword);
     lexer->setColor(c, QsciLexerLua::KeywordSet5);

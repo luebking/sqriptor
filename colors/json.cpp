@@ -13,9 +13,10 @@ static void setColorsJSON(QsciLexerJSON *lexer)
     lexer->setColor(COLOR_NUMBER, QsciLexerJSON::Number);
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerJSON::Operator);
-    lexer->setColor(c, QsciLexerJSON::UnclosedString);
     c = COLOR_KEYWORD;
     lexer->setColor(c, QsciLexerJSON::Keyword);
     lexer->setColor(c, QsciLexerJSON::KeywordLD);
-    lexer->setColor(COLOR_ERROR, QsciLexerJSON::Error);
+    c = COLOR_ERROR;
+    lexer->setColor(c, QsciLexerJSON::Error);
+    lexer->setColor(c, QsciLexerJSON::UnclosedString);
 }

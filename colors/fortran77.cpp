@@ -10,12 +10,12 @@ static void setColorsFortran77(QsciLexerFortran77 *lexer)
     lexer->setColor(COLOR_NUMBER, QsciLexerFortran77::Number);
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerFortran77::Operator);
-    lexer->setColor(c, QsciLexerFortran77::UnclosedString);
     lexer->setColor(c, QsciLexerFortran77::DottedOperator);
     lexer->setColor(c, QsciLexerFortran77::Continuation);
     c = COLOR_KEYWORD;
     lexer->setColor(c, QsciLexerFortran77::Keyword);
     lexer->setColor(c, QsciLexerFortran77::IntrinsicFunction);
     lexer->setColor(c, QsciLexerFortran77::ExtendedFunction);
+    lexer->setColor(COLOR_ERROR, QsciLexerFortran77::UnclosedString);
     // Identifier
 }

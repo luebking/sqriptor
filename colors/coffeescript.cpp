@@ -21,12 +21,13 @@ static void setColorsCoffeeScript(QsciLexerCoffeeScript *lexer)
     lexer->setColor(c, QsciLexerCoffeeScript::UUID);
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerCoffeeScript::Operator);
-    lexer->setColor(c, QsciLexerCoffeeScript::UnclosedString);
     c = COLOR_KEYWORD;
     lexer->setColor(c, QsciLexerCoffeeScript::Keyword);
     lexer->setColor(c, QsciLexerCoffeeScript::KeywordSet2);
     lexer->setColor(c, QsciLexerCoffeeScript::GlobalClass);
     lexer->setColor(c, QsciLexerCoffeeScript::CommentDocKeyword);
-    lexer->setColor(COLOR_ERROR, QsciLexerCoffeeScript::CommentDocKeywordError);
+    c = COLOR_ERROR;
+    lexer->setColor(c, QsciLexerCoffeeScript::CommentDocKeywordError);
+    lexer->setColor(c, QsciLexerCoffeeScript::UnclosedString);
     // Identifier
 }

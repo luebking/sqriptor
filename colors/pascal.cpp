@@ -16,7 +16,7 @@ static void setColorsPascal(QsciLexerPascal *lexer)
     lexer->setColor(COLOR_CHAR, QsciLexerPascal::Character);
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerPascal::Operator);
-    lexer->setColor(c, QsciLexerPascal::UnclosedString);
+    lexer->setColor(COLOR_ERROR, QsciLexerPascal::UnclosedString);
     lexer->setColor(COLOR_KEYWORD, QsciLexerPascal::Keyword);
     // Identifier
 }

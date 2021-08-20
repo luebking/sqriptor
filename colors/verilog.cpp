@@ -20,7 +20,6 @@ static void setColorsVerilog(QsciLexerVerilog *lexer)
     
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerVerilog::Operator);
-    lexer->setColor(c, QsciLexerVerilog::UnclosedString);
     lexer->setColor(c, QsciLexerVerilog::SystemTask);
     
     c = COLOR_KEYWORD;
@@ -31,6 +30,7 @@ static void setColorsVerilog(QsciLexerVerilog *lexer)
     c = COLOR_ERROR;
     lexer->setColor(c, QsciLexerVerilog::DeclareInputOutputPort);
     lexer->setColor(c, QsciLexerVerilog::DeclareOutputPort);
+    lexer->setColor(c, QsciLexerVerilog::UnclosedString);
     
     // Identifier
 }

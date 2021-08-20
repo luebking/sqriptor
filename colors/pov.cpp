@@ -18,15 +18,16 @@ static void setColorsPOV(QsciLexerPOV *lexer)
     
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerPOV::Operator);
-    lexer->setColor(c, QsciLexerPOV::UnclosedString);
-        
+
     lexer->setColor(COLOR_STRING, QsciLexerPOV::String);
     
     c = COLOR_CHAR;
     lexer->setColor(c, QsciLexerPOV::ObjectsCSGAppearance);
     lexer->setColor(c, QsciLexerPOV::TypesModifiersItems);
     
-    lexer->setColor(COLOR_ERROR, QsciLexerPOV::BadDirective);
+    c = COLOR_ERROR;
+    lexer->setColor(c, QsciLexerPOV::BadDirective);
+    lexer->setColor(c, QsciLexerPOV::UnclosedString);
 
     // Identifier
 }

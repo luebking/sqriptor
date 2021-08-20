@@ -15,7 +15,7 @@ static void setColorsVHDL(QsciLexerVHDL *lexer)
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerVHDL::Operator);
     lexer->setColor(c, QsciLexerVHDL::StandardOperator);
-    lexer->setColor(c, QsciLexerVHDL::UnclosedString);
+    lexer->setColor(COLOR_ERROR, QsciLexerVHDL::UnclosedString);
     lexer->setColor(COLOR_STRING, QsciLexerVHDL::String);
     lexer->setColor(COLOR_CHAR, QsciLexerVHDL::Attribute);
     // Identifier

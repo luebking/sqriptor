@@ -103,10 +103,6 @@ static void setColorsHTML(QsciLexerHTML *lexer)
     lexer->setColor(c, QsciLexerHTML::PythonOperator);
     lexer->setColor(c, QsciLexerHTML::ASPPythonOperator);
     lexer->setColor(c, QsciLexerHTML::PHPOperator);
-    lexer->setColor(c, QsciLexerHTML::JavaScriptUnclosedString);
-    lexer->setColor(c, QsciLexerHTML::ASPJavaScriptUnclosedString);
-    lexer->setColor(c, QsciLexerHTML::VBScriptUnclosedString);
-    lexer->setColor(c, QsciLexerHTML::ASPVBScriptUnclosedString);
     lexer->setColor(c, QsciLexerHTML::Tag);
     lexer->setColor(c, QsciLexerHTML::XMLTagEnd);
     lexer->setColor(c, QsciLexerHTML::JavaScriptSymbol);
@@ -132,6 +128,10 @@ static void setColorsHTML(QsciLexerHTML *lexer)
     lexer->setColor(c, QsciLexerHTML::SGMLError);
     lexer->setColor(c, QsciLexerHTML::UnknownTag);
     lexer->setColor(c, QsciLexerHTML::UnknownAttribute);
+    lexer->setColor(c, QsciLexerHTML::JavaScriptUnclosedString);
+    lexer->setColor(c, QsciLexerHTML::ASPJavaScriptUnclosedString);
+    lexer->setColor(c, QsciLexerHTML::VBScriptUnclosedString);
+    lexer->setColor(c, QsciLexerHTML::ASPVBScriptUnclosedString);
     
     // VBScriptIdentifier
     // ASPVBScriptIdentifier

@@ -88,15 +88,12 @@ Sqriptor::Sqriptor()
     setCentralWidget(m_documents);
 
     createUI();
-    addTab();
-
     connect(qApp, &QApplication::focusChanged, [=](QWidget *old, QWidget *now) {
         Q_UNUSED(old)
         if (now == m_documents->currentWidget())
             checkTimestamp();
     });
-
-    setCurrentFile("");
+    newFile("", true);
 }
 
 QsciScintilla *Sqriptor::textEdit(int idx) const
@@ -117,6 +114,15 @@ void Sqriptor::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
+void Sqriptor::analyzeSyntaxOnce()
+{
+    QsciScintilla *doc = qobject_cast<QsciScintilla*>(sender());
+    if (!doc)
+        return;
+    setSyntax(Syntax::Auto, doc);
+    disconnect (textEdit(), SIGNAL(linesChanged()), this, SLOT(analyzeSyntaxOnce()));
+}
+
 void Sqriptor::newFile(QString name, bool forceNewTab)
 {
     QsciScintilla *doc = textEdit();
@@ -127,6 +133,7 @@ void Sqriptor::newFile(QString name, bool forceNewTab)
         textEdit()->clear();
         setCurrentFile(name);
     }
+    connect (textEdit(), SIGNAL(linesChanged()), SLOT(analyzeSyntaxOnce()));
 }
 
 void Sqriptor::open(QString fileName, bool forceNewTab)

@@ -82,6 +82,7 @@ private slots:
     bool toggleComment();
     void showSettings();
     void checkTimestamp();
+    void analyzeSyntaxOnce();
 
 private:
     void createUI();

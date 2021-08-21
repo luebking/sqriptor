@@ -161,6 +161,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         document->setLexer(syntaxDict[syntax]);
         document->setProperty("sqriptor_syntax", syntax);
         resetColors(document);
+        if (document == textEdit())
+            indicateCurrentSyntax();
         return;
     }
 

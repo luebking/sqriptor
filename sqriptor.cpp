@@ -322,7 +322,10 @@ void Sqriptor::writeSettings()
 
 bool Sqriptor::maybeSave(int idx)
 {
+    QString fileName = textEdit(idx)->property("sqriptor_filename").toString();
     if (textEdit(idx)->isModified()) {
+        if (!textEdit(idx)->length() && fileName.isEmpty())
+            return true; // don't ask me to save an empty new file
         int ret = QMessageBox::warning(this, tr("Sqriptor"),
                      tr("The document has been modified.\n"
                         "Do you want to save your changes?"),
@@ -334,7 +337,6 @@ bool Sqriptor::maybeSave(int idx)
         else if (ret == QMessageBox::Cancel)
             return false;
     }
-    QString fileName = textEdit(idx)->property("sqriptor_filename").toString();
     if (!fileName.isEmpty() && !QFileInfo::exists(fileName)) {
         int ret = QMessageBox::warning(this, tr("Sqriptor"),
                      tr("The documents file no longer exists!\n"

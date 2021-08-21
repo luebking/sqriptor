@@ -205,6 +205,7 @@ bool Sqriptor::closeTab(int idx)
         if (m_documents->count() > 1) {
             delete m_documents->widget(idx);
             m_tabMenu->setVisible(m_documents->count() > 7); // still 8+
+            textEdit()->setFocus();
         } else {
             textEdit()->clear();
             setCurrentFile("");

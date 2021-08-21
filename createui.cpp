@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QScrollBar>
 #include <QSpinBox>
 #include <QTextEdit>
 #include <QToolButton>
@@ -229,6 +230,10 @@ void Sqriptor::createUI()
     });
     connect(gotoLine, QOverload<int>::of(&QSpinBox::valueChanged), [=](int i) {
         textEdit()->setCursorPosition(i-1, 0); // humans start counting at 0...
+        QScrollBar *sb;
+        if ((sb = textEdit()->verticalScrollBar())) {
+            sb->setValue(i-1+(sb->maximum()-textEdit()->lines())/2);
+        }
     });
     connect(gotoLine, &QSpinBox::editingFinished, [=]() {
         textEdit()->setFocus();

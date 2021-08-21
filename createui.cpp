@@ -139,6 +139,12 @@ void Sqriptor::createUI()
     searchForward->setCheckable(true);
     searchForward->setChecked(true);
     tbmenu->addAction(searchForward);
+    tbmenu->addSeparator();
+//    QAction *filterFind = new QAction(tr("Find all"), searchBar);
+//    tbmenu->addAction(filterFind);
+    QAction *replaceAll = new QAction(tr("Replace all"), searchBar);
+    tbmenu->addAction(replaceAll);
+    replaceAll->setVisible(false);
     btn->setMenu(tbmenu);
     
     static bool menuWasVisible = true;
@@ -187,6 +193,35 @@ void Sqriptor::createUI()
         l_search(false);
     });
     
+    connect(replaceAll, &QAction::triggered, [=]() {
+        const QString text = findLine->text();
+        if (text.isEmpty())
+            return;
+        const bool re = searchRegExp->isChecked();
+        const bool cs = searchCaseSens->isChecked();
+        const bool wo = searchWord->isChecked();
+        int la, ia, lb, ib;
+        textEdit()->getSelection(&la, &ia, &lb, &ib);
+        if (ib != ia) {
+            // if the user selected more than one line, that's explicit and
+            // we take it as hint to limit the replace to that area
+            // in-line selections happen for the find, but what's worse
+            // is that we need to restore the selection after every find/replace
+            // and the originally selected text can shrink due to that, eg.
+            // |111|111, s/11/2/g;
+            // |111|111 => |211|11 => |221|1
+            // Chances of the user planning sth. like that are much lower if
+            // s/he selected multiple lines
+            while (textEdit()->findFirstInSelection(text, re, cs, wo)) {
+                textEdit()->replace(replaceLine->text());
+                textEdit()->setSelection(la, ia, lb, ib);
+            }
+        } else {
+            while (textEdit()->findFirst(text, re, cs, wo, true))
+                textEdit()->replace(replaceLine->text());
+        }
+    });
+
     QSpinBox *gotoLine = new QSpinBox(searchBar);
     connect(qApp, &QApplication::focusChanged, [=]() {
         if (gotoLine->hasFocus())
@@ -212,7 +247,7 @@ void Sqriptor::createUI()
     
     menu->addSeparator();
     
-#define HIDE_STUFF searchBar->hide(); gotoLine->hide(); findLine->hide(); replaceLine->hide(); btn->hide();
+#define HIDE_STUFF searchBar->hide(); gotoLine->hide(); findLine->hide(); replaceLine->hide(); btn->hide(); replaceAll->setVisible(false);
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
     act = new QAction(tr("&Find"), this);
@@ -239,6 +274,7 @@ void Sqriptor::createUI()
         btn->show();
         findLine->show();
         replaceLine->show();
+        replaceAll->setVisible(true);
         textEdit()->cancelFind(); // clear previous finds to no replace them
         QString text = textEdit()->selectedText();
         if (!text.isEmpty()) {

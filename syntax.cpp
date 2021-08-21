@@ -150,6 +150,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
                 syntax = Sqriptor::syntax(shebang);
             else if (shebang.startsWith("diff --git"))
                 syntax = Syntax::Diff;
+            else if (shebang.startsWith("-- Journal begins at"))
+                syntax = Syntax::Bash; // it's not really bash, but looks somewhat ok
         }
         if (syntax == Syntax::Auto)
             return;

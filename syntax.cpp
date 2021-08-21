@@ -120,7 +120,7 @@ static void resetColors(QsciScintilla *document) {
     QColor fg = COLOR_FOREGROUND;
     document->setPaper(bg);
     document->setColor(fg);
-    document->setCaretForegroundColor(fg);
+    // document->setCaretForegroundColor(fg);
     document->setCaretLineVisible(true);
     document->setMatchedBraceBackgroundColor(COLOR_OPERATOR);
     document->setMatchedBraceForegroundColor(bg);
@@ -130,6 +130,8 @@ static void resetColors(QsciScintilla *document) {
     document->setCaretLineBackgroundColor(bg);
     fg = QColor((bg.red()+fg.red())/2, (bg.green()+fg.green())/2, (bg.green()+fg.green())/2);
     document->setMarginsForegroundColor(fg);
+    document->setCaretForegroundColor(fg);
+    document->setCaretWidth(qMax(1,qRound(document->physicalDpiX()/96.0f)));
     fg = QColor((2*bg.red()+fg.red())/3, (2*bg.green()+fg.green())/3, (2*bg.green()+fg.green())/3);
     document->setIndentationGuidesBackgroundColor(fg);
     document->setIndentationGuidesForegroundColor(fg);

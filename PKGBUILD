@@ -3,7 +3,7 @@
 pkgname=sqriptor
 pkgver=0.1.0
 pkgrel=1
-pkgdesc="Greatest TextEditor in the World. Tribute."
+pkgdesc="Greatest and best TextEditor in the World. Tribute."
 arch=('i686' 'x86_64')
 url="https://github.com/luebking/sqriptor"
 license=('GPL')

@@ -420,8 +420,16 @@ void Sqriptor::createUI()
 
     act = new QAction(tr("&About"), this);
     connect(act, &QAction::triggered, [=](){
-       QMessageBox::about(this, tr("About Sqriptor"),
-                                tr("Best editor in the world. Tribute."));
+        QString brag = tr(  "<html><h2>Sqriptor</h2><h3>Greatest&nbsp;and&nbsp;best&nbsp;TextEditor"
+                            "&nbsp;in&nbsp;the&nbsp;world.</h3><h4 align=right>Tribute.</h4>"
+                            "<hr><a href='https://github.com/luebking/sqriptor'>Code on github</a><br>"
+                            "<br><a href='https://github.com/luebking/sqriptor/issues'>"
+                            "Report, what you falsely assume to be a bug</a></html>");
+        QMessageBox *about = new QMessageBox(QMessageBox::Information, tr("About Sqriptor"), brag,
+                                             QMessageBox::Ok, nullptr, Qt::Dialog);
+        about->setAttribute(Qt::WA_DeleteOnClose);
+        about->setTextInteractionFlags(Qt::LinksAccessibleByMouse|Qt::LinksAccessibleByKeyboard);
+        about->show();
     });
     menu->addAction(act);
 

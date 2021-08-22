@@ -419,24 +419,48 @@ void Sqriptor::createUI()
     connect(act, SIGNAL(triggered()), SLOT(showSettings()));
     menu->addAction(act);
     
-    menu = m_syntaxMenu = menuBar()->addMenu(tr("&Syntax"));
-    QActionGroup *group = new QActionGroup(this);
-#define ADD_SYNTAX(_SYN_) act = group->addAction(menu->addAction(#_SYN_, [=](){setSyntax(Syntax::_SYN_);}));\
-        act->setCheckable(true); act->setData("QsciLexer"#_SYN_)
-    menu->addAction(tr("Auto"), [=](){setSyntax(Syntax::Auto);});
-    menu->addSeparator();
-    group->addAction(menu->addAction(tr("None"), [=](){setSyntax(Syntax::None);}))->setCheckable(true);
-    menu->addSeparator();
-    ADD_SYNTAX(AVS); ADD_SYNTAX(Bash); ADD_SYNTAX(Batch); ADD_SYNTAX(CMake);
-    ADD_SYNTAX(CoffeeScript); ADD_SYNTAX(CPP); ADD_SYNTAX(CSharp); ADD_SYNTAX(CSS);
-    ADD_SYNTAX(D); ADD_SYNTAX(Diff); ADD_SYNTAX(EDIFACT); ADD_SYNTAX(Fortran);
-    ADD_SYNTAX(Fortran77); ADD_SYNTAX(HTML); ADD_SYNTAX(IDL); ADD_SYNTAX(Java);
-    ADD_SYNTAX(JavaScript); ADD_SYNTAX(JSON); ADD_SYNTAX(Lua); ADD_SYNTAX(Makefile);
-    ADD_SYNTAX(Markdown); ADD_SYNTAX(Matlab); ADD_SYNTAX(Octave); ADD_SYNTAX(Pascal);
-    ADD_SYNTAX(Perl); ADD_SYNTAX(PO); ADD_SYNTAX(PostScript); ADD_SYNTAX(POV);
-    ADD_SYNTAX(Properties); ADD_SYNTAX(Python); ADD_SYNTAX(Ruby); ADD_SYNTAX(Spice);
-    ADD_SYNTAX(SQL); ADD_SYNTAX(TCL); ADD_SYNTAX(TeX); ADD_SYNTAX(Verilog);
-    ADD_SYNTAX(VHDL); ADD_SYNTAX(XML); ADD_SYNTAX(YAML);
+    QMenu *syntaxMenu = menuBar()->addMenu(tr("&Syntax"));
+    m_syntaxActions = new QActionGroup(this);
+#define ADD_SYNTAX2(_SYN_, _COM_) act = m_syntaxActions->addAction(menu->addAction(#_SYN_ _COM_, [=](){setSyntax(Syntax::_SYN_);}));\
+        act->setCheckable(true); act->setData(#_SYN_)
+#define ADD_SYNTAX(_SYN_) ADD_SYNTAX2(_SYN_, "")
+    syntaxMenu->addAction(tr("Auto"), [=](){setSyntax(Syntax::Auto);});
+    syntaxMenu->addSeparator();
+    m_syntaxActions->addAction(syntaxMenu->addAction(tr("None"), [=](){setSyntax(Syntax::None);}))->setCheckable(true);
+    syntaxMenu->addSeparator();
+    
+    menu = syntaxMenu->addMenu(tr("&Code"));
+    ADD_SYNTAX(CPP); ADD_SYNTAX(CSharp); ADD_SYNTAX(D); ADD_SYNTAX(Fortran);
+    ADD_SYNTAX(Fortran77); ADD_SYNTAX(Java); ADD_SYNTAX(Pascal);
+    ADD_SYNTAX(Python);
+    
+    menu = syntaxMenu->addMenu(tr("&Script"));
+    ADD_SYNTAX(AVS); ADD_SYNTAX(Bash); ADD_SYNTAX(Batch); ADD_SYNTAX(CoffeeScript);
+    ADD_SYNTAX(JavaScript); ADD_SYNTAX(Lua); ADD_SYNTAX(Perl);
+    QAction *htmlSyntax = ADD_SYNTAX2(HTML, "\tid. PHP, JSP, ASP"); ADD_SYNTAX(PostScript);
+    ADD_SYNTAX(Ruby); ADD_SYNTAX(TCL);
+    
+    menu = syntaxMenu->addMenu(tr("Mark&up"));
+    ADD_SYNTAX(CSS);  ADD_SYNTAX(Markdown); menu->addAction(htmlSyntax);
+    ADD_SYNTAX(TeX); ADD_SYNTAX(YAML);
+    
+    menu = syntaxMenu->addMenu(tr("&Math"));
+    ADD_SYNTAX2(IDL, "\tInteractive Data Language"); ADD_SYNTAX(Matlab); ADD_SYNTAX(Octave); 
+    
+    menu = syntaxMenu->addMenu(tr("&Buildsystem"));
+    ADD_SYNTAX(CMake); ADD_SYNTAX(Makefile);
+    
+    menu = syntaxMenu->addMenu(tr("&Config/Data"));
+    ADD_SYNTAX(Diff); ADD_SYNTAX(JSON); ADD_SYNTAX2(PO, "\teg. gettext");
+    ADD_SYNTAX(POV); ADD_SYNTAX2(Properties, "\teg. ini syntax"); ADD_SYNTAX(SQL);
+    ADD_SYNTAX(XML);
+    
+    menu = syntaxMenu->addMenu(tr("&Obscure && ancient stuff"));
+    ADD_SYNTAX2(EDIFACT, "\tUN Data Interchange");
+    ADD_SYNTAX2(Spice, "\tElectronic circuit simulator");
+    ADD_SYNTAX2(Verilog, "\tHardware description");
+    ADD_SYNTAX2(VHDL, "\tHardware description");
+
 
     menuBar()->addSeparator();
 

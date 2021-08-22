@@ -22,6 +22,7 @@
 #include <QMainWindow>
 
 class QAction;
+class QActionGroup;
 class QMenu;
 class QTabWidget;
 class QsciScintilla;
@@ -98,7 +99,7 @@ private:
     void updateTimestamp(QObject *o);
 
     QTabWidget *m_documents;
-    QMenu *m_syntaxMenu;
+    QActionGroup *m_syntaxActions;
     QMenu *m_eolMenu;
     QAction *m_tabMenu;
 };

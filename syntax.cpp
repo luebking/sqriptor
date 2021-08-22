@@ -263,8 +263,8 @@ void Sqriptor::indicateCurrentSyntax()
         name = lexer->metaObject()->className();
         name.remove("QsciLexer");
     }
-    foreach (QAction *act, m_syntaxMenu->actions()) {
-        if (act->text() == name) {
+    foreach (QAction *act, m_syntaxActions->actions()) {
+        if (act->data().toString() == name) {
             act->setChecked(true);
             return;
         }

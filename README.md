@@ -1,5 +1,4 @@
-![Sqriptor Logo](sqriptor256.png)
-# Sqriptor
+# Sqriptor ![Sqriptor Logo](sqriptor256.png)
 #### QsciScintilla based text editor
 
 > "Every man should plant a tree, have a son and write a TextEditor"<br>

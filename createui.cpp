@@ -62,6 +62,30 @@ void Sqriptor::createUI()
     // FILE
     menu = menuBar()->addMenu(tr("&File"));
 
+#define CREATE_EOL(_TYPE_) act->setCheckable(true); \
+    act->setData(QsciScintilla::_TYPE_); \
+    eolGroup->addAction(act);\
+    connect(act, &QAction::triggered, [=](){ \
+        if (textEdit()->eolMode() != QsciScintilla::_TYPE_) { \
+            textEdit()->convertEols(QsciScintilla::_TYPE_); \
+            textEdit()->setEolMode(QsciScintilla::_TYPE_); \
+        } \
+    }); \
+    m_eolMenu->addAction(act)
+
+    m_eolMenu = menu->addMenu(tr("&EOL"));
+    QActionGroup *eolGroup = new QActionGroup(m_eolMenu);
+    act = new QAction(tr("LF (\\n) \t The sane choice"), m_eolMenu);
+    CREATE_EOL(EolUnix);
+
+    act = new QAction(tr("CR (\\r) \t Woz didn't know better"), m_eolMenu);
+    CREATE_EOL(EolMac);
+
+    act = new QAction(tr("CRLF (\\r\\n) \t The Windows abomination"), m_eolMenu);
+    CREATE_EOL(EolWindows);
+
+    menu->addSeparator();
+
     act = new QAction(tr("&New"), this);
     act->setShortcut(tr("Ctrl+N"));
     connect(act, &QAction::triggered, [=](){ newFile(); });
@@ -466,4 +490,14 @@ void Sqriptor::createUI()
     act->setStatusTip(tr("Show the Qt library's About box"));
     connect(act, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     menu->addAction(act); */
+}
+
+void Sqriptor::indicateCurrentEOL()
+{
+    foreach (QAction *act, m_eolMenu->actions()) {
+        if (act->data().toInt() == textEdit()->eolMode()) {
+            act->setChecked(true);
+            return;
+        }
+    }
 }

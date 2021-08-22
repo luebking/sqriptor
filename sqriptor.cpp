@@ -81,6 +81,7 @@ Sqriptor::Sqriptor()
         setWindowModified(textEdit()->isModified());
         setWindowTitle(tr("%1[*]").arg(m_documents->tabText(idx)));
         indicateCurrentSyntax();
+        indicateCurrentEOL();
         checkTimestamp();
     });
     m_documents->setTabPosition(QTabWidget::West);
@@ -427,6 +428,7 @@ void Sqriptor::loadFile(const QString &fileName)
                 break;
         }
     }
+    indicateCurrentEOL();
     QApplication::restoreOverrideCursor();
 
     setCurrentFile(fileName);

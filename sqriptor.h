@@ -94,10 +94,12 @@ private:
     void setCurrentFile(const QString &fileName);
     Syntax syntax(QString suffix) const;
     void indicateCurrentSyntax();
+    void indicateCurrentEOL();
     void updateTimestamp(QObject *o);
 
     QTabWidget *m_documents;
     QMenu *m_syntaxMenu;
+    QMenu *m_eolMenu;
     QAction *m_tabMenu;
 };
 

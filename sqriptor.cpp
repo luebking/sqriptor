@@ -481,11 +481,8 @@ void Sqriptor::readStdin()
         QSocketNotifier *snr = new QSocketNotifier(input->handle(), QSocketNotifier::Read, input);
         connect (snr, &QSocketNotifier::activated, [=](){
             QsciScintilla *doc = textEdit();
-            if (!(doc->length() || doc->isModified())) {
+            if (!(doc->length() || doc->isModified()))
                 doc->setText(QString::fromLocal8Bit(input->readAll()));
-                if (doc->property("sqriptor_syntax").toInt() == Syntax::None)
-                    setSyntax(Syntax::Auto);
-            }
             input->close();
             delete input;
         });

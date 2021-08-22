@@ -37,11 +37,11 @@
      inkscape:groupmode="layer"
      id="layer1">
     <circle
-       style="opacity:1;fill:#00d2e2;stroke-width:1.00213"
+       style="opacity:1;fill:#00d2e2;stroke-width:1.61568"
        id="path846"
-       cx="25.929167"
-       cy="109.53751"
-       r="25.929167" />
+       cx="41.804169"
+       cy="93.662498"
+       r="41.804169" />
     <path
        sodipodi:type="star"
        style="opacity:1;fill:#666666;stroke-width:3.77953"
@@ -56,9 +56,9 @@
        sodipodi:arg2="2.6179939"
        inkscape:rounded="0"
        inkscape:randomized="0"
-       d="M 241.66401,232.7145 71.165682,-62.597244 l 340.996628,-9e-6 z"
-       transform="matrix(0.19312235,0.19312235,-0.19312235,0.19312235,43.779987,-1.654757)"
-       inkscape:transform-center-x="-6.9583017"
-       inkscape:transform-center-y="-6.9583028" />
+       d="M 241.66401,232.7145 71.165684,-62.597244 l 340.996626,-9e-6 z"
+       transform="matrix(0.17949019,0.17949019,-0.17949019,0.17949019,50.251985,-1.5379509)"
+       inkscape:transform-center-x="-6.4671276"
+       inkscape:transform-center-y="-6.4671286" />
   </g>
 </svg>

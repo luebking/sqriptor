@@ -1,5 +1,5 @@
 # Sqriptor ![Sqriptor Logo](sqriptor256.png)
-#### QsciScintilla based text editor
+#### QScintilla based text editor
 
 > "Every man should plant a tree, have a son and write a TextEditor"<br>
 > &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;  --- Proverb

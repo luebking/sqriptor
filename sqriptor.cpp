@@ -393,7 +393,13 @@ void Sqriptor::loadFile(const QString &fileName)
     QApplication::setOverrideCursor(Qt::WaitCursor);
     doc->setText(in.readAll());
 
-    QString vimHints;
+    QString vimHints = doc->text(0);
+    if (vimHints.endsWith("\r\n")) // abomination
+        doc->setEolMode(QsciScintilla::EolWindows);
+    else if (vimHints.endsWith("\r")) // "retarded"
+        doc->setEolMode(QsciScintilla::EolMac);
+    else
+        doc->setEolMode(QsciScintilla::EolUnix);
     for (int i = 0; i < doc->lines(); ++i) {
         vimHints = doc->text(i);
         if (vimHints.contains("vim:")) {

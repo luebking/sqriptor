@@ -3,7 +3,7 @@
 #### QsciScintilla based text editor
 
 > "Every man should plant a tree, have a son and write a TextEditor"<br>
-> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;  --- Me, 2021
+> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;  --- Proverb
 
 > "The best TextEditor I've ever used!"<br>
 > &emsp;&emsp;&emsp;&emsp; --- Undisclosed user, 2021
@@ -24,6 +24,8 @@
   * A: Somewhat. But more importantly scite exposes all scintilla configurations directly to the user. The html lexer alone has a trillion… ok, that's exaggerated: half a trillion syntax items. It's very configurable. Through text files. It's not configurable at all.
 * Q: What about vim?
   * A: I like vim. It's a great text editor. And in the hands of average humans an even better entropy generator.
+* Q: KWrite/Kate?
+  * A: Very good editor. And half a Desktop Environment on its tail :(
 * Q: There're _feature rich IDEs and EMacs_ …
   * A: Yes. And here is a text editor. Your point being?
 * Q: If it can't read from stdin, it's not real POSIX! Can sqriptor read from stdin?

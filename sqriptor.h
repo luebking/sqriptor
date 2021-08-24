@@ -97,6 +97,7 @@ private:
     void indicateCurrentSyntax();
     void indicateCurrentEOL();
     void updateTimestamp(QObject *o);
+    void updatePalette();
 
     QTabWidget *m_documents;
     QActionGroup *m_syntaxActions;

@@ -67,6 +67,22 @@ protected:
     }
 };
 
+void Sqriptor::updatePalette()
+{
+    // todo: update syntax lexers w/ new palette
+    for (int syntax = Syntax::Auto + 1; syntax < Syntax::Count; ++syntax)
+        setSyntax(static_cast<Syntax>(syntax), nullptr, true); // updateColorsOnly
+    for (int i = 0; i < m_documents->count(); ++i) {
+        QsciScintilla *doc = textEdit(i);
+        doc->setIndentationsUseTabs(config.tab.isTab);
+        doc->setTabWidth(config.tab.width);
+        int syntax = doc->property("sqriptor_syntax").toInt();
+        setSyntax(static_cast<Syntax>(syntax), doc);
+        doc->setMarginsFont(config.font);
+        doc->setMarginWidth(0, "14444");
+    }
+}
+
 void Sqriptor::showSettings()
 {
     if (!gs_ui) {
@@ -94,18 +110,7 @@ void Sqriptor::showSettings()
             if (result == QDialog::Accepted) {
                 config = config_bak;
                 config.changed = true;
-                // todo: update syntax lexers w/ new palette
-                for (int syntax = Syntax::Auto + 1; syntax < Syntax::Count; ++syntax)
-                    setSyntax(static_cast<Syntax>(syntax), nullptr, true); // updateColorsOnly
-                for (int i = 0; i < m_documents->count(); ++i) {
-                    QsciScintilla *doc = textEdit(i);
-                    doc->setIndentationsUseTabs(config.tab.isTab);
-                    doc->setTabWidth(config.tab.width);
-                    int syntax = doc->property("sqriptor_syntax").toInt();
-                    setSyntax(static_cast<Syntax>(syntax), doc);
-                    doc->setMarginsFont(config.font);
-                    doc->setMarginWidth(0, "14444");
-                }
+                updatePalette();
             }
         });
         gs_ui->tabIsTab->setChecked(config.tab.isTab);

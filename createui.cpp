@@ -419,6 +419,17 @@ void Sqriptor::createUI()
     connect(act, SIGNAL(triggered()), SLOT(showSettings()));
     menu->addAction(act);
     
+    menu->addSeparator();
+
+    act = new QAction(tr("&Flip colors"), this);
+    connect(act, &QAction::triggered, [=]() {
+        QColor c = config.color.bg;
+        config.color.bg = config.color.fg;
+        config.color.fg = c;
+        updatePalette();
+    });
+    menu->addAction(act);
+    
     QMenu *syntaxMenu = menuBar()->addMenu(tr("&Syntax"));
     m_syntaxActions = new QActionGroup(this);
 #define ADD_SYNTAX2(_SYN_, _COM_) act = m_syntaxActions->addAction(menu->addAction(#_SYN_ _COM_, [=](){setSyntax(Syntax::_SYN_);}));\

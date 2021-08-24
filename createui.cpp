@@ -380,6 +380,7 @@ void Sqriptor::createUI()
     
     menu = menuBar()->addMenu(tr("&View"));
     act = new QAction(tr("&Wrap text"), this);
+    act->setShortcut(tr("F10"));
     act->setCheckable(true);
     connect(act, &QAction::triggered, [=](bool checked){
         textEdit()->setWrapMode(checked ? QsciScintilla::WrapWhitespace : QsciScintilla::WrapNone);

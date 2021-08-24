@@ -31,9 +31,9 @@ namespace Syntax {
     enum Lexer {
         None = 0, Auto, AVS, Bash, Batch, CMake, CoffeeScript, CPP, CSS,
         D, Diff, EDIFACT, Fortran77, HTML, JSON, Lua, Makefile,
-        Markdown, Matlab, Pascal, Perl, PO, PostScript, POV, Properties,
+        Markdown2, Matlab, Pascal, Perl, PO, PostScript, POV, Properties,
         Python, Ruby, Spice, SQL, TCL, TeX, Verilog, VHDL, YAML, 
-        CSharp, IDL, Java, JavaScript, Fortran, XML, Octave, Count
+        CSharp, IDL, Java, JavaScript, Fortran, XML, Octave, Test, Count
     };
 };
 

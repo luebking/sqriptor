@@ -441,7 +441,8 @@ void Sqriptor::createUI()
     ADD_SYNTAX(Ruby); ADD_SYNTAX(TCL);
     
     menu = syntaxMenu->addMenu(tr("Mark&up"));
-    ADD_SYNTAX(CSS);  ADD_SYNTAX(Markdown); menu->addAction(htmlSyntax);
+    ADD_SYNTAX(CSS);  ADD_SYNTAX(Markdown2); act->setText("Markdown");
+    menu->addAction(htmlSyntax);
     ADD_SYNTAX(TeX); ADD_SYNTAX(YAML);
     
     menu = syntaxMenu->addMenu(tr("&Math"));

@@ -25,7 +25,7 @@
 /*
 None, AVS, Bash, Batch, CMake, CoffeeScript, CPP, CSS,
 D, Diff, EDIFACT, Fortran77, HTML, JSON, Lua, Makefile,
-Markdown, Matlab, Pascal, Perl, PO, PostScript, POV, Properties,
+Markdown2, Matlab, Pascal, Perl, PO, PostScript, POV, Properties,
 Python, Ruby, Spice, SQL, TCL, TeX, Verilog, VHDL, YAML, 
 CSharp, IDL, Java, JavaScript, Fortran, XML, Octave
 */
@@ -61,7 +61,7 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffixes["zsh"] = Syntax::Bash; // dto.
     suffixes["fish"] = Syntax::Bash; // you're welcome…
     suffixes["PKGBUILD"] = Syntax::Bash;
-    suffixes["md"] = Syntax::Markdown;
+    suffixes["md"] = Syntax::Markdown2;
     suffixes["pl"] = Syntax::Perl;
     suffixes["plx"] = Syntax::Perl;
     suffixes["pm"] = Syntax::Perl;

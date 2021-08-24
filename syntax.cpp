@@ -45,7 +45,7 @@
 #include <Qsci/qscilexerjson.h>
 #include <Qsci/qscilexerlua.h>
 #include <Qsci/qscilexermakefile.h>
-#include <Qsci/qscilexermarkdown.h>
+//#include <Qsci/qscilexermarkdown.h>
 #include <Qsci/qscilexermatlab.h>
 #include <Qsci/qscilexeroctave.h>
 #include <Qsci/qscilexerpascal.h>
@@ -64,6 +64,8 @@
 #include <Qsci/qscilexervhdl.h>
 #include <Qsci/qscilexerxml.h>
 #include <Qsci/qscilexeryaml.h>
+
+#include "lexer/markdown2.h"
 
 
 #include "sqriptor.h"
@@ -96,7 +98,7 @@ static QsciLexer *syntaxDict[Syntax::Count] = {nullptr};
 #include "colors/json.cpp"
 #include "colors/lua.cpp"
 #include "colors/makefile.cpp"
-#include "colors/markdown.cpp"
+//#include "colors/markdown.cpp"
 #include "colors/matlab.cpp"
 #include "colors/pascal.cpp"
 #include "colors/perl.cpp"
@@ -220,7 +222,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         MAKE_LEXER(JSON)
         MAKE_LEXER(Lua)
         MAKE_LEXER(Makefile)
-        MAKE_LEXER(Markdown)
+        MAKE_LEXER(Markdown2)
 
         case Syntax::Octave:
             if (!hook) hook = syntaxDict[syntax] = new QsciLexerMatlab(this);

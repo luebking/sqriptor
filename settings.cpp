@@ -81,6 +81,14 @@ void Sqriptor::updatePalette()
         doc->setMarginsFont(config.font);
         doc->setMarginWidth(0, "14444");
     }
+    QPalette pal = palette(); // qApp->palette();
+    pal.setColor(QPalette::Window, config.color.bg);
+    pal.setColor(QPalette::Base, config.color.bg);
+    pal.setColor(QPalette::Button, config.color.bg);
+    pal.setColor(QPalette::WindowText, config.color.fg);
+    pal.setColor(QPalette::Text, config.color.fg);
+    pal.setColor(QPalette::ButtonText, config.color.fg);
+    setPalette(pal);
 }
 
 void Sqriptor::showSettings()

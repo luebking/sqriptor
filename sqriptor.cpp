@@ -63,14 +63,6 @@ Sqriptor::Sqriptor()
     readSettings();
     config.changed = false;
 
-    QPalette pal = qApp->palette();
-    pal.setColor(QPalette::Window, config.color.bg);
-    pal.setColor(QPalette::Base, config.color.bg);
-    pal.setColor(QPalette::Button, config.color.bg);
-    pal.setColor(QPalette::WindowText, config.color.fg);
-    pal.setColor(QPalette::Text, config.color.fg);
-    pal.setColor(QPalette::ButtonText, config.color.fg);
-    setPalette(pal);
     //qApp->installEventFilter(new EventPicker);
     m_documents = new QTabWidget;
     m_documents->setDocumentMode(true);
@@ -87,7 +79,9 @@ Sqriptor::Sqriptor()
     m_documents->setTabPosition(QTabWidget::West);
     m_documents->setTabBarAutoHide(true);
     setCentralWidget(m_documents);
-
+    
+    updatePalette();
+    
     createUI();
     connect(qApp, &QApplication::focusChanged, [=](QWidget *old, QWidget *now) {
         Q_UNUSED(old)

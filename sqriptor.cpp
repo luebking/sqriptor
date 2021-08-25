@@ -25,6 +25,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPoint>
+#include <QRegularExpression>
 #include <QScreen>
 #include <QScrollBar>
 #include <QSettings>
@@ -395,17 +396,19 @@ void Sqriptor::loadFile(const QString &fileName)
         doc->setEolMode(QsciScintilla::EolMac);
     else
         doc->setEolMode(QsciScintilla::EolUnix);
+    static const QRegularExpression blank_colon("[\\s:]");
+    static const QRegularExpression tabstop_ts("(tabstop|ts)=.*");
     for (int i = 0; i < doc->lines(); ++i) {
         vimHints = doc->text(i);
         if (vimHints.contains("vim:")) {
             bool isModeline = false; // could be some random line talking about "vim: great editor"
-            QStringList vimmodes = vimHints.split(QRegExp("[\\s:]"));
+            QStringList vimmodes = vimHints.split(blank_colon);
             if ((isModeline = (vimmodes.contains("noexpandtab") || vimmodes.contains("noet"))))
                 doc->setIndentationsUseTabs(true);
             else if ((isModeline = (vimmodes.contains("expandtab") || vimmodes.contains("et"))))
                 doc->setIndentationsUseTabs(false);
             if (!doc->indentationsUseTabs()) { // if we use tabs, we honor the users width preference
-                int tabstop = vimmodes.indexOf(QRegExp("(tabstop|ts)=.*"));
+                int tabstop = vimmodes.indexOf(tabstop_ts);
                 if (tabstop > -1) {
                     bool ok;
                     tabstop = vimmodes.at(tabstop).section('=',-1).toInt(&ok);

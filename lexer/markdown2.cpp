@@ -129,7 +129,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
     static const QRegularExpression tokenizer("######|#####|####|###|##|---|~~|"
                                               "\\*\\*\\*|\\*\\*|___|__|_|\\s+|[A-Za-z\\d]+|\\W");
     static const QRegularExpression nonWS("[^\\s]"); // \\W?
-    static const QRegularExpression linebreak("\\s*\\n+\\s*");
+    static const QRegularExpression linebreak("\\s*(\\n|\\r)+\\s*");
 
     QString text = editor()->text(start, end);
     QRegularExpressionMatchIterator i = tokenizer.globalMatch(text/*, 0, QRegularExpression::PartialPreferFirstMatch*/);

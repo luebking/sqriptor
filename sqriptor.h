@@ -98,6 +98,7 @@ private:
     void indicateCurrentEOL();
     void updateTimestamp(QObject *o);
     void updatePalette();
+    void renderIcon(QPixmap &pix);
 
     QTabWidget *m_documents;
     QActionGroup *m_syntaxActions;

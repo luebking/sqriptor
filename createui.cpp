@@ -19,15 +19,18 @@
 #include <QAction>
 #include <QApplication>
 #include <QFileDialog>
+#include <QHBoxLayout>
 #include <QLineEdit>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPainterPath>
 #include <QScrollBar>
 #include <QSpinBox>
 #include <QTextEdit>
 #include <QToolButton>
-#include <QHBoxLayout>
+
 
 #include <QDebug>
 
@@ -41,6 +44,9 @@
 
 void Sqriptor::createUI()
 {
+    QPixmap pix(64,64);
+    renderIcon(pix);
+    setWindowIcon(pix);
     QMenu *menu;
     QAction *act;
 
@@ -481,15 +487,21 @@ void Sqriptor::createUI()
 
     act = new QAction(tr("&About"), this);
     connect(act, &QAction::triggered, [=](){
-        QString brag = tr(  "<html><h2>Sqriptor</h2><h3>Greatest&nbsp;and&nbsp;best&nbsp;TextEditor"
-                            "&nbsp;in&nbsp;the&nbsp;world.</h3><h4 align=right>Tribute.</h4>"
+        QString brag = tr(  "<html><h2>Sqriptor</h2><h4>Greatest&nbsp;and&nbsp;best&nbsp;TextEditor"
+                            "&nbsp;in&nbsp;the&nbsp;world.</h4><h4 align=right>Tribute.</h4>"
                             "<hr><a href='https://github.com/luebking/sqriptor'>Code on github</a><br>"
                             "<br><a href='https://github.com/luebking/sqriptor/issues'>"
-                            "Report, what you falsely assume to be a bug</a></html>");
+                            "Report, what you falsely assume to be a bug</a>"
+                            "<hr><h4>Facilitating</h4>"
+                            "<a href=https://www.riverbankcomputing.com/software/qscintilla/intro'>"
+                            "QScintilla</a><br><br><a href='https://www.scintilla.org/'>Scintilla</a></html>");
         QMessageBox *about = new QMessageBox(QMessageBox::Information, tr("About Sqriptor"), brag,
                                              QMessageBox::Ok, nullptr, Qt::Dialog);
         about->setAttribute(Qt::WA_DeleteOnClose);
         about->setTextInteractionFlags(Qt::LinksAccessibleByMouse|Qt::LinksAccessibleByKeyboard);
+        QPixmap icon(256,256);
+        renderIcon(icon);
+        about->setIconPixmap(icon);
         about->show();
     });
     menu->addAction(act);
@@ -537,4 +549,23 @@ void Sqriptor::indicateCurrentEOL()
             return;
         }
     }
+}
+
+void Sqriptor::renderIcon(QPixmap &pix)
+{
+    pix.fill(Qt::transparent);
+    QPainter p(&pix);
+    p.setRenderHint(QPainter::Antialiasing);
+    const int w = pix.width(), h = pix.height();
+    const qreal gm = 1.618f;
+    p.setPen(Qt::NoPen);
+    p.setBrush(qApp->palette().color(QPalette::Active, QPalette::Highlight));
+    p.drawEllipse(0, h-h/gm, w/gm, h/gm);
+    QPainterPath path;
+    path.moveTo(w/1.83, 0);
+    path.lineTo(w, h - h/1.83);
+    path.lineTo(w-w/gm, h/gm);
+    path.closeSubpath();
+    p.fillPath(path, QColor(0x666666));
+    p.end();
 }

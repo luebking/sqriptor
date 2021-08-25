@@ -120,6 +120,10 @@ void QsciLexerMarkdown2::updateColors()
     setColor(mid, Style::StrikeBoldItalicQuote);
 }
 
+bool operator==(const QStringView&view, const char* string) {
+    return !view.compare(QLatin1String(string));
+}
+
 void QsciLexerMarkdown2::styleText(int start, int end)
 {
     static const QRegularExpression tokenizer("######|#####|####|###|##|---|~~|"
@@ -169,8 +173,8 @@ void QsciLexerMarkdown2::styleText(int start, int end)
     while (i.hasNext()) {
         prev = match;
         match = i.next();
-        QStringRef token = match.capturedRef(0);
-#define NEXT_IS_WS i.hasNext() && !nonWS.match(i.peekNext().capturedRef(0)).hasMatch()
+        QStringView token = match.capturedView(0);
+#define NEXT_IS_WS i.hasNext() && !nonWS.match(i.peekNext().capturedView(0)).hasMatch()
         if (linebreak.match(token).hasMatch()) {
             if (header || quote) {
                 finishStyle();
@@ -207,7 +211,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
                 setStyling(1, Style::Tag); length = 0; tag = false;
                 continue;
             }
-            if (i.hasNext() && i.peekNext().capturedRef(0) == "=") {
+            if (i.hasNext() && i.peekNext().capturedView(0) == "=") {
                 setStyling(length, Style::Quote); // value?
                 setStyling(token.toUtf8().length(), Style::List); // attribute
                 setStyling(1, Style::Default); // "="
@@ -233,15 +237,15 @@ void QsciLexerMarkdown2::styleText(int start, int end)
                 finishStyle(); newline = false; header = 1;
             } else if (token == ">" && NEXT_IS_WS) {
                 finishStyle(); newline = false; quote = true;
-            } else if (token.startsWith("---")) { // TODO: not entirely accurate,  ---foobar is not a ruler, quotes?
+            } else if (token.startsWith(QLatin1String("---"))) { // TODO: not entirely accurate,  ---foobar is not a ruler, quotes?
                 finishStyle(); newline = false; setStyling(3, Style::Ruler);
                 continue;
             } else if ((token == "*" || token == "-" || token == "-") && NEXT_IS_WS) {
                 finishStyle(); newline = false; setStyling(1, Style::List);
                 continue;
             } else {
-                token.toInt(&isInt);
-                if (isInt && i.hasNext() && i.peekNext().capturedRef(0) == ".") { // ordered list item
+                Q_UNUSED(token.toInt(&isInt));
+                if (isInt && i.hasNext() && i.peekNext().capturedView(0) == ".") { // ordered list item
                     finishStyle(); newline = false; setStyling(match.capturedLength(0) + 1, Style::List);
                     i.next(); // skip
                     continue;
@@ -255,7 +259,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
         if (token == "[") {
             finishStyle();
             bracket = true;
-        } else if (token == "(" && !length && prev.capturedRef() == "]") {
+        } else if (token == "(" && !length && prev.capturedView() == "]") {
             // !length because we just closed a bracket!
             // we therefore also don't need to finishStyle();
             brace = true;
@@ -264,7 +268,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
             length = 1;
             tag = true;
             while (!(NEXT_IS_WS)) {
-                token = i.next().capturedRef(0);
+                token = i.next().capturedView(0);
                 if (token == ">") {
                     ++length;
                     tag = false;
@@ -279,7 +283,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
             for (int fs = 0; fs < FontStyleCount; ++fs) {
                 if (token == fsIndicator[fs]) {
                     const bool nexWS = NEXT_IS_WS;
-                    if ((style & (1<<fs)) && nonWS.match(prev.capturedRef()).hasMatch()) {
+                    if ((style & (1<<fs)) && nonWS.match(prev.capturedView()).hasMatch()) {
                         length += match.capturedLength(0); // capture indicator
                         finishStyle();
                         length -= match.capturedLength(0); // sanitized below!

@@ -28,11 +28,11 @@ static void setColorsCPP(QsciLexerCPP *lexer)
     lexer->setColor(c, QsciLexerCPP::UUID);
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerCPP::Operator);
+    lexer->setColor(c, QsciLexerCPP::CommentDocKeyword);
     c = COLOR_KEYWORD;
     lexer->setColor(c, QsciLexerCPP::Keyword);
     lexer->setColor(c, QsciLexerCPP::KeywordSet2);
     lexer->setColor(c, QsciLexerCPP::GlobalClass);
-    lexer->setColor(c, QsciLexerCPP::CommentDocKeyword);
     c = COLOR_ERROR;
     lexer->setColor(c, QsciLexerCPP::CommentDocKeywordError);
     lexer->setColor(c, QsciLexerCPP::UnclosedString);

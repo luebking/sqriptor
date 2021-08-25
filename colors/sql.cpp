@@ -17,8 +17,8 @@ static void setColorsSQL(QsciLexerSQL *lexer)
     lexer->setColor(c, QsciLexerSQL::Operator);
     lexer->setColor(c, QsciLexerSQL::PlusPrompt);
     lexer->setColor(c, QsciLexerSQL::QuotedOperator);
-    c = COLOR_KEYWORD;
     lexer->setColor(c, QsciLexerSQL::CommentDocKeyword);
+    c = COLOR_KEYWORD;
     lexer->setColor(c, QsciLexerSQL::Keyword);
     lexer->setColor(c, QsciLexerSQL::KeywordSet5);
     lexer->setColor(c, QsciLexerSQL::KeywordSet6);

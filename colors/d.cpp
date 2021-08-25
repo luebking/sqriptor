@@ -16,7 +16,10 @@ static void setColorsD(QsciLexerD *lexer)
     lexer->setColor(COLOR_NUMBER, QsciLexerD::Number);
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerD::Operator);
-    lexer->setColor(COLOR_ERROR, QsciLexerD::UnclosedString);
+    lexer->setColor(c, QsciLexerD::CommentDocKeyword);
+    c = COLOR_ERROR;
+    lexer->setColor(c, QsciLexerD::UnclosedString);
+    lexer->setColor(c, QsciLexerD::CommentDocKeywordError);
     c = COLOR_KEYWORD;
     lexer->setColor(c, QsciLexerD::Keyword);
     lexer->setColor(c, QsciLexerD::KeywordSecondary);
@@ -24,7 +27,5 @@ static void setColorsD(QsciLexerD *lexer)
     lexer->setColor(c, QsciLexerD::KeywordSet5);
     lexer->setColor(c, QsciLexerD::KeywordSet6);
     lexer->setColor(c, QsciLexerD::KeywordSet7);
-    lexer->setColor(c, QsciLexerD::CommentDocKeyword);
-    lexer->setColor(c, QsciLexerD::CommentDocKeywordError);
     // Identifier
 }

@@ -65,8 +65,9 @@
 #include <Qsci/qscilexerxml.h>
 #include <Qsci/qscilexeryaml.h>
 
-#include "lexer/markdown2.h"
 #include "lexer/awk.h"
+#include "lexer/markdown2.h"
+#include "lexer/xorg.h"
 
 
 #include "sqriptor.h"
@@ -125,6 +126,10 @@ static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer)
 {
     lexer->updateColors();
 }
+static void setColorsXorg(QsciLexerXorg *lexer)
+{
+    lexer->updateColors();
+}
 
 static void resetColors(QsciScintilla *document) {
     QColor bg = COLOR_BACKGROUND;
@@ -156,8 +161,12 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         document = textEdit();
 
     if (syntax == Syntax::Auto && !updateColorsOnly) {
-        if (!document->lexer()) // don't use the filename to override an explicit/content detected lexer
-            syntax = Sqriptor::syntax(document->property("sqriptor_filename").toString());
+        if (!document->lexer()) { // don't use the filename to override an explicit/content detected lexer
+            const QString filename = document->property("sqriptor_filename").toString();
+            syntax = Sqriptor::syntax(filename);
+            if (syntax == Syntax::Properties && filename.contains("xorg.conf"))
+                syntax = Syntax::Xorg;
+        }
         if (syntax == Syntax::Auto) {
             QString shebang = document->text(0).section("\n",0,0);
             if (shebang.startsWith("#!"))
@@ -260,6 +269,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         MAKE_LEXER(TeX)
         MAKE_LEXER(Verilog)
         MAKE_LEXER(VHDL)
+        MAKE_LEXER(Xorg)
         MAKE_LEXER(YAML)
             break;
         default:
@@ -363,7 +373,7 @@ bool Sqriptor::toggleComment()
 
     if (name == "Bash" || name == "Python" || name == "Ruby" || name == "Perl" || 
         name == "Makefile" || name == "CMake" || name.startsWith("Fortran") ||
-        name == "TCL") { // tcltk might or not require ";#" inline
+        name == "TCL" || name == "AWK" || name == "Xorg") { // tcltk might or not require ";#" inline
         const QChar bang = name.startsWith("Fortran") ? '!' : '#';
         QString text = doc->selectedText();
         if (!text.isEmpty()) {

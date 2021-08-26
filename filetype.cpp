@@ -107,6 +107,7 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffixes["avs"] = Syntax::AVS;
     suffixes["ini"] = Syntax::Properties;
     suffixes["conf"] = Syntax::Properties;
+    suffixes["awk"] = Syntax::AWK;
     
     suffixes["Makefile"] = Syntax::Makefile;
 

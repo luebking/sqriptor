@@ -29,7 +29,7 @@ class QsciScintilla;
 
 namespace Syntax {
     enum Lexer {
-        None = 0, Auto, AVS, Bash, Batch, CMake, CoffeeScript, CPP, CSS,
+        None = 0, Auto, AVS, AWK, Bash, Batch, CMake, CoffeeScript, CPP, CSS,
         D, Diff, EDIFACT, Fortran77, HTML, JSON, Lua, Makefile,
         Markdown2, Matlab, Pascal, Perl, PO, PostScript, POV, Properties,
         Python, Ruby, Spice, SQL, TCL, TeX, Verilog, VHDL, YAML, 

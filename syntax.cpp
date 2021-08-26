@@ -66,6 +66,7 @@
 #include <Qsci/qscilexeryaml.h>
 
 #include "lexer/markdown2.h"
+#include "lexer/awk.h"
 
 
 #include "sqriptor.h"
@@ -116,6 +117,14 @@ static QsciLexer *syntaxDict[Syntax::Count] = {nullptr};
 #include "colors/vhdl.cpp"
 #include "colors/yaml.cpp"
 
+static void setColorsAWK(QsciLexerAWK *lexer)
+{
+    setColorsBash(lexer);
+}
+static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer)
+{
+    lexer->updateColors();
+}
 
 static void resetColors(QsciScintilla *document) {
     QColor bg = COLOR_BACKGROUND;
@@ -193,6 +202,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         case Syntax::None:
             break;
         MAKE_LEXER(AVS)
+        MAKE_LEXER(AWK)
         MAKE_LEXER(Bash)
         MAKE_LEXER(Batch)
         MAKE_LEXER(CMake)

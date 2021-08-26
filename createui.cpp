@@ -453,7 +453,7 @@ void Sqriptor::createUI()
     ADD_SYNTAX(Python);
     
     menu = syntaxMenu->addMenu(tr("&Script"));
-    ADD_SYNTAX(AVS); ADD_SYNTAX(Bash); ADD_SYNTAX(Batch); ADD_SYNTAX(CoffeeScript);
+    ADD_SYNTAX(AVS); ADD_SYNTAX(AWK); ADD_SYNTAX(Bash); ADD_SYNTAX(Batch); ADD_SYNTAX(CoffeeScript);
     ADD_SYNTAX(JavaScript); ADD_SYNTAX(Lua); ADD_SYNTAX(Perl);
     QAction *htmlSyntax = ADD_SYNTAX2(HTML, "\tid. PHP, JSP, ASP"); ADD_SYNTAX(PostScript);
     ADD_SYNTAX(Ruby); ADD_SYNTAX(TCL);

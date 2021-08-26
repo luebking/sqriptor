@@ -1,9 +1,10 @@
-#ifndef QSCILEXERTEST_H
-#define QSCILEXERTEST_H
+#ifndef QSCILEXERMARKDOWN2_H
+#define QSCILEXERMARKDOWN2_H
 
 #include <Qsci/qscilexercustom.h>
 
 class QsciLexerMarkdown2 : public QsciLexerCustom {
+    Q_OBJECT
 public:
     QsciLexerMarkdown2(QObject *parent);
     void updateColors();
@@ -12,9 +13,4 @@ public:
     virtual QString description(int style) const {Q_UNUSED(style); return "Markdown2"; }
 };
 
-static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer)
-{
-    lexer->updateColors();
-}
-
-#endif // QSCILEXERTEST_H
+#endif // QSCILEXERMARKDOWN2_H

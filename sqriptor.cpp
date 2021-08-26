@@ -380,6 +380,15 @@ void Sqriptor::checkTimestamp()
 void Sqriptor::loadFile(const QString &fileName)
 {
     QFile file(fileName);
+    if (file.size() > 2*1024*1024) {
+        int ret = QMessageBox::warning(this, tr("How much do you RAM, Bro?"),
+            tr("<b>The file </b>%1<b><br> is really huge!</b> (%2 MB)<br><br>"
+            "Sure you want to open that?!").arg(fileName.section('/',-1,-1)).arg(file.size()/(1024*1024)),
+                     QMessageBox::Yes,
+                     QMessageBox::No | QMessageBox::Default);
+        if (ret == QMessageBox::No)
+            return;
+    }
     if (!file.open(QFile::ReadOnly)) {
         QMessageBox::warning(this, tr("Sqriptor"),
                              tr("Cannot read file %1:\n%2.")

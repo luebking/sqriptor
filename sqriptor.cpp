@@ -115,7 +115,12 @@ void Sqriptor::analyzeSyntaxOnce()
     QsciScintilla *doc = qobject_cast<QsciScintilla*>(sender());
     if (!doc)
         return;
-    setSyntax(Syntax::Auto, doc);
+    if (doc->property("sqriptor_syntax").toInt() == Syntax::None) {
+        const QString fn = doc->property("sqriptor_filename").toString();
+        doc->setProperty("sqriptor_filename", "");
+        setSyntax(Syntax::Auto, doc);
+        doc->setProperty("sqriptor_filename", fn);
+    }
     disconnect (textEdit(), SIGNAL(linesChanged()), this, SLOT(analyzeSyntaxOnce()));
 }
 

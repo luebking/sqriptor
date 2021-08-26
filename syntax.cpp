@@ -147,7 +147,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         document = textEdit();
 
     if (syntax == Syntax::Auto && !updateColorsOnly) {
-        syntax = Sqriptor::syntax(document->property("sqriptor_filename").toString());
+        if (!document->lexer()) // don't use the filename to override an explicit/content detected lexer
+            syntax = Sqriptor::syntax(document->property("sqriptor_filename").toString());
         if (syntax == Syntax::Auto) {
             QString shebang = document->text(0).section("\n",0,0);
             if (shebang.startsWith("#!"))
@@ -161,10 +162,17 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
             return;
     }
 
-    if (syntaxDict[syntax] && !updateColorsOnly) {
+    if ((syntaxDict[syntax] || syntax == Syntax::None) && !updateColorsOnly) {
+        QsciLexer *oldLexer = document->lexer();
         document->setLexer(syntaxDict[syntax]);
         document->setProperty("sqriptor_syntax", syntax);
         resetColors(document);
+        if (!syntaxDict[syntax] && oldLexer) {
+            const bool wasModified = document->isModified();
+            document->setFont(config.font);
+            document->setText(document->text());
+            document->setModified(wasModified);
+        }
         if (document == textEdit())
             indicateCurrentSyntax();
         return;
@@ -183,7 +191,6 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
     QsciLexer *hook = syntaxDict[syntax];
     switch (syntax) {
         case Syntax::None:
-            document->setFont(config.font);
             break;
         MAKE_LEXER(AVS)
         MAKE_LEXER(Bash)

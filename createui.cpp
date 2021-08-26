@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QHBoxLayout>
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QMenu>
 #include <QMenuBar>
@@ -41,6 +42,34 @@
 #include "sqriptor.h"
 
 #define ADD_ACT menu->addAction(act); addAction(act);
+
+
+class NavHelper : public QObject {
+    public:
+        NavHelper(Sqriptor *parent) : QObject(parent) {}
+protected:
+    bool eventFilter(QObject *, QEvent *ev) {
+        if (ev->type() == QEvent::KeyPress || ev->type() == QEvent::KeyRelease) {
+            QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
+            switch (kev->key()) {
+                case Qt::Key_Home:
+                case Qt::Key_End:
+                    if (!(kev->modifiers() & Qt::ControlModifier))
+                        return false;
+                    [[fallthrough]];
+                case Qt::Key_Up:
+                case Qt::Key_Down:
+                case Qt::Key_PageUp:
+                case Qt::Key_PageDown:
+                    QCoreApplication::sendEvent(static_cast<Sqriptor*>(parent())->textEdit(), ev);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        return false;
+    }
+};
 
 void Sqriptor::createUI()
 {
@@ -188,8 +217,11 @@ void Sqriptor::createUI()
             menuBar()->hide();
     });
     searchBar->addAction(act);
-    
+
+    NavHelper *navHelper = new NavHelper(this);
+
     QLineEdit *findLine = new QLineEdit(searchBar);
+    findLine->installEventFilter(navHelper);
     auto l_search = [=](bool jump) {
         int line, index, dummy;
         jump = jump ? searchForward->isChecked() : !searchForward->isChecked();
@@ -217,6 +249,7 @@ void Sqriptor::createUI()
     connect(findLine, &QLineEdit::textEdited, [=]() { l_search(true); });
 
     QLineEdit *replaceLine = new QLineEdit(searchBar);
+    replaceLine->installEventFilter(navHelper);
     connect(replaceLine, &QLineEdit::returnPressed, [=]() {
         if (textEdit()->selectedText().isEmpty())
             textEdit()->cancelFind(); // user clicked forward, voids the replace, we search on

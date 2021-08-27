@@ -503,8 +503,9 @@ void Sqriptor::createUI()
     ADD_SYNTAX(CMake); ADD_SYNTAX(Makefile);
     
     menu = syntaxMenu->addMenu(tr("&Config/Data"));
-    ADD_SYNTAX(Diff); ADD_SYNTAX(JSON); ADD_SYNTAX2(PO, "\teg. gettext");
-    ADD_SYNTAX(POV); ADD_SYNTAX2(Properties, "\teg. ini syntax"); ADD_SYNTAX(SQL);
+    ADD_SYNTAX(Diff); ADD_SYNTAX2(Journal, "\tSystemD"); ADD_SYNTAX(JSON);
+    ADD_SYNTAX2(PO, "\teg. gettext"); ADD_SYNTAX(POV);
+    ADD_SYNTAX2(Properties, "\teg. ini syntax"); ADD_SYNTAX(SQL);
     ADD_SYNTAX(XML); ADD_SYNTAX(Xorg);
     
     menu = syntaxMenu->addMenu(tr("&Obscure && ancient stuff"));

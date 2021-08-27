@@ -66,6 +66,7 @@
 #include <Qsci/qscilexeryaml.h>
 
 #include "lexer/awk.h"
+#include "lexer/journal.h"
 #include "lexer/markdown2.h"
 #include "lexer/xorg.h"
 
@@ -118,18 +119,10 @@ static QsciLexer *syntaxDict[Syntax::Count] = {nullptr};
 #include "colors/vhdl.cpp"
 #include "colors/yaml.cpp"
 
-static void setColorsAWK(QsciLexerAWK *lexer)
-{
-    setColorsBash(lexer);
-}
-static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer)
-{
-    lexer->updateColors();
-}
-static void setColorsXorg(QsciLexerXorg *lexer)
-{
-    lexer->updateColors();
-}
+static void setColorsAWK(QsciLexerAWK *lexer) { setColorsBash(lexer); }
+static void setColorsJournal(QsciLexerJournal *lexer) { lexer->updateColors(); }
+static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(); }
+static void setColorsXorg(QsciLexerXorg *lexer) { lexer->updateColors(); }
 
 static void resetColors(QsciScintilla *document) {
     QColor bg = COLOR_BACKGROUND;
@@ -174,7 +167,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
             else if (shebang.startsWith("diff --git"))
                 syntax = Syntax::Diff;
             else if (shebang.startsWith("-- Journal begins at"))
-                syntax = Syntax::Bash; // it's not really bash, but looks somewhat ok
+                syntax = Syntax::Journal;
         }
         if (syntax == Syntax::Auto)
             return;
@@ -245,6 +238,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
             [[fallthrough]];
             MAKE_LEXER(HTML)
 
+        MAKE_LEXER(Journal)
         MAKE_LEXER(JSON)
         MAKE_LEXER(Lua)
         MAKE_LEXER(Makefile)

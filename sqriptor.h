@@ -33,7 +33,7 @@ namespace Syntax {
         D, Diff, EDIFACT, Fortran77, HTML, JSON, Lua, Makefile,
         Markdown2, Matlab, Pascal, Perl, PO, PostScript, POV, Properties,
         Python, Ruby, Spice, SQL, TCL, TeX, Verilog, VHDL, YAML, 
-        CSharp, IDL, Java, JavaScript, Fortran, XML, Octave, Xorg, Count
+        CSharp, IDL, Java, JavaScript, Fortran, XML, Octave, Xorg, Journal, Count
     };
 };
 

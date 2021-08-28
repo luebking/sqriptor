@@ -77,7 +77,7 @@ void QsciLexerMarkdown2::updateColors()
     setColor(mid, Style::Ruler);
     
     QFont font;
-    font.setPointSize(Sqriptor::config.font.pointSize());
+    font.setPointSize(12);
     setFont(font);
     setFont(font, Style::Default);
     

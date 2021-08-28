@@ -104,6 +104,7 @@ private:
     QActionGroup *m_syntaxActions;
     QMenu *m_eolMenu;
     QAction *m_tabMenu;
+    QAction *m_EolVis, *m_wrapped, *m_folds;
 };
 
 #endif

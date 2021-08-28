@@ -137,6 +137,7 @@ static void resetColors(QsciScintilla *document) {
     bg = bg.value() < fg.value() ? bg.darker(120) : bg.lighter(120);
     document->setMarginsBackgroundColor(bg);
     document->setCaretLineBackgroundColor(bg);
+    document->setFoldMarginColors(bg, bg);
     fg = QColor((bg.red()+fg.red())/2, (bg.green()+fg.green())/2, (bg.green()+fg.green())/2);
     document->setMarginsForegroundColor(fg);
     document->setCaretForegroundColor(fg);

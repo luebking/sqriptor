@@ -200,8 +200,10 @@ void Sqriptor::createUI()
     searchForward->setChecked(true);
     tbmenu->addAction(searchForward);
     tbmenu->addSeparator();
-//    QAction *filterFind = new QAction(tr("Find all"), searchBar);
-//    tbmenu->addAction(filterFind);
+    /*! @todo 
+    QAction *filterFind = new QAction(tr("Find all"), searchBar);
+    tbmenu->addAction(filterFind);
+    */
     QAction *replaceAll = new QAction(tr("Replace all"), searchBar);
     tbmenu->addAction(replaceAll);
     replaceAll->setVisible(false);
@@ -285,7 +287,23 @@ void Sqriptor::createUI()
                 textEdit()->replace(replaceLine->text());
         }
     });
-
+/*! 
+    @todo - doesn't work
+    connect(filterFind, &QAction::triggered, [=]() {
+        QsciScintilla *doc = textEdit();
+        doc->setFolding(QsciScintilla::PlainFoldStyle, 1);
+        doc->clearFolds();
+        const QString filter = findLine->text();
+        if (findLine->text().isEmpty())
+            return;
+        for (int i = 0; i < doc->lines(); ++i) {
+            if (doc->text(i).contains(filter))
+                continue;
+            qDebug() << "fold" << i;
+            doc->foldLine(i);
+        }
+    });
+*/
     QSpinBox *gotoLine = new QSpinBox(searchBar);
     connect(qApp, &QApplication::focusChanged, [=]() {
         if (gotoLine->hasFocus())
@@ -315,7 +333,9 @@ void Sqriptor::createUI()
     
     menu->addSeparator();
     
-#define HIDE_STUFF searchBar->hide(); gotoLine->hide(); findLine->hide(); replaceLine->hide(); btn->hide(); replaceAll->setVisible(false);
+#define HIDE_STUFF  searchBar->hide(); gotoLine->hide(); findLine->hide(); \
+                    replaceLine->hide(); btn->hide(); replaceAll->setVisible(false);
+                    /// @todo filterFind->setVisible(false);
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
     act = new QAction(tr("&Find"), this);
@@ -325,6 +345,7 @@ void Sqriptor::createUI()
         btn->setText(tr("Find:"));
         btn->show();
         findLine->show();
+        /// @todo filterFind->setVisible(true);
         QString text = textEdit()->selectedText();
         if (!text.isEmpty())
             findLine->setText(text);
@@ -416,24 +437,30 @@ void Sqriptor::createUI()
     act->setShortcut(tr("Ctrl+D"));
     connect(act, SIGNAL(triggered()), SLOT(toggleComment()));
     ADD_ACT
-    
+
     menu = menuBar()->addMenu(tr("&View"));
-    act = new QAction(tr("&Wrap text"), this);
-    act->setShortcut(tr("F10"));
-    act->setCheckable(true);
-    connect(act, &QAction::triggered, [=](bool checked){
+    m_wrapped = new QAction(tr("&Wrap text"), this);
+    m_wrapped->setShortcut(tr("F10"));
+    m_wrapped->setCheckable(true);
+    connect(m_wrapped, &QAction::triggered, [=](bool checked){
         textEdit()->setWrapMode(checked ? QsciScintilla::WrapWhitespace : QsciScintilla::WrapNone);
         });
-    menu->addAction(act);
+    menu->addAction(m_wrapped);
+    
+    m_folds = new QAction(tr("&Folding"), this);
+    m_folds->setShortcut(tr("F11"));
+    m_folds->setCheckable(true);
+    connect(m_folds, &QAction::triggered, [=](bool checked){
+        textEdit()->setFolding(checked ? QsciScintilla::PlainFoldStyle : QsciScintilla::NoFoldStyle);
+        });
+    menu->addAction(m_folds);
 
-    act = new QAction(tr("&EOL"), this);
-    act->setCheckable(true);
-    connect(act, &QAction::triggered, [=](bool checked){
+    m_EolVis = new QAction(tr("&EOL"), this);
+    m_EolVis->setCheckable(true);
+    connect(m_EolVis, &QAction::triggered, [=](bool checked){
         textEdit()->setEolVisibility(checked);
         });
-    menu->addAction(act);
-
-//    void 	setEolMode (EolMode mode)
+    menu->addAction(m_EolVis);
 
     act = new QAction(tr("Show &Menu"), this);
     act->setCheckable(true);

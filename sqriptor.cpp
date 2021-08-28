@@ -71,10 +71,14 @@ Sqriptor::Sqriptor()
     m_documents->setContentsMargins(0, 0, 0, 0);
     connect(m_documents, SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
     connect(m_documents, &QTabWidget::currentChanged, [=](int idx) {
-        setWindowModified(textEdit()->isModified());
+        QsciScintilla *doc = textEdit();
+        setWindowModified(doc->isModified());
         setWindowTitle(tr("%1[*]").arg(m_documents->tabText(idx)));
         indicateCurrentSyntax();
         indicateCurrentEOL();
+        m_EolVis->setChecked(doc->eolVisibility());
+        m_wrapped->setChecked(doc->wrapMode() != QsciScintilla::WrapNone);
+        m_folds->setChecked(doc->folding() != QsciScintilla::NoFoldStyle);
         checkTimestamp();
     });
     m_documents->setTabPosition(QTabWidget::West);

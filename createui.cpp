@@ -207,10 +207,9 @@ void Sqriptor::createUI()
     searchForward->setChecked(true);
     tbmenu->addAction(searchForward);
     tbmenu->addSeparator();
-    /*! @todo 
-    QAction *filterFind = new QAction(tr("Find all"), searchBar);
+    QAction *filterFind = new QAction(tr("Filter text"), searchBar);
+    filterFind->setCheckable(true);
     tbmenu->addAction(filterFind);
-    */
     QAction *replaceAll = new QAction(tr("Replace all"), searchBar);
     tbmenu->addAction(replaceAll);
     replaceAll->setVisible(false);
@@ -253,9 +252,43 @@ void Sqriptor::createUI()
             findLine->setPalette(pal);
         }
     };
+    
+    auto l_filter = [=]() {
+        QsciScintilla *doc = textEdit();
+        const QString filter = findLine->text();
+        if (filter.isEmpty()) {
+            for (int i = 0; i < doc->lines(); ++i)
+                doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
+        } else if (searchRegExp->isChecked()) {
+            const QRegularExpression rx(filter, searchCaseSens->isChecked() ?
+                                                QRegularExpression::NoPatternOption :
+                                                QRegularExpression::CaseInsensitiveOption);
+            for (int i = 0; i < doc->lines(); ++i) {
+                QString line = doc->text(i);
+                if (line.contains(rx, nullptr))
+                    doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
+                else
+                    doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, i, i);
+            }
+        } else {
+            Qt::CaseSensitivity cs = searchCaseSens->isChecked() ?
+                                            Qt::CaseSensitive : Qt::CaseInsensitive;
+            for (int i = 0; i < doc->lines(); ++i) {
+                QString line = doc->text(i);
+                if (line.contains(filter, cs))
+                    doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
+                else
+                    doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, i, i);
+            }
+        }
+    };
 
-    connect(findLine, &QLineEdit::returnPressed, [=]() { l_search(false); });
-    connect(findLine, &QLineEdit::textEdited, [=]() { l_search(true); });
+    connect(findLine, &QLineEdit::returnPressed, [=]() {
+        filterFind->isChecked() ? l_filter() : l_search(false);
+    });
+    connect(findLine, &QLineEdit::textEdited, [=]() {
+        filterFind->isChecked() ? l_filter() : l_search(true);
+    });
 
     QLineEdit *replaceLine = new QLineEdit(searchBar);
     replaceLine->installEventFilter(navHelper);
@@ -294,23 +327,7 @@ void Sqriptor::createUI()
                 textEdit()->replace(replaceLine->text());
         }
     });
-/*! 
-    @todo - doesn't work
-    connect(filterFind, &QAction::triggered, [=]() {
-        QsciScintilla *doc = textEdit();
-        doc->setFolding(QsciScintilla::PlainFoldStyle, 1);
-        doc->clearFolds();
-        const QString filter = findLine->text();
-        if (findLine->text().isEmpty())
-            return;
-        for (int i = 0; i < doc->lines(); ++i) {
-            if (doc->text(i).contains(filter))
-                continue;
-            qDebug() << "fold" << i;
-            doc->foldLine(i);
-        }
-    });
-*/
+
     QSpinBox *gotoLine = new QSpinBox(searchBar);
     connect(qApp, &QApplication::focusChanged, [=]() {
         if (gotoLine->hasFocus())
@@ -341,8 +358,8 @@ void Sqriptor::createUI()
     menu->addSeparator();
     
 #define HIDE_STUFF  searchBar->hide(); gotoLine->hide(); findLine->hide(); \
-                    replaceLine->hide(); btn->hide(); replaceAll->setVisible(false);
-                    /// @todo filterFind->setVisible(false);
+                    replaceLine->hide(); btn->hide(); replaceAll->setVisible(false); \
+                    filterFind->setVisible(false);
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
     act = new QAction(tr("&Find"), this);
@@ -352,7 +369,7 @@ void Sqriptor::createUI()
         btn->setText(tr("Find:"));
         btn->show();
         findLine->show();
-        /// @todo filterFind->setVisible(true);
+        filterFind->setVisible(true);
         QString text = textEdit()->selectedText();
         if (!text.isEmpty())
             findLine->setText(text);

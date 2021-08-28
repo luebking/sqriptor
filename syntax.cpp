@@ -124,7 +124,7 @@ static void setColorsJournal(QsciLexerJournal *lexer) { lexer->updateColors(); }
 static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(); }
 static void setColorsXorg(QsciLexerXorg *lexer) { lexer->updateColors(); }
 
-static void resetColors(QsciScintilla *document) {
+static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
     QColor bg = COLOR_BACKGROUND;
     QColor fg = COLOR_FOREGROUND;
     document->setPaper(bg);
@@ -147,6 +147,7 @@ static void resetColors(QsciScintilla *document) {
     document->setIndentationGuidesForegroundColor(fg);
     document->setEdgeColor(fg);
     document->setWhitespaceForegroundColor(fg);
+    document->setEdgeMode(syntax == Syntax::Markdown2 ? QsciScintilla::EdgeBackground : QsciScintilla::EdgeLine);
 }
 
 void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColorsOnly)
@@ -178,7 +179,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         QsciLexer *oldLexer = document->lexer();
         document->setLexer(syntaxDict[syntax]);
         document->setProperty("sqriptor_syntax", syntax);
-        resetColors(document);
+        resetColors(document, syntax);
         if (!syntaxDict[syntax] && oldLexer) {
             const bool wasModified = document->isModified();
             document->setFont(config.font);
@@ -276,7 +277,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
     document->setProperty("sqriptor_syntax", syntax);
     if (document == textEdit())
         indicateCurrentSyntax();
-    resetColors(document);
+    resetColors(document, syntax);
 }
 
 void Sqriptor::indicateCurrentSyntax()

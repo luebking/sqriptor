@@ -79,7 +79,7 @@ void Sqriptor::createUI()
     QMenu *menu;
     QAction *act;
 
-    menu = menuBar()->addMenu("(·)");
+    menu = menuBar()->addMenu("Ξ"); // ◎ (·) ⬤ Ξ • · ◉ ▣ ■ □ ▢ ◯ ◆ ★ •  
     m_tabMenu = menu->menuAction();
     m_tabMenu->setVisible(false);
     connect(menu, &QMenu::aboutToShow, [=]() {

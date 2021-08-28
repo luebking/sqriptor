@@ -79,6 +79,13 @@ void Sqriptor::createUI()
     QMenu *menu;
     QAction *act;
 
+    act = new QAction(this);
+    act->setShortcut(tr("Ctrl+0"));
+    connect(act, &QAction::triggered, [=](){
+        textEdit()->zoomTo(0);
+    });
+    addAction(act);
+
     menu = menuBar()->addMenu("Ξ"); // ◎ (·) ⬤ Ξ • · ◉ ▣ ■ □ ▢ ◯ ◆ ★ •  
     m_tabMenu = menu->menuAction();
     m_tabMenu->setVisible(false);

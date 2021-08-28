@@ -76,7 +76,8 @@ void QsciLexerMarkdown2::updateColors()
         setColor(Sqriptor::config.color.string, i);
     setColor(mid, Style::Ruler);
     
-    QFont font("sans", Sqriptor::config.font.pointSize());
+    QFont font;
+    font.setPointSize(Sqriptor::config.font.pointSize());
     setFont(font);
     setFont(font, Style::Default);
     

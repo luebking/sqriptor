@@ -18,6 +18,7 @@
 
 #include <QAction>
 #include <QApplication>
+#include <QElapsedTimer>
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QKeyEvent>
@@ -294,38 +295,82 @@ void Sqriptor::createUI()
     QLineEdit *filterLine = new QLineEdit(searchBar);
     filterLine->installEventFilter(navHelper);
     
+    /*  "cooperative multithreeading" effort
+        filtering a looooooong document (100.000 lines etc.) can take a while
+        and we need to manage that
+        This is all GUI stuff and idk. whether QsciScintilla, let alone Scintilla
+        are sufficiently re-entrant. So we manage that here.
+    */
+    QTimer *filterTimer = new QTimer(this);
+    filterTimer->setSingleShot(true);
+    filterTimer->setInterval(200);
+    /*  The average typing speed is 1 char / 300ms - source: internet.
+        At the same time, delays > 250ms are perceived as stalls. source: idem.
+        So we go for 200ms to allow faster users multiple key strokes while not
+        looking too laggy.
+        But if the filtering takes 500ms, that doesn't help...
+    */
+#define PROCESS_EVENTS  if (profiler.hasExpired(66)) { \
+                            QCoreApplication::processEvents(); \
+                            filterTimerWasActive = filterTimer->isActive(); \
+                            filterTimer->stop(); \
+                            profiler.restart(); \
+                        }
+    /** So in addition we profile the filtering and flush the event queue every
+        66ms, maintaining 15fps (it's not an ego-shooter or some animation)
+        In that, we catch an active timer and stall it until the filtering is done
+        so we don't stumble over ourselves - this could still happen if the user
+        also presses Enter for no reason... I should maybe @todo test that...
+    */
     auto l_filter = [=]() {
+        bool filterTimerWasActive = false;
         QsciScintilla *doc = textEdit();
         const QString filter = filterLine->text();
+        /** In addition to the above, also shortcut the filtering if we know that
+            the filter got narrower... this could be a problem w/ regexp
+            @todo test that, too...
+        */
+        static QString lastFilter;
+        const bool grow = !filter.contains(lastFilter);
+        lastFilter = filter;
+        QElapsedTimer profiler;
+        profiler.start();
         if (filter.isEmpty()) {
-            for (int i = 0; i < doc->lines(); ++i)
+            for (int i = 0; i < doc->lines(); ++i) {
                 doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
+                PROCESS_EVENTS
+            }
         } else if (searchRegExp->isChecked()) {
             const QRegularExpression rx(filter, searchCaseSens->isChecked() ?
                                                 QRegularExpression::NoPatternOption :
                                                 QRegularExpression::CaseInsensitiveOption);
             for (int i = 0; i < doc->lines(); ++i) {
-                QString line = doc->text(i);
-                if (line.contains(rx, nullptr))
-                    doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
-                else
-                    doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, i, i);
+                if (grow || doc->SendScintilla(QsciScintillaBase::SCI_GETLINEVISIBLE, i)) {
+                    doc->SendScintilla(doc->text(i).contains(rx, nullptr) ?
+                                            QsciScintillaBase::SCI_SHOWLINES :
+                                            QsciScintillaBase::SCI_HIDELINES, i, i);
+                }
+                PROCESS_EVENTS
             }
         } else {
             Qt::CaseSensitivity cs = searchCaseSens->isChecked() ?
                                             Qt::CaseSensitive : Qt::CaseInsensitive;
             for (int i = 0; i < doc->lines(); ++i) {
-                QString line = doc->text(i);
-                if (line.contains(filter, cs))
-                    doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
-                else
-                    doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, i, i);
+                if (grow || doc->SendScintilla(QsciScintillaBase::SCI_GETLINEVISIBLE, i)) {
+                    doc->SendScintilla(doc->text(i).contains(filter, cs) ?
+                                            QsciScintillaBase::SCI_SHOWLINES :
+                                            QsciScintillaBase::SCI_HIDELINES, i, i);
+                }
+                PROCESS_EVENTS
             }
         }
+        if (filterTimerWasActive)
+            filterTimer->start();
     };
-    
-    connect(filterLine, &QLineEdit::returnPressed, [=]() { l_filter(); });
-    connect(filterLine, &QLineEdit::textEdited, [=]() { l_filter(); });
+
+    connect(filterTimer, &QTimer::timeout, [=]() { l_filter(); });
+    connect(filterLine, &QLineEdit::returnPressed, [=]() { filterTimer->stop(); l_filter(); });
+    connect(filterLine, &QLineEdit::textEdited, [=]() { filterTimer->start(); });
 
     QSpinBox *gotoLine = new QSpinBox(searchBar);
     connect(qApp, &QApplication::focusChanged, [=]() {

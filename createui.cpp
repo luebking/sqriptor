@@ -207,9 +207,6 @@ void Sqriptor::createUI()
     searchForward->setChecked(true);
     tbmenu->addAction(searchForward);
     tbmenu->addSeparator();
-    QAction *filterFind = new QAction(tr("Filter text"), searchBar);
-    filterFind->setCheckable(true);
-    tbmenu->addAction(filterFind);
     QAction *replaceAll = new QAction(tr("Replace all"), searchBar);
     tbmenu->addAction(replaceAll);
     replaceAll->setVisible(false);
@@ -253,42 +250,8 @@ void Sqriptor::createUI()
         }
     };
     
-    auto l_filter = [=]() {
-        QsciScintilla *doc = textEdit();
-        const QString filter = findLine->text();
-        if (filter.isEmpty()) {
-            for (int i = 0; i < doc->lines(); ++i)
-                doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
-        } else if (searchRegExp->isChecked()) {
-            const QRegularExpression rx(filter, searchCaseSens->isChecked() ?
-                                                QRegularExpression::NoPatternOption :
-                                                QRegularExpression::CaseInsensitiveOption);
-            for (int i = 0; i < doc->lines(); ++i) {
-                QString line = doc->text(i);
-                if (line.contains(rx, nullptr))
-                    doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
-                else
-                    doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, i, i);
-            }
-        } else {
-            Qt::CaseSensitivity cs = searchCaseSens->isChecked() ?
-                                            Qt::CaseSensitive : Qt::CaseInsensitive;
-            for (int i = 0; i < doc->lines(); ++i) {
-                QString line = doc->text(i);
-                if (line.contains(filter, cs))
-                    doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
-                else
-                    doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, i, i);
-            }
-        }
-    };
-
-    connect(findLine, &QLineEdit::returnPressed, [=]() {
-        filterFind->isChecked() ? l_filter() : l_search(false);
-    });
-    connect(findLine, &QLineEdit::textEdited, [=]() {
-        filterFind->isChecked() ? l_filter() : l_search(true);
-    });
+    connect(findLine, &QLineEdit::returnPressed, [=]() { l_search(false); });
+    connect(findLine, &QLineEdit::textEdited, [=]() { l_search(true); });
 
     QLineEdit *replaceLine = new QLineEdit(searchBar);
     replaceLine->installEventFilter(navHelper);
@@ -327,6 +290,42 @@ void Sqriptor::createUI()
                 textEdit()->replace(replaceLine->text());
         }
     });
+    
+    QLineEdit *filterLine = new QLineEdit(searchBar);
+    filterLine->installEventFilter(navHelper);
+    
+    auto l_filter = [=]() {
+        QsciScintilla *doc = textEdit();
+        const QString filter = filterLine->text();
+        if (filter.isEmpty()) {
+            for (int i = 0; i < doc->lines(); ++i)
+                doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
+        } else if (searchRegExp->isChecked()) {
+            const QRegularExpression rx(filter, searchCaseSens->isChecked() ?
+                                                QRegularExpression::NoPatternOption :
+                                                QRegularExpression::CaseInsensitiveOption);
+            for (int i = 0; i < doc->lines(); ++i) {
+                QString line = doc->text(i);
+                if (line.contains(rx, nullptr))
+                    doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
+                else
+                    doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, i, i);
+            }
+        } else {
+            Qt::CaseSensitivity cs = searchCaseSens->isChecked() ?
+                                            Qt::CaseSensitive : Qt::CaseInsensitive;
+            for (int i = 0; i < doc->lines(); ++i) {
+                QString line = doc->text(i);
+                if (line.contains(filter, cs))
+                    doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
+                else
+                    doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, i, i);
+            }
+        }
+    };
+    
+    connect(filterLine, &QLineEdit::returnPressed, [=]() { l_filter(); });
+    connect(filterLine, &QLineEdit::textEdited, [=]() { l_filter(); });
 
     QSpinBox *gotoLine = new QSpinBox(searchBar);
     connect(qApp, &QApplication::focusChanged, [=]() {
@@ -350,16 +349,17 @@ void Sqriptor::createUI()
     layout->addWidget(btn);
     layout->addWidget(findLine);
     layout->addWidget(replaceLine);
+    layout->addWidget(filterLine);
     gotoLine->hide();
     replaceLine->hide();
+    filterLine->hide();
 
     menuBar()->setCornerWidget(searchBar);
     
     menu->addSeparator();
     
-#define HIDE_STUFF  searchBar->hide(); gotoLine->hide(); findLine->hide(); \
-                    replaceLine->hide(); btn->hide(); replaceAll->setVisible(false); \
-                    filterFind->setVisible(false);
+#define HIDE_STUFF  searchBar->hide(); gotoLine->hide(); findLine->hide(); filterLine->hide();\
+                    replaceLine->hide(); btn->hide(); replaceAll->setVisible(false);
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
     act = new QAction(tr("&Find"), this);
@@ -369,7 +369,6 @@ void Sqriptor::createUI()
         btn->setText(tr("Find:"));
         btn->show();
         findLine->show();
-        filterFind->setVisible(true);
         QString text = textEdit()->selectedText();
         if (!text.isEmpty())
             findLine->setText(text);
@@ -437,7 +436,20 @@ void Sqriptor::createUI()
         SHOW_STUFF
     });
     ADD_ACT
-    
+
+    act = new QAction(tr("Fi&lter"), this);
+    act->setShortcut(tr("Ctrl+L"));
+    connect(act, &QAction::triggered, [=]() {
+        HIDE_STUFF
+        btn->setText(tr("Filter:"));
+        btn->show();
+        filterLine->show();
+        filterLine->setFocus();
+        filterLine->selectAll();
+        SHOW_STUFF
+    });
+    ADD_ACT
+
     menu->addSeparator();
     
     act = new QAction(tr("Toggle &Bookmark"), this);

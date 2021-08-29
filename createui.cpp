@@ -475,6 +475,12 @@ void Sqriptor::createUI()
     ADD_ACT
 
     menu = menuBar()->addMenu(tr("&View"));
+/*
+    act = new QAction(tr("Show &Tip"), this);
+    act->setShortcut(tr("Ctrl+?"));
+    connect(act, &QAction::triggered, [=](){ textEdit()->setCallTipsStyle(QsciScintilla::CallTipsContext); textEdit()->callTip(); });
+    ADD_ACT
+*/
     m_wrapped = new QAction(tr("&Wrap text"), this);
     m_wrapped->setShortcut(tr("F10"));
     m_wrapped->setCheckable(true);
@@ -560,10 +566,10 @@ void Sqriptor::createUI()
     ADD_SYNTAX(TeX); ADD_SYNTAX(YAML);
     
     menu = syntaxMenu->addMenu(tr("&Math"));
-    ADD_SYNTAX2(IDL, "\tInteractive Data Language"); ADD_SYNTAX(Matlab); ADD_SYNTAX(Octave); 
+    ADD_SYNTAX2(IDL, "\tInteractive Data Language"); ADD_SYNTAX(Matlab); ADD_SYNTAX(Octave);
     
     menu = syntaxMenu->addMenu(tr("&Buildsystem"));
-    ADD_SYNTAX(CMake); ADD_SYNTAX(Makefile);
+    ADD_SYNTAX(CMake); ADD_SYNTAX(Makefile); ADD_SYNTAX(PkgBuild);
     
     menu = syntaxMenu->addMenu(tr("&Config/Data"));
     ADD_SYNTAX(Diff); ADD_SYNTAX2(Journal, "\tSystemD"); ADD_SYNTAX(JSON);

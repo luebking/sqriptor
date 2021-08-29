@@ -68,6 +68,7 @@
 #include "lexer/awk.h"
 #include "lexer/journal.h"
 #include "lexer/markdown2.h"
+#include "lexer/pkgbuild.h"
 #include "lexer/xorg.h"
 
 
@@ -122,6 +123,7 @@ static QsciLexer *syntaxDict[Syntax::Count] = {nullptr};
 static void setColorsAWK(QsciLexerAWK *lexer) { setColorsBash(lexer); }
 static void setColorsJournal(QsciLexerJournal *lexer) { lexer->updateColors(); }
 static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(); }
+static void setColorsPkgBuild(QsciLexerPkgBuild *lexer) { setColorsBash(lexer); }
 static void setColorsXorg(QsciLexerXorg *lexer) { lexer->updateColors(); }
 
 static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
@@ -253,6 +255,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
             
         MAKE_LEXER(Pascal)
         MAKE_LEXER(Perl)
+        MAKE_LEXER(PkgBuild)
         MAKE_LEXER(PO)
         MAKE_LEXER(PostScript)
         MAKE_LEXER(POV)
@@ -369,7 +372,7 @@ bool Sqriptor::toggleComment()
 
     if (name == "Bash" || name == "Python" || name == "Ruby" || name == "Perl" || 
         name == "Makefile" || name == "CMake" || name.startsWith("Fortran") ||
-        name == "TCL" || name == "AWK" || name == "Xorg") { // tcltk might or not require ";#" inline
+        name == "TCL" || name == "AWK" || name == "Xorg" || name == "PkgBuild") { // tcltk might or not require ";#" inline
         const QChar bang = name.startsWith("Fortran") ? '!' : '#';
         QString text = doc->selectedText();
         if (!text.isEmpty()) {

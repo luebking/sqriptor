@@ -60,7 +60,7 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffixes["bash"] = Syntax::Bash; // shebang
     suffixes["zsh"] = Syntax::Bash; // dto.
     suffixes["fish"] = Syntax::Bash; // you're welcome…
-    suffixes["PKGBUILD"] = Syntax::Bash;
+    suffixes["PKGBUILD"] = Syntax::PkgBuild;
     suffixes["md"] = Syntax::Markdown2;
     suffixes["pl"] = Syntax::Perl;
     suffixes["plx"] = Syntax::Perl;

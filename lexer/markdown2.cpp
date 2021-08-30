@@ -117,10 +117,12 @@ static bool operator==(const QStringView&view, const char* string) {
 
 void QsciLexerMarkdown2::styleText(int start, int end)
 {
-    static const QRegularExpression tokenizer("######|#####|####|###|##|---|~~|"
+    static const QRegularExpression tokenizer("######|#####|####|###|##|---+|====+|~~|"
                                               "\\*\\*\\*|\\*\\*|___|__|_|\\s+|[A-Za-z\\d]+|\\W");
     static const QRegularExpression nonWS("[^\\s]"); // \\W?
     static const QRegularExpression linebreak("\\s*(\\n|\\r)+\\s*");
+    static const QRegularExpression header1("====+");
+    static const QRegularExpression header2("----+");
 
     QString text = editor()->text(start, end);
     QRegularExpressionMatchIterator i = tokenizer.globalMatch(text/*, 0, QRegularExpression::PartialPreferFirstMatch*/);
@@ -228,11 +230,15 @@ void QsciLexerMarkdown2::styleText(int start, int end)
                 finishStyle(); newline = false; header = 1;
             } else if (token == ">" && NEXT_IS_WS) {
                 finishStyle(); newline = false; quote = true;
-            } else if (token.startsWith(QLatin1String("---"))) { // TODO: not entirely accurate,  ---foobar is not a ruler, quotes?
+            } else if (token == "---" && NEXT_IS_WS) { // TODO: not entirely accurate,  ---foobar is not a ruler, quotes?
                 finishStyle(); newline = false; setStyling(3, Style::Ruler);
                 continue;
-            } else if ((token == "*" || token == "-" || token == "-") && NEXT_IS_WS) {
+            } else if ((token == "*" || token == "-" || token == "+") && NEXT_IS_WS) {
                 finishStyle(); newline = false; setStyling(1, Style::List);
+                continue;
+            } else if ((header1.match(token).hasMatch() || header2.match(token).hasMatch()) &&
+                        i.hasNext() && linebreak.match(i.peekNext().capturedView(0)).hasMatch()) {
+                finishStyle(); newline = false; setStyling(match.capturedLength(0), Style::BoldQuote);
                 continue;
             } else {
                 Q_UNUSED(token.toInt(&isInt));

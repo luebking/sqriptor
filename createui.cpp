@@ -191,6 +191,7 @@ void Sqriptor::createUI()
     
     QWidget *searchBar = new QWidget(menuBar());
     QToolButton *btn = new QToolButton(searchBar);
+    btn->setAutoRaise(true);
     btn->setPopupMode(QToolButton::InstantPopup);
     btn->setText(tr("Find:"));
     QMenu *tbmenu = new QMenu(btn);

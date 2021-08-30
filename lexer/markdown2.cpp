@@ -26,22 +26,6 @@
 #include "../sqriptor.h"
 #include "lexer/markdown2.h"
 
-/*
-Styles:
-bold, **bold**
-italic, *italic*, _italic_
-stroke, ~~stroke~~
-~~st**ro**ke~~
-~~st_ro_ke~~
-monospace, `monospace`
-#* header
-hr, ---
-ol, "^\s*[0-9].\s"
-ul, "^\s*\*\s"
-tagopen, "<[^\s]*"
-tagopentail, ">"
-tagclose, "</[^\s]*>"
-*/
 
 namespace Style {
     enum Type {
@@ -84,27 +68,14 @@ void QsciLexerMarkdown2::updateColors()
     QFont bold = font; bold.setBold(true);
     setFont(bold, Style::Bold);
     setFont(bold, Style::BoldQuote);
-//    bold.setStrikeOut(true);
-//    setFont(bold, Style::StrikeBold);
-//    setFont(bold, Style::StrikeBoldQuote);
     
     QFont italic = font; italic.setItalic(true);
     setFont(italic, Style::Italic);
     setFont(italic, Style::ItalicQuote);
-//    italic.setStrikeOut(true);
-//    setFont(italic, Style::StrikeItalic);
-//    setFont(italic, Style::StrikeItalicQuote);
     
     QFont boldItalic = font; boldItalic.setBold(true); boldItalic.setItalic(true);
     setFont(boldItalic, Style::BoldItalic);
     setFont(boldItalic, Style::BoldItalicQuote);
-//    boldItalic.setStrikeOut(true);
-//    setFont(boldItalic, Style::StrikeBoldItalic);
-//    setFont(boldItalic, Style::StrikeBoldItalicQuote);
-    
-//    QFont strike = font; strike.setStrikeOut(true);
-//    setFont(strike, Style::Strike);
-//    setFont(strike, Style::StrikeQuote);
     
     QFont mono = Sqriptor::config.font;
     setFont(mono, Style::Monospace);

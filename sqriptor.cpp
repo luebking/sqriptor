@@ -409,40 +409,42 @@ void Sqriptor::loadFile(const QString &fileName)
     QApplication::setOverrideCursor(Qt::WaitCursor);
     doc->setText(in.readAll());
 
-    QString vimHints = doc->text(0);
-    if (vimHints.endsWith("\r\n")) // abomination
-        doc->setEolMode(QsciScintilla::EolWindows);
-    else if (vimHints.endsWith("\r")) // "retarded"
-        doc->setEolMode(QsciScintilla::EolMac);
-    else
-        doc->setEolMode(QsciScintilla::EolUnix);
-    static const QRegularExpression blank_colon("[\\s:]");
-    static const QRegularExpression tabstop_ts("(tabstop|ts)=.*");
-    for (int i = 0; i < doc->lines(); ++i) {
-        vimHints = doc->text(i);
-        if (vimHints.contains("vim:")) {
-            bool isModeline = false; // could be some random line talking about "vim: great editor"
-            QStringList vimmodes = vimHints.split(blank_colon);
-            if ((isModeline = (vimmodes.contains("noexpandtab") || vimmodes.contains("noet"))))
-                doc->setIndentationsUseTabs(true);
-            else if ((isModeline = (vimmodes.contains("expandtab") || vimmodes.contains("et"))))
-                doc->setIndentationsUseTabs(false);
-            if (!doc->indentationsUseTabs()) { // if we use tabs, we honor the users width preference
-                int tabstop = vimmodes.indexOf(tabstop_ts);
-                if (tabstop > -1) {
-                    bool ok;
-                    tabstop = vimmodes.at(tabstop).section('=',-1).toInt(&ok);
-                    if (ok) {
-                        isModeline = true;
-                        doc->setTabWidth(tabstop);
+    if (doc->lines() < 6666) { // this isn't code and even if, it's insane and you don't deserve this scan.
+        QString vimHints = doc->text(0);
+        if (vimHints.endsWith("\r\n")) // abomination
+            doc->setEolMode(QsciScintilla::EolWindows);
+        else if (vimHints.endsWith("\r")) // "retarded"
+            doc->setEolMode(QsciScintilla::EolMac);
+        else
+            doc->setEolMode(QsciScintilla::EolUnix);
+        static const QRegularExpression blank_colon("[\\s:]");
+        static const QRegularExpression tabstop_ts("(tabstop|ts)=.*");
+        for (int i = 0; i < doc->lines(); ++i) {
+            vimHints = doc->text(i);
+            if (vimHints.contains("vim:")) {
+                bool isModeline = false; // could be some random line talking about "vim: great editor"
+                QStringList vimmodes = vimHints.split(blank_colon);
+                if ((isModeline = (vimmodes.contains("noexpandtab") || vimmodes.contains("noet"))))
+                    doc->setIndentationsUseTabs(true);
+                else if ((isModeline = (vimmodes.contains("expandtab") || vimmodes.contains("et"))))
+                    doc->setIndentationsUseTabs(false);
+                if (!doc->indentationsUseTabs()) { // if we use tabs, we honor the users width preference
+                    int tabstop = vimmodes.indexOf(tabstop_ts);
+                    if (tabstop > -1) {
+                        bool ok;
+                        tabstop = vimmodes.at(tabstop).section('=',-1).toInt(&ok);
+                        if (ok) {
+                            isModeline = true;
+                            doc->setTabWidth(tabstop);
+                        }
                     }
+                    // if (vimmodes.contains("shiftwidth") || vimmodes.contains("sw"))
+                    // nobody cares about the stupid shiftwidth
                 }
-                // if (vimmodes.contains("shiftwidth") || vimmodes.contains("sw"))
-                // nobody cares about the stupid shiftwidth
+                // TODO: apply ft/filetype?
+                if (isModeline)
+                    break;
             }
-            // TODO: apply ft/filetype?
-            if (isModeline)
-                break;
         }
     }
     indicateCurrentEOL();

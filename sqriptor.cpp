@@ -44,19 +44,6 @@
 
 Config Sqriptor::config;
 
-class EventPicker : public QObject {
-protected:
-    bool eventFilter(QObject *o, QEvent *ev) {
-        if (ev->type() == QEvent::MouseButtonPress)
-        if (QWidget *w = qobject_cast<QWidget*>(o)) {
-            qDebug() << w << w->geometry();
-            while (w = w->parentWidget())
-                qDebug() << w << w->geometry();
-            qDebug() << "=========================";
-        }
-        return false;
-    }
-};
 
 Sqriptor::Sqriptor()
 {
@@ -64,7 +51,6 @@ Sqriptor::Sqriptor()
     readSettings();
     config.changed = false;
 
-    //qApp->installEventFilter(new EventPicker);
     m_documents = new QTabWidget;
     m_documents->setDocumentMode(true);
     m_documents->setTabsClosable(true);

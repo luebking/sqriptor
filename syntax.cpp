@@ -150,6 +150,7 @@ static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
     document->setEdgeColor(fg);
     document->setWhitespaceForegroundColor(fg);
     document->setEdgeMode(syntax == Syntax::Markdown2 ? QsciScintilla::EdgeBackground : QsciScintilla::EdgeLine);
+    document->setMarginsFont(Sqriptor::config.font);
 }
 
 void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColorsOnly)

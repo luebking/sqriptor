@@ -320,8 +320,8 @@ bool Sqriptor::maybeSave(int idx)
         if (!textEdit(idx)->length() && fileName.isEmpty())
             return true; // don't ask me to save an empty new file
         int ret = QMessageBox::warning(this, tr("Sqriptor"),
-                     tr("The document has been modified.\n"
-                        "Do you want to save your changes?"),
+                     tr("<html><h2>Save me?</h2>%1 has been modified.<br>"
+                        "Do you want to save your changes?</html>").arg(fileName),
                      QMessageBox::Yes | QMessageBox::Default,
                      QMessageBox::No,
                      QMessageBox::Cancel | QMessageBox::Escape);
@@ -332,8 +332,8 @@ bool Sqriptor::maybeSave(int idx)
     }
     if (!fileName.isEmpty() && !QFileInfo::exists(fileName)) {
         int ret = QMessageBox::warning(this, tr("Sqriptor"),
-                     tr("The documents file no longer exists!\n"
-                        "Do you want to save it?"),
+                     tr("<html><h2>Rescue me?</h2>%1 no longer exists!<br>"
+                        "Do you want to save it?</html>").arg(fileName),
                      QMessageBox::Save | QMessageBox::Default,
                      QMessageBox::Discard,
                      QMessageBox::Cancel | QMessageBox::Escape);
@@ -358,8 +358,8 @@ void Sqriptor::checkTimestamp()
     QFileInfo info(fileName);
     if (info.exists() && info.lastModified() > date) {
         int ret = QMessageBox::warning(this, tr("Sqriptor"),
-                     tr("The document file was updated outside Sqriptor.\n"
-                        "Do you want to reload it?"),
+                     tr("<html><h2>Update me?</h2>%1 was updated outside Sqriptor.<br>"
+                        "Do you want to reload it?</html>").arg(fileName),
                      QMessageBox::Yes,
                      QMessageBox::No | QMessageBox::Default);
         if (ret == QMessageBox::Yes)
@@ -383,7 +383,7 @@ void Sqriptor::loadFile(const QString &fileName)
     }
     if (!file.open(QFile::ReadOnly)) {
         QMessageBox::warning(this, tr("Sqriptor"),
-                             tr("Cannot read file %1:\n%2.")
+                             tr("<html><h2>%2</h2>Cannot read file<br><b>%1</b></html>")
                              .arg(fileName)
                              .arg(file.errorString()));
         return;
@@ -444,7 +444,7 @@ bool Sqriptor::saveFile(const QString &fileName)
     QFile file(fileName);
     if (!file.open(QFile::WriteOnly)) {
         QMessageBox::warning(this, tr("Sqriptor"),
-                             tr("Cannot write file %1:\n%2.")
+                             tr("<html><h2>%2</h2>Cannot write file<br><b>%1</b></html>")
                              .arg(fileName)
                              .arg(file.errorString()));
         return false;

@@ -592,7 +592,10 @@ void Sqriptor::createUI()
 #define ADD_SYNTAX(_SYN_) ADD_SYNTAX2(_SYN_, "")
     syntaxMenu->addAction(tr("Auto"), [=](){setSyntax(Syntax::Auto);});
     syntaxMenu->addSeparator();
-    m_syntaxActions->addAction(syntaxMenu->addAction(tr("None"), [=](){setSyntax(Syntax::None);}))->setCheckable(true);
+    act = syntaxMenu->addAction(tr("None"), [=](){setSyntax(Syntax::None);});
+    act->setData("None");
+    act->setCheckable(true);
+    m_syntaxActions->addAction(act);
     syntaxMenu->addSeparator();
     
     menu = syntaxMenu->addMenu(tr("&Code"));

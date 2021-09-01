@@ -167,7 +167,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         }
         if (syntax == Syntax::Auto) {
             QString shebang = document->text(0).section("\n",0,0);
-            if (shebang.startsWith("#!"))
+            if (shebang.startsWith("#!") || shebang.contains("mime/"))
                 syntax = Sqriptor::syntax(shebang);
             else if (shebang.startsWith("diff --git"))
                 syntax = Syntax::Diff;

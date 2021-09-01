@@ -205,6 +205,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
             break;
     
     QsciLexer *hook = syntaxDict[syntax];
+    if (updateColorsOnly && !hook)
+        return; // don't pre-fab lexers...
     switch (syntax) {
         case Syntax::None:
             break;

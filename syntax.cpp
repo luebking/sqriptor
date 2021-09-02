@@ -127,6 +127,7 @@ static void setColorsPkgBuild(QsciLexerPkgBuild *lexer) { setColorsBash(lexer); 
 static void setColorsXorg(QsciLexerXorg *lexer) { lexer->updateColors(); }
 
 static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
+    document->setFont(Sqriptor::config.font);
     QColor bg = COLOR_BACKGROUND;
     QColor fg = COLOR_FOREGROUND;
     document->setPaper(bg);
@@ -185,7 +186,6 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         resetColors(document, syntax);
         if (!syntaxDict[syntax] && oldLexer) {
             const bool wasModified = document->isModified();
-            document->setFont(config.font);
             document->setText(document->text());
             document->setModified(wasModified);
         }
@@ -196,6 +196,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
 
 #define MAKE_LEXER(_TYPE_) case Syntax::_TYPE_ : \
             if (!hook) syntaxDict[syntax] = new QsciLexer##_TYPE_(this); \
+            syntaxDict[syntax]->setDefaultFont(config.font);\
             syntaxDict[syntax]->setFont(config.font);\
             syntaxDict[syntax]->setDefaultPaper(COLOR_BACKGROUND);\
             syntaxDict[syntax]->setPaper(COLOR_BACKGROUND);\

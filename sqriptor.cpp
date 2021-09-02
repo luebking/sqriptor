@@ -142,7 +142,6 @@ int Sqriptor::addTab()
 {
     QsciScintilla *doc = new QsciScintilla;
     doc->setFrameShape(QFrame::NoFrame);
-    doc->setFont(config.font);
     
     doc->setBraceMatching(QsciScintilla::StrictBraceMatch);
     doc->setWhitespaceVisibility(QsciScintilla::WsVisibleOnlyInIndent);
@@ -153,7 +152,6 @@ int Sqriptor::addTab()
     doc->setMarkerForegroundColor(config.color.bg, 1);
     doc->setMarkerBackgroundColor(palette().color(QPalette::Link), 1);
     doc->setWrapVisualFlags(QsciScintilla::WrapFlagNone, QsciScintilla::WrapFlagInMargin, 0);
-    doc->setMarginsFont(config.font);
     doc->setMarginWidth(0, "14444");
     doc->setMarginWidth(1, 16);
     

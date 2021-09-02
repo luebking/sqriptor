@@ -166,8 +166,22 @@ void Sqriptor::createUI()
     ADD_ACT
 
     // EDIT
-    menu = menuBar()->addMenu(tr("&Edit"));
-
+    QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
+    menu = editMenu;
+/** @todo - not supported in QScintilla?
+    act = new QAction(tr("&Block Mode"), this);
+    act->setShortcut(tr("Ctrl+Ins"));
+    connect(act, &QAction::triggered, [=](){
+        int sel = textEdit()->SendScintilla(QsciScintillaBase::SCI_GETSELECTIONMODE);
+        sel = (sel == QsciScintillaBase::SC_SEL_STREAM) ? QsciScintillaBase::SC_SEL_RECTANGLE :
+                                                          QsciScintillaBase::SC_SEL_STREAM;
+        textEdit()->SendScintilla(sel);
+    });
+    ADD_ACT
+    
+    menu->addSeparator();
+*/
+    menu = editMenu->addMenu(tr("&Copy && Paste"));
     act = new QAction(tr("Cu&t"), this);
     act->setShortcut(tr("Ctrl+X"));
     connect(act, &QAction::triggered, [=](){textEdit()->cut();});
@@ -187,8 +201,6 @@ void Sqriptor::createUI()
     connect(act, &QAction::triggered, [=](){textEdit()->paste();});
     ADD_ACT
 
-    menuBar()->addSeparator();
-    
     QWidget *searchBar = new QWidget(menuBar());
     QToolButton *btn = new QToolButton(searchBar);
     btn->setAutoRaise(true);
@@ -402,12 +414,11 @@ void Sqriptor::createUI()
 
     menuBar()->setCornerWidget(searchBar);
     
-    menu->addSeparator();
-    
 #define HIDE_STUFF  searchBar->hide(); gotoLine->hide(); findLine->hide(); filterLine->hide();\
                     replaceLine->hide(); btn->hide(); replaceAll->setVisible(false);
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
+    menu = editMenu->addMenu(tr("&Search and replace"));
     act = new QAction(tr("&Find"), this);
     act->setShortcut(tr("Ctrl+F"));
     connect(act, &QAction::triggered, [=]() {
@@ -496,7 +507,7 @@ void Sqriptor::createUI()
     });
     ADD_ACT
 
-    menu->addSeparator();
+    menu = editMenu->addMenu(tr("&Bookmarks"));
     
     act = new QAction(tr("Toggle &Bookmark"), this);
     act->setShortcut(tr("Ctrl+B"));
@@ -512,6 +523,8 @@ void Sqriptor::createUI()
     act->setShortcut(tr("Alt+PgUp"));
     connect(act, SIGNAL(triggered()), SLOT(prevBookmark()));
     ADD_ACT
+    
+    menu = editMenu;
     
     menu->addSeparator();
     

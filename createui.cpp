@@ -670,6 +670,29 @@ void Sqriptor::createUI()
         about->show();
     });
     menu->addAction(act);
+    
+    act = new QAction(tr("&Syntax detection"), this);
+    connect(act, &QAction::triggered, [=](){
+        QString help =
+        tr("<html><h2>Syntax Detection</h2>"
+        "The automatic syntax selection is primarily based on the files <b>suffix</b>, "
+        "ie. <i>file.<b>perl</b></i> will be detected to be Perl.<hr>"
+        "If your file doesn't have a suffix, the same suffix is matched against its "
+        "<b>shebang</b>, ie. if <i>/bin/foo</i> has the first line <b>#!/bin/perl</b> it will "
+        "be detected to be perl as well.<hr>"
+        "As last resort, you can indicate the type w/ a comment (document syntax) "
+        "in the first line, eg. <b>; mime/ini</b> will apply the ini syntax, even "
+        "if the filename is <i>~/.config/foorc</i> - ';' indicates an ini comment.<hr>"
+        "If you think some suffix is missing, you can file a <s>bug</s> "
+        "<a href='https://github.com/luebking/sqriptor/issues'>feature request</a>"
+        "</html>");
+        QMessageBox *syntaxHelp = new QMessageBox(QMessageBox::Information, tr("Syntax detection"),
+                                                help, QMessageBox::Ok, nullptr, Qt::Dialog);
+        syntaxHelp->setAttribute(Qt::WA_DeleteOnClose);
+        syntaxHelp->setTextInteractionFlags(Qt::LinksAccessibleByMouse|Qt::LinksAccessibleByKeyboard);
+        syntaxHelp->show();
+    });
+    menu->addAction(act);
 
     static QDialog *shortcutHelp = nullptr;
     act = new QAction(tr("Scintilla &Shortcuts"), this);

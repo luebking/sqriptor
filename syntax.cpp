@@ -186,15 +186,11 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         TRICK_QSCINTILLA_DETACHLEXER
         document->setLexer(syntaxDict[syntax]);
         document->setProperty("sqriptor_syntax", syntax);
-        resetColors(document, syntax);
         if (!syntaxDict[syntax] && oldLexer) {
-//            document->setColor(COLOR_FOREGROUND);
-//            document->SendScintilla(QsciScintilla::SCI_STYLECLEARALL);
-//            resetColors(document, syntax);
-            const bool wasModified = document->isModified();
-            document->setText(document->text());
-            document->setModified(wasModified);
+            document->SendScintilla(QsciScintilla::SCI_STYLESETFORE, QsciScintilla::STYLE_DEFAULT, COLOR_FOREGROUND);
+            document->SendScintilla(QsciScintilla::SCI_STYLECLEARALL);
         }
+        resetColors(document, syntax);
         if (document == textEdit())
             indicateCurrentSyntax();
         return;

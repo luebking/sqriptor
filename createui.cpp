@@ -167,20 +167,7 @@ void Sqriptor::createUI()
 
     // EDIT
     QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
-    menu = editMenu;
-/** @todo - not supported in QScintilla?
-    act = new QAction(tr("&Block Mode"), this);
-    act->setShortcut(tr("Ctrl+Ins"));
-    connect(act, &QAction::triggered, [=](){
-        int sel = textEdit()->SendScintilla(QsciScintillaBase::SCI_GETSELECTIONMODE);
-        sel = (sel == QsciScintillaBase::SC_SEL_STREAM) ? QsciScintillaBase::SC_SEL_RECTANGLE :
-                                                          QsciScintillaBase::SC_SEL_STREAM;
-        textEdit()->SendScintilla(sel);
-    });
-    ADD_ACT
-    
-    menu->addSeparator();
-*/
+
     menu = editMenu->addMenu(tr("&Copy && Paste"));
     act = new QAction(tr("Cu&t"), this);
     act->setShortcut(tr("Ctrl+X"));
@@ -691,6 +678,20 @@ void Sqriptor::createUI()
         syntaxHelp->setAttribute(Qt::WA_DeleteOnClose);
         syntaxHelp->setTextInteractionFlags(Qt::LinksAccessibleByMouse|Qt::LinksAccessibleByKeyboard);
         syntaxHelp->show();
+    });
+    menu->addAction(act);
+    
+    act = new QAction(tr("&Block selection"), this);
+    connect(act, &QAction::triggered, [=](){
+        QString help =
+        tr("<html><h2>Block selection</h2>"
+        "Hold <b>Alt+Shift</b> while using the <b>arrow keys</b> or press "
+        "<b>Ctrl</b> while selecting text with the <b>mouse</b>.<br><br>You're welcome."
+        "</html>");
+        QMessageBox *blockHelp = new QMessageBox(QMessageBox::Information, tr("Block selection"),
+                                                help, QMessageBox::Ok, nullptr, Qt::Dialog);
+        blockHelp->setAttribute(Qt::WA_DeleteOnClose);
+        blockHelp->show();
     });
     menu->addAction(act);
 

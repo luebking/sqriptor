@@ -154,6 +154,8 @@ static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
     document->setMarginsFont(Sqriptor::config.font);
 }
 
+#define TRICK_QSCINTILLA_DETACHLEXER document->setLexer(nullptr); resetColors(document, syntax); document->SendScintilla(QsciScintilla::SCI_STYLECLEARALL);
+
 void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColorsOnly)
 {
     if (!document && !updateColorsOnly)
@@ -181,10 +183,14 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
 
     if ((syntaxDict[syntax] || syntax == Syntax::None) && !updateColorsOnly) {
         QsciLexer *oldLexer = document->lexer();
+        TRICK_QSCINTILLA_DETACHLEXER
         document->setLexer(syntaxDict[syntax]);
         document->setProperty("sqriptor_syntax", syntax);
         resetColors(document, syntax);
         if (!syntaxDict[syntax] && oldLexer) {
+//            document->setColor(COLOR_FOREGROUND);
+//            document->SendScintilla(QsciScintilla::SCI_STYLECLEARALL);
+//            resetColors(document, syntax);
             const bool wasModified = document->isModified();
             document->setText(document->text());
             document->setModified(wasModified);
@@ -280,6 +286,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
     }
     if (updateColorsOnly)
         return; // we're not touching the document here at all
+    TRICK_QSCINTILLA_DETACHLEXER
     document->setLexer(syntaxDict[syntax]);
     document->setProperty("sqriptor_syntax", syntax);
     if (document == textEdit())

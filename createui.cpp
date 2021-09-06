@@ -663,7 +663,7 @@ void Sqriptor::createUI()
         QString help =
         tr("<html><h2>Syntax Detection</h2>"
         "The automatic syntax selection is primarily based on the files <b>suffix</b>, "
-        "ie. <i>file.<b>perl</b></i> will be detected to be Perl.<hr>"
+        "ie. <i>file.<b>pl</b></i> will be detected to be Perl.<hr>"
         "If your file doesn't have a suffix, the same suffix is matched against its "
         "<b>shebang</b>, ie. if <i>/bin/foo</i> has the first line <b>#!/bin/perl</b> it will "
         "be detected to be perl as well.<hr>"

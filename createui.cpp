@@ -271,8 +271,10 @@ void Sqriptor::createUI()
         const bool cs = searchCaseSens->isChecked();
         const bool wo = searchWord->isChecked();
         int la, ia, lb, ib;
-        textEdit()->getSelection(&la, &ia, &lb, &ib);
-        if (ib != ia) {
+        QsciScintilla *doc = textEdit();
+        doc->getSelection(&la, &ia, &lb, &ib);
+        doc->beginUndoAction();
+        if (lb != la) {
             // if the user selected more than one line, that's explicit and
             // we take it as hint to limit the replace to that area
             // in-line selections happen for the find, but what's worse
@@ -282,7 +284,7 @@ void Sqriptor::createUI()
             // |111|111 => |211|11 => |221|1
             // Chances of the user planning sth. like that are much lower if
             // s/he selected multiple lines
-            while (textEdit()->findFirstInSelection(text, re, cs, wo)) {
+            while (doc->findFirstInSelection(text, re, cs, wo)) {
                 textEdit()->replace(replaceLine->text());
                 textEdit()->setSelection(la, ia, lb, ib);
             }
@@ -290,6 +292,7 @@ void Sqriptor::createUI()
             while (textEdit()->findFirst(text, re, cs, wo, true))
                 textEdit()->replace(replaceLine->text());
         }
+        doc->endUndoAction();
     });
     
     QLineEdit *filterLine = new QLineEdit(searchBar);

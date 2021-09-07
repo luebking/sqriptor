@@ -334,7 +334,7 @@ void Sqriptor::createUI()
             @todo test that, too...
         */
         static QString lastFilter;
-        const bool grow = !filter.contains(lastFilter);
+        const bool grow = searchRegExp->isChecked() || !filter.contains(lastFilter);
         lastFilter = filter;
         QElapsedTimer profiler;
         profiler.start();

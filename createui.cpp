@@ -178,7 +178,7 @@ void Sqriptor::createUI()
 
     act = new QAction(tr("&Copy"), this);
     act->setShortcut(tr("Ctrl+C"));
-    connect(act, &QAction::triggered, [=](){textEdit()->copy();});
+    connect(act, &QAction::triggered, [=](){copy();});
     connect(this, SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
     act->setEnabled(false);
     ADD_ACT
@@ -295,8 +295,8 @@ void Sqriptor::createUI()
         doc->endUndoAction();
     });
     
-    QLineEdit *filterLine = new QLineEdit(searchBar);
-    filterLine->installEventFilter(navHelper);
+    m_filterLine = new QLineEdit(searchBar);
+    m_filterLine->installEventFilter(navHelper);
     
     /*  "cooperative multithreeading" effort
         filtering a looooooong document (100.000 lines etc.) can take a while
@@ -328,7 +328,7 @@ void Sqriptor::createUI()
     auto l_filter = [=]() {
         bool filterTimerWasActive = false;
         QsciScintilla *doc = textEdit();
-        const QString filter = filterLine->text();
+        const QString filter = m_filterLine->text();
         /** In addition to the above, also shortcut the filtering if we know that
             the filter got narrower... this could be a problem w/ regexp
             @todo test that, too...
@@ -372,8 +372,8 @@ void Sqriptor::createUI()
     };
 
     connect(filterTimer, &QTimer::timeout, [=]() { l_filter(); });
-    connect(filterLine, &QLineEdit::returnPressed, [=]() { filterTimer->stop(); l_filter(); });
-    connect(filterLine, &QLineEdit::textEdited, [=]() { filterTimer->start(); });
+    connect(m_filterLine, &QLineEdit::returnPressed, [=]() { filterTimer->stop(); l_filter(); });
+    connect(m_filterLine, &QLineEdit::textEdited, [=]() { filterTimer->start(); });
 
     QSpinBox *gotoLine = new QSpinBox(searchBar);
     connect(qApp, &QApplication::focusChanged, [=]() {
@@ -397,14 +397,14 @@ void Sqriptor::createUI()
     layout->addWidget(btn);
     layout->addWidget(findLine);
     layout->addWidget(replaceLine);
-    layout->addWidget(filterLine);
+    layout->addWidget(m_filterLine);
     gotoLine->hide();
     replaceLine->hide();
-    filterLine->hide();
+    m_filterLine->hide();
 
     menuBar()->setCornerWidget(searchBar);
     
-#define HIDE_STUFF  searchBar->hide(); gotoLine->hide(); findLine->hide(); filterLine->hide();\
+#define HIDE_STUFF  searchBar->hide(); gotoLine->hide(); findLine->hide(); m_filterLine->hide();\
                     replaceLine->hide(); btn->hide(); replaceAll->setVisible(false);
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
@@ -490,9 +490,9 @@ void Sqriptor::createUI()
         HIDE_STUFF
         btn->setText(tr("Filter:"));
         btn->show();
-        filterLine->show();
-        filterLine->setFocus();
-        filterLine->selectAll();
+        m_filterLine->show();
+        m_filterLine->setFocus();
+        m_filterLine->selectAll();
         SHOW_STUFF
     });
     ADD_ACT
@@ -731,6 +731,30 @@ void Sqriptor::createUI()
     act->setStatusTip(tr("Show the Qt library's About box"));
     connect(act, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     menu->addAction(act); */
+}
+
+void Sqriptor::copy()
+{
+    QsciScintilla *doc = textEdit();
+    if (m_filterLine->text().isEmpty()) {
+        doc->SendScintilla(QsciScintilla::SCI_COPY);
+        return;
+    }
+    int l1, i1, l2, i2;
+    doc->getSelection(&l1, &i1, &l2, &i2);
+    if (l1 == l2) {
+        doc->SendScintilla(QsciScintilla::SCI_COPY);
+        return;
+    }
+    // user tries to copy multiple lines out of a filter. So filter them.
+    QString buffer = doc->text(l1).mid(i1);
+    for (int i = l1+1; i < l2; ++i) {
+        if (doc->SendScintilla(QsciScintillaBase::SCI_GETLINEVISIBLE, i))
+            buffer += doc->text(i);
+    }
+    buffer += doc->text(l2).left(i2);
+    QByteArray utf8 = buffer.toUtf8();
+    doc->SendScintilla(QsciScintilla::SCI_COPYTEXT, utf8.size(), utf8.constData());
 }
 
 void Sqriptor::indicateCurrentEOL()

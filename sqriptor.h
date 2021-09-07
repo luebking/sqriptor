@@ -23,6 +23,7 @@
 
 class QAction;
 class QActionGroup;
+class QLineEdit;
 class QMenu;
 class QTabWidget;
 class QsciScintilla;
@@ -84,6 +85,7 @@ private slots:
     void showSettings();
     void checkTimestamp();
     void analyzeSyntaxOnce();
+    void copy();
 
 private:
     void createUI();
@@ -105,6 +107,7 @@ private:
     QMenu *m_eolMenu;
     QAction *m_tabMenu;
     QAction *m_EolVis, *m_wrapped, *m_folds;
+    QLineEdit *m_filterLine;
 };
 
 #endif

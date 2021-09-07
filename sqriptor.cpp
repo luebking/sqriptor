@@ -172,6 +172,8 @@ int Sqriptor::addTab()
         cmd->setKey(0); // double line, nobody uses that and I want it for the comment toggle
     if (QsciCommand *cmd = doc->standardCommands()->boundTo(Qt::CTRL + Qt::Key_L))
         cmd->setKey(0); // delete line, nobody uses that and I want it for the filter
+    if (QsciCommand *cmd = doc->standardCommands()->boundTo(Qt::CTRL + Qt::Key_C))
+        cmd->setKey(0); // we replace this with our filter-aware copy function
 
     connect(doc, SIGNAL(copyAvailable(bool)), SIGNAL(copyAvailable(bool)));
     connect(doc, &QsciScintilla::modificationChanged, [=](){

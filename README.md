@@ -31,3 +31,12 @@
   * A: Yes :)
 * Q: Your TextEditor sucks! Sqriptor sucks!
   * A: Your opinion sucks. But if you can structure your criticism into a coherent bug report, feel free to issue it [–> here](https://github.com/luebking/sqriptor/issues)
+
+## Build/requirements
+* Qt5 (feel free to try Qt6)
+* QScintilla
+* Most distros: **don't forget the \*-dev packages**
+ * Ubuntu / Debian: *libqscintilla2-qt5-dev*
+ * Fedora: tba (fedora doesn't have a web-database for their packages)
+ * SuSE: *libqscintilla_qt5-devel* (warning: the library package is *libqscintilla**2**\_qt5-\** because … reasons) & *libQt5Core-devel* & *libQt5Widgets-devel*
+* ```qmake && make && ./sqriptor```

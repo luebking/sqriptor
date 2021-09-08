@@ -118,7 +118,9 @@ static bool operator==(const QStringView&view, const char* string) {
 void QsciLexerMarkdown2::styleText(int start, int end)
 {
     static const QRegularExpression tokenizer("######|#####|####|###|##|---+|====+|~~|"
-                                              "\\*\\*\\*|\\*\\*|___|__|_|\\s+|[A-Za-z\\d]+|\\W");
+                                              "[^\\\\]\\*\\*\\*|[^\\\\]\\*\\*|"
+                                              "[^\\\\]___|[^\\\\]__|_|"
+                                              "\\s+|[A-Za-z\\d]+|\\W");
     static const QRegularExpression nonWS("[^\\s]"); // \\W?
     static const QRegularExpression linebreak("\\s*(\\n|\\r)+\\s*");
     static const QRegularExpression header1("====+");
@@ -276,7 +278,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
             setStyling(length, Style::Tag);
             length = 0;
             continue;
-        } else {
+        } else if (!prev.capturedView().endsWith('\\')) {
             for (int fs = 0; fs < FontStyleCount; ++fs) {
                 if (token == fsIndicator[fs]) {
                     const bool nexWS = NEXT_IS_WS;

@@ -327,10 +327,31 @@ void Sqriptor::createUI()
         so we don't stumble over ourselves - this could still happen if the user
         also presses Enter for no reason... I should maybe @todo test that...
     */
+
+#define FILTER_TEXT(_T_, _R_) \
+    int lastMatch = 0; /* skip first line because scintilla won't hide it */ \
+    for (int i = 1; i < doc->lines(); ++i) { \
+        if ((grow || doc->SendScintilla(QsciScintillaBase::SCI_GETLINEVISIBLE, i)) \
+                                            && doc->text(i).contains(_T_, _R_)) { \
+            if (lastMatch < i - 1) \
+                doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, lastMatch + 1, i - 1); \
+            doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i); \
+            lastMatch = i; \
+        } \
+        PROCESS_EVENTS /* allow interaction if this is slow */ \
+        if (filter != m_filterLine->text()) { \
+            lastMatch = doc->lines(); /* we don't want to hide the "tail" here */ \
+            break; /* user altered pattern, abort current filter */ \
+        } \
+    } \
+    if (lastMatch + 1 < doc->lines()) /* hide tail */ \
+        doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, lastMatch + 1, doc->lines() - 1)
+
     auto l_filter = [=]() {
         bool filterTimerWasActive = false;
         QsciScintilla *doc = textEdit();
         const QString filter = m_filterLine->text();
+
         /** In addition to the above, also shortcut the filtering if we know that
             the filter got narrower... this could be a problem w/ regexp
             @todo test that, too...
@@ -338,36 +359,21 @@ void Sqriptor::createUI()
         static QString lastFilter;
         const bool grow = searchRegExp->isChecked() || !filter.contains(lastFilter);
         lastFilter = filter;
+
         QElapsedTimer profiler;
         profiler.start();
+
         if (filter.isEmpty()) {
-            for (int i = 0; i < doc->lines(); ++i) {
-                doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i);
-                PROCESS_EVENTS
-            }
+            doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, 0, doc->lines() - 1);
         } else if (searchRegExp->isChecked()) {
             const QRegularExpression rx(filter, searchCaseSens->isChecked() ?
                                                 QRegularExpression::NoPatternOption :
                                                 QRegularExpression::CaseInsensitiveOption);
-            for (int i = 0; i < doc->lines(); ++i) {
-                if (grow || doc->SendScintilla(QsciScintillaBase::SCI_GETLINEVISIBLE, i)) {
-                    doc->SendScintilla(doc->text(i).contains(rx, nullptr) ?
-                                            QsciScintillaBase::SCI_SHOWLINES :
-                                            QsciScintillaBase::SCI_HIDELINES, i, i);
-                }
-                PROCESS_EVENTS
-            }
+            FILTER_TEXT(rx, nullptr);
         } else {
             Qt::CaseSensitivity cs = searchCaseSens->isChecked() ?
                                             Qt::CaseSensitive : Qt::CaseInsensitive;
-            for (int i = 0; i < doc->lines(); ++i) {
-                if (grow || doc->SendScintilla(QsciScintillaBase::SCI_GETLINEVISIBLE, i)) {
-                    doc->SendScintilla(doc->text(i).contains(filter, cs) ?
-                                            QsciScintillaBase::SCI_SHOWLINES :
-                                            QsciScintillaBase::SCI_HIDELINES, i, i);
-                }
-                PROCESS_EVENTS
-            }
+            FILTER_TEXT(filter, cs);
         }
         if (filterTimerWasActive)
             filterTimer->start();

@@ -284,13 +284,15 @@ void Sqriptor::createUI()
             // |111|111 => |211|11 => |221|1
             // Chances of the user planning sth. like that are much lower if
             // s/he selected multiple lines
-            while (doc->findFirstInSelection(text, re, cs, wo)) {
-                textEdit()->replace(replaceLine->text());
-                textEdit()->setSelection(la, ia, lb, ib);
+            if (doc->findFirstInSelection(text, re, cs, wo)) {
+                do textEdit()->replace(replaceLine->text());
+                while (doc->findNext());
             }
         } else {
-            while (textEdit()->findFirst(text, re, cs, wo, true))
-                textEdit()->replace(replaceLine->text());
+            if (textEdit()->findFirst(text, re, cs, wo, false, true, 0, 0)) {
+                do textEdit()->replace(replaceLine->text());
+                while (doc->findNext());
+            }
         }
         doc->endUndoAction();
     });

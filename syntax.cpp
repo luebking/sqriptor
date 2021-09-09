@@ -136,6 +136,7 @@ static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
     document->setCaretLineVisible(true);
     document->setMatchedBraceBackgroundColor(COLOR_OPERATOR);
     document->setMatchedBraceForegroundColor(bg);
+    document->setUnmatchedBraceForegroundColor(COLOR_OPERATOR);
     // accentuate background color
     bg = bg.value() < fg.value() ? bg.darker(120) : bg.lighter(120);
     document->setMarginsBackgroundColor(bg);

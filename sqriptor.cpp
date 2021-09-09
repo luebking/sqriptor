@@ -38,6 +38,8 @@
 #include <Qsci/qscicommandset.h>
 #include <Qsci/qscicommand.h>
 
+#include <unistd.h>
+
 #include "sqriptor.h"
 
 #include <QtDebug>
@@ -481,6 +483,13 @@ void Sqriptor::setCurrentFile(const QString &fileName)
 
 void Sqriptor::readStdin()
 {
+#ifdef Q_OS_WIN
+    if (_isatty(_fileno(stdin)))
+        return;
+#else
+    if (isatty(fileno(stdin)))
+        return;
+#endif
     QFile *input = new QFile;
     if (input->open(stdin, QFile::ReadOnly)) {
         QSocketNotifier *snr = new QSocketNotifier(input->handle(), QSocketNotifier::Read, input);

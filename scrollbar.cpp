@@ -32,18 +32,14 @@ void ScrollBar::paintEvent(QPaintEvent *event)
     QScrollBar::paintEvent(event);
     if (maximum() < 1)
         return;
-//        Q_D(QScrollBar);
     QPainter p(this);
     p.setPen(Qt::white);
-    p.setCompositionMode(QPainter::RasterOp_SourceXorDestination); // QPainter::RasterOp_NotSourceXorDestination
+    p.setCompositionMode(QPainter::RasterOp_SourceXorDestination);
     QStyleOptionSlider opt;
     initStyleOption(&opt);
     opt.subControls = QStyle::SC_All;
-//    style()->drawComplexControl(QStyle::CC_ScrollBar, &opt, &p, this);
     QRect groove = style()->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarGroove, this);
-    QRect slider = style()->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarSlider, this);
-    groove.adjust(  groove.width()/3, slider.height()/2,
-                   -groove.width()/3, slider.height()/2 - slider.height());
+    groove.adjust(groove.width()/3, 0, -groove.width()/3, 0);
     foreach (int marker, m_markers) {
         int y = groove.y() + groove.height()*marker/maximum();
         p.drawLine(groove.left(), y, groove.right(), y);

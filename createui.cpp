@@ -767,13 +767,12 @@ void Sqriptor::findAll(QString text, bool rx, bool cs, bool wo)
 
     QElapsedTimer profiler;
     profiler.start();
-    const int delta = 1 + (sb->maximum() - doc->lines())/2;
     if (rx) {
         const QRegularExpression qrx(text, cs ? QRegularExpression::NoPatternOption :
                                                  QRegularExpression::CaseInsensitiveOption);
         for (int i = 0; i < doc->lines(); ++i) {
             if (doc->text(i).contains(qrx, nullptr))
-                markers << i - delta;
+                markers << i*sb->maximum()/doc->lines();
             if (profiler.hasExpired(66)) {
                 sb->setMarkers(markers);
                 QCoreApplication::processEvents();
@@ -784,7 +783,7 @@ void Sqriptor::findAll(QString text, bool rx, bool cs, bool wo)
         Qt::CaseSensitivity qcs = cs ? Qt::CaseSensitive : Qt::CaseInsensitive;
         for (int i = 0; i < doc->lines(); ++i) {
             if (doc->text(i).contains(text, qcs))
-                markers << i - delta;
+                markers << i*sb->maximum()/doc->lines();
             if (profiler.hasExpired(66)) {
                 sb->setMarkers(markers);
                 QCoreApplication::processEvents();

@@ -40,6 +40,7 @@
 #include <Qsci/qscicommandset.h>
 #include <Qsci/qscicommand.h>
 
+#include "scrollbar.h"
 #include "sqriptor.h"
 
 #define ADD_ACT menu->addAction(act); addAction(act);
@@ -208,6 +209,9 @@ void Sqriptor::createUI()
     searchForward->setChecked(true);
     tbmenu->addAction(searchForward);
     tbmenu->addSeparator();
+    QAction *findAllAct = new QAction(tr("Find all\tReturn"), searchBar);
+    tbmenu->addAction(findAllAct);
+    findAllAct->setVisible(false);
     QAction *replaceAll = new QAction(tr("Replace all"), searchBar);
     tbmenu->addAction(replaceAll);
     replaceAll->setVisible(false);
@@ -251,8 +255,17 @@ void Sqriptor::createUI()
         }
     };
     
-    connect(findLine, &QLineEdit::returnPressed, [=]() { l_search(false); });
-    connect(findLine, &QLineEdit::textEdited, [=]() { l_search(true); });
+    connect(findLine, &QLineEdit::returnPressed, [=]() {
+        l_search(false);
+        findAll(findLine->text(), searchRegExp->isChecked(), searchCaseSens->isChecked(), searchWord->isChecked());
+        });
+    connect(findLine, &QLineEdit::textEdited, [=]() {
+        l_search(true);
+        findAll(QString(), false, false, false);
+        });
+    connect(findAllAct, &QAction::triggered, [=]() {
+        findAll(findLine->text(), searchRegExp->isChecked(), searchCaseSens->isChecked(), searchWord->isChecked());
+        });
 
     QLineEdit *replaceLine = new QLineEdit(searchBar);
     replaceLine->installEventFilter(navHelper);
@@ -413,7 +426,7 @@ void Sqriptor::createUI()
     menuBar()->setCornerWidget(searchBar);
     
 #define HIDE_STUFF  searchBar->hide(); gotoLine->hide(); findLine->hide(); m_filterLine->hide();\
-                    replaceLine->hide(); btn->hide(); replaceAll->setVisible(false);
+                    replaceLine->hide(); btn->hide(); findAllAct->setVisible(false); replaceAll->setVisible(false);
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
     menu = editMenu->addMenu(tr("&Search and replace"));
@@ -424,6 +437,7 @@ void Sqriptor::createUI()
         btn->setText(tr("Find:"));
         btn->show();
         findLine->show();
+        findAllAct->setVisible(true);
         QString text = textEdit()->selectedText();
         if (!text.isEmpty())
             findLine->setText(text);
@@ -739,6 +753,46 @@ void Sqriptor::createUI()
     act->setStatusTip(tr("Show the Qt library's About box"));
     connect(act, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     menu->addAction(act); */
+}
+
+void Sqriptor::findAll(QString text, bool rx, bool cs, bool wo)
+{
+    QList<int> markers;
+    QsciScintilla *doc = textEdit();
+    ScrollBar *sb = static_cast<ScrollBar*>(doc->verticalScrollBar());
+    if (text.isEmpty()) {
+        sb->setMarkers(markers);
+        return;
+    }
+
+    QElapsedTimer profiler;
+    profiler.start();
+    const int delta = 1 + (sb->maximum() - doc->lines())/2;
+    if (rx) {
+        const QRegularExpression qrx(text, cs ? QRegularExpression::NoPatternOption :
+                                                 QRegularExpression::CaseInsensitiveOption);
+        for (int i = 0; i < doc->lines(); ++i) {
+            if (doc->text(i).contains(qrx, nullptr))
+                markers << i - delta;
+            if (profiler.hasExpired(66)) {
+                sb->setMarkers(markers);
+                QCoreApplication::processEvents();
+                profiler.restart();
+            }
+        }
+    } else {
+        Qt::CaseSensitivity qcs = cs ? Qt::CaseSensitive : Qt::CaseInsensitive;
+        for (int i = 0; i < doc->lines(); ++i) {
+            if (doc->text(i).contains(text, qcs))
+                markers << i - delta;
+            if (profiler.hasExpired(66)) {
+                sb->setMarkers(markers);
+                QCoreApplication::processEvents();
+                profiler.restart();
+            }
+        }
+    }
+    sb->setMarkers(markers);
 }
 
 void Sqriptor::copy()

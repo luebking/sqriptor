@@ -27,7 +27,6 @@
 #include <QPoint>
 #include <QRegularExpression>
 #include <QScreen>
-#include <QScrollBar>
 #include <QSettings>
 #include <QSize>
 #include <QSocketNotifier>
@@ -40,6 +39,7 @@
 
 #include <unistd.h>
 
+#include "scrollbar.h"
 #include "sqriptor.h"
 
 #include <QtDebug>
@@ -143,6 +143,7 @@ void Sqriptor::open(QString fileName, bool forceNewTab)
 int Sqriptor::addTab()
 {
     QsciScintilla *doc = new QsciScintilla;
+    doc->replaceVerticalScrollBar(new ScrollBar);
     doc->setFrameShape(QFrame::NoFrame);
     
     doc->setBraceMatching(QsciScintilla::StrictBraceMatch);

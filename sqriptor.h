@@ -101,6 +101,7 @@ private:
     void updateTimestamp(QObject *o);
     void updatePalette();
     void renderIcon(QPixmap &pix);
+    void findAll(QString text, bool rx, bool cs, bool wo);
 
     QTabWidget *m_documents;
     QActionGroup *m_syntaxActions;

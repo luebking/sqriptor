@@ -199,6 +199,11 @@ bool Sqriptor::closeTab(int idx)
     if (idx < 0)
         idx = m_documents->currentIndex();
     if (maybeSave(idx)) {
+        QString fileName = m_documents->widget(idx)->property("sqriptor_filename").toString();
+        config.recentFiles.removeAll(fileName);
+        config.recentFiles.prepend(fileName);
+        while (config.recentFiles.count() > 16)
+            config.recentFiles.removeLast();
         if (m_documents->count() > 1) {
             delete m_documents->widget(idx);
             m_tabMenu->setVisible(m_documents->count() > 7); // still 8+
@@ -267,6 +272,7 @@ void Sqriptor::readSettings()
     QRect geo = QGuiApplication::screenAt(pos())->availableGeometry();
     resize(settings.value("size", QSize(qRound(geo.width()/1.618f),
                                         qRound(geo.height()/1.618f))).toSize());
+    config.recentFiles = settings.value("recent").toStringList();
     settings.beginGroup("font");
     config.font.setFamily(settings.value("family", "monospace").toString());
     config.font.setPointSize(settings.value("size", 9).toInt());
@@ -292,9 +298,10 @@ void Sqriptor::readSettings()
 
 void Sqriptor::writeSettings()
 {
+    QSettings settings("sqriptor");
+    settings.setValue("recent", config.recentFiles);
     if (!config.changed)
         return;
-    QSettings settings("sqriptor");
     settings.beginGroup("font");
     settings.setValue("family", config.font.family());
     settings.setValue("size", config.font.pointSize());

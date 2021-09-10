@@ -145,6 +145,23 @@ void Sqriptor::createUI()
     });
     ADD_ACT
     
+    QMenu *lastWeek = menu->addMenu(tr("&Last Night on Sqriptor"));
+    connect(lastWeek, &QMenu::aboutToShow, [=]() {
+        lastWeek->clear();
+        if (config.recentFiles.isEmpty())
+            return;
+        QAction *act2;
+        for (QString &recent : config.recentFiles) {
+            act2 = lastWeek->addAction(QFileInfo(recent).fileName());
+            act2->setData(recent);
+            connect(act2, &QAction::triggered, [=]() { open(act2->data().toString()); });
+        }
+        lastWeek->addSeparator();
+        act2 = lastWeek->addAction(tr("That's not my porn library in the history!"));
+        connect(act2, &QAction::triggered, [=]() { config.recentFiles.clear(); });
+    });
+    connect(menu, &QMenu::aboutToShow, [=]() { lastWeek->setEnabled(!config.recentFiles.isEmpty()); });
+    
     act = new QAction(tr("&Close..."), this);
     act->setShortcut(tr("Ctrl+W"));
     connect(act, SIGNAL(triggered()), SLOT(closeTab()));

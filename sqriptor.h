@@ -50,6 +50,7 @@ typedef struct Config
                 number, operateur, keyword, error;
     } color;
     bool changed;
+    QStringList recentFiles;
 } Config;
 
 

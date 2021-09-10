@@ -200,10 +200,12 @@ bool Sqriptor::closeTab(int idx)
         idx = m_documents->currentIndex();
     if (maybeSave(idx)) {
         QString fileName = m_documents->widget(idx)->property("sqriptor_filename").toString();
-        config.recentFiles.removeAll(fileName);
-        config.recentFiles.prepend(fileName);
-        while (config.recentFiles.count() > 16)
-            config.recentFiles.removeLast();
+        if (!fileName.isEmpty()) {
+            config.recentFiles.removeAll(fileName);
+            config.recentFiles.prepend(fileName);
+            while (config.recentFiles.count() > 16)
+                config.recentFiles.removeLast();
+        }
         if (m_documents->count() > 1) {
             delete m_documents->widget(idx);
             m_tabMenu->setVisible(m_documents->count() > 7); // still 8+

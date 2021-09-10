@@ -411,7 +411,7 @@ void Sqriptor::loadFile(const QString &fileName)
     usr_bin_file.start("/usr/bin/file", QStringList() << "-b" << "--mime-encoding" << fileName);
     usr_bin_file.waitForFinished(2000);
     QString codec = usr_bin_file.readAllStandardOutput();
-    if (!(codec.contains("utf-8", Qt::CaseInsensitive) ||
+    if (!(codec.isEmpty() || codec.contains("utf-8", Qt::CaseInsensitive) ||
         codec.contains("ascii", Qt::CaseInsensitive))) {
         codec = codec.section('\n', 0, 0);
         in.setCodec(codec.toLatin1());

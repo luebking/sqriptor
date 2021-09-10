@@ -25,6 +25,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPoint>
+#include <QProcess>
 #include <QRegularExpression>
 #include <QScreen>
 #include <QSettings>
@@ -396,6 +397,21 @@ void Sqriptor::loadFile(const QString &fileName)
     updateTimestamp(doc);
     QTextStream in(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    QProcess usr_bin_file;
+    usr_bin_file.start("/usr/bin/file", QStringList() << "-b" << "--mime-encoding" << fileName);
+    usr_bin_file.waitForFinished(2000);
+    QString codec = usr_bin_file.readAllStandardOutput();
+    if (!(codec.contains("utf-8", Qt::CaseInsensitive) ||
+        codec.contains("ascii", Qt::CaseInsensitive))) {
+        codec = codec.section('\n', 0, 0);
+        in.setCodec(codec.toLatin1());
+        QMessageBox::warning(this, tr("Sqriptor"),
+                             tr("<html><h2>Anachronism Alert!</h2>"
+                                "<i>%1</i> seems to be encoded in<h3 align=\"center\">%2</h3>"
+                                "<b>Notice!</b> that it will be <b>saved as UTF-8!</b></html>")
+                             .arg(fileName).arg(codec));
+    }
     doc->setText(in.readAll());
 
     if (doc->lines() < 6666) { // this isn't code and even if, it's insane and you don't deserve this scan.

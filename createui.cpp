@@ -18,18 +18,23 @@
 
 #include <QAction>
 #include <QApplication>
+#include <QComboBox>
 #include <QElapsedTimer>
 #include <QFileDialog>
+#include <QGridLayout>
 #include <QHBoxLayout>
 #include <QKeyEvent>
+#include <QLabel>
 #include <QLineEdit>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QPainter>
 #include <QPainterPath>
+#include <QPushButton>
 #include <QScrollBar>
 #include <QSpinBox>
+#include <QTextCodec>
 #include <QTextEdit>
 #include <QToolButton>
 
@@ -862,4 +867,46 @@ void Sqriptor::renderIcon(QPixmap &pix)
     path.closeSubpath();
     p.fillPath(path, QColor(0x666666));
     p.end();
+}
+
+QString Sqriptor::ask4Codec(const QString &codec, const QString &fileName)
+{
+    QDialog *warning = new QDialog(this);
+    warning->setWindowTitle(tr("Sqriptor"));
+    QGridLayout *gld = new QGridLayout(warning);
+    warning->setLayout(gld);
+    QLabel *lbl;
+    QIcon icon = style()->standardIcon(QStyle::SP_MessageBoxWarning, 0, warning);
+    if (!icon.isNull()) {
+        lbl = new QLabel(warning);
+        int iconSize = style()->pixelMetric(QStyle::PM_MessageBoxIconSize, 0, warning);
+        lbl->setPixmap(icon.pixmap(warning->windowHandle(), QSize(iconSize, iconSize)));
+        gld->addWidget(lbl, 0, 0, Qt::AlignTop|Qt::AlignHCenter);
+    }
+    lbl = new QLabel(warning);
+    lbl->setText(tr("<html><h2>Anachronism Alert!</h2>"
+                    "<i>%1</i> seems to be encoded in<h3 align=\"center\">%2</h3>"
+                    "<b>Notice!</b> that it will be <b>saved as UTF-8!</b><hr>"
+                    "</html>").arg(fileName).arg(codec));
+    gld->addWidget(lbl, 0, icon.isNull() ? 0 : 1, 1, -1, Qt::AlignCenter);
+    lbl = new QLabel(tr("Interpret text as"), warning);
+    gld->addWidget(lbl, 1, 0);
+    QComboBox *codecs = new QComboBox(warning);
+    codecs->setEditable(true);
+    QStringList codecNames;
+    for (const QByteArray &ba : QTextCodec::availableCodecs())
+        codecNames << ba;
+    codecNames.removeDuplicates();
+    codecNames.sort(Qt::CaseInsensitive);
+    codecs->addItems(codecNames);
+    codecs->setInsertPolicy(QComboBox::NoInsert);
+    codecs->setCurrentText(codec);
+    gld->addWidget(codecs, 1, 1);
+    QPushButton *btn = new QPushButton(tr("Ok"), warning);
+    connect(btn, SIGNAL(clicked()), warning, SLOT(accept()));
+    gld->addWidget(btn, 1, 2);
+    warning->exec();
+    QString ret = codecs->currentText();
+    delete warning;
+    return ret;
 }

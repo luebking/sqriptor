@@ -16,13 +16,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <QAction>
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDateTime>
 #include <QFile>
 #include <QFileInfo>
 #include <QFileDialog>
+#include <QMenu>
 #include <QMessageBox>
 #include <QPoint>
 #include <QProcess>
@@ -413,13 +413,23 @@ void Sqriptor::loadFile(const QString &fileName)
     QString codec = usr_bin_file.readAllStandardOutput();
     if (!(codec.isEmpty() || codec.contains("utf-8", Qt::CaseInsensitive) ||
         codec.contains("ascii", Qt::CaseInsensitive))) {
+        QApplication::restoreOverrideCursor();
         codec = codec.section('\n', 0, 0);
-        in.setCodec(codec.toLatin1());
-        QMessageBox::warning(this, tr("Sqriptor"),
-                             tr("<html><h2>Anachronism Alert!</h2>"
-                                "<i>%1</i> seems to be encoded in<h3 align=\"center\">%2</h3>"
-                                "<b>Notice!</b> that it will be <b>saved as UTF-8!</b></html>")
-                             .arg(fileName).arg(codec));
+        if (codec.contains("utf-16", Qt::CaseInsensitive))
+            QMessageBox::warning(this, tr("Sqriptor"),
+                    tr( "<html><h2>Encoding: ill-conceived</h2>"
+                        "<i>%1</i> seems to be encoded in<h3 align=\"center\">%2</h3>"
+                        "<b>Notice!</b> that it will be <b>saved as UTF-8!</b><br>"
+                        "(Feel free to google why UTF-16 is useless)</html>").arg(fileName).arg(codec));
+        else if (codec.contains("binary", Qt::CaseInsensitive))
+            QMessageBox::warning(this, tr("Sqriptor"),
+                    tr( "<html><h2>Binary Blob?</h2>"
+                        "<i>%1</i> seems to be<h3 align=\"center\">binary data</h3>"
+                        "<b>Do not save the file!</b><br>It would be <b>converted to UTF-8!</b>"
+                        "</html>").arg(fileName));
+        else
+            in.setCodec(ask4Codec(codec, fileName).toLatin1());
+        QApplication::setOverrideCursor(Qt::WaitCursor);
     }
     doc->setText(in.readAll());
 

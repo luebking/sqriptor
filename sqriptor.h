@@ -103,6 +103,7 @@ private:
     void updatePalette();
     void renderIcon(QPixmap &pix);
     void findAll(QString text, bool rx, bool cs, bool wo);
+    QString ask4Codec(const QString &codec, const QString &fileName);
 
     QTabWidget *m_documents;
     QActionGroup *m_syntaxActions;

@@ -162,7 +162,7 @@ int Sqriptor::addTab()
     doc->setAutoCompletionSource(QsciScintilla::AcsAll);
     doc->setAutoCompletionThreshold(3);
 //    doc->setAutoCompletionUseSingle(AcusNever);
-    doc->setAutoCompletionReplaceWord(true);
+//    doc->setAutoCompletionReplaceWord(true);
     
     doc->setIndentationGuides(true);
     doc->setAutoIndent(true);

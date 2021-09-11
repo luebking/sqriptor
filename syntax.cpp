@@ -70,6 +70,7 @@
 #include "lexer/markdown2.h"
 #include "lexer/pkgbuild.h"
 #include "lexer/xorg.h"
+#include "lexer/xorglog.h"
 
 
 #include "sqriptor.h"
@@ -125,6 +126,7 @@ static void setColorsJournal(QsciLexerJournal *lexer) { lexer->updateColors(); }
 static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(); }
 static void setColorsPkgBuild(QsciLexerPkgBuild *lexer) { setColorsBash(lexer); }
 static void setColorsXorg(QsciLexerXorg *lexer) { lexer->updateColors(); }
+static void setColorsXorgLog(QsciLexerXorgLog *lexer) { lexer->updateColors(); }
 
 static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
     document->setFont(Sqriptor::config.font);
@@ -276,6 +278,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         MAKE_LEXER(Verilog)
         MAKE_LEXER(VHDL)
         MAKE_LEXER(Xorg)
+        MAKE_LEXER(XorgLog)
         MAKE_LEXER(YAML)
             break;
         default:

@@ -17,6 +17,7 @@
 */
 
 #include <QHash>
+#include <QRegularExpression>
 #include <QString>
 #include <QDebug>
 
@@ -34,6 +35,9 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffix = suffix.section('/', -1);
     if (suffix == "CMakeLists.txt")
         return Syntax::CMake;
+    static QRegularExpression xorg_n_log("^xorg\\.[0-9\\.]*log\(\\.old)*$", QRegularExpression::CaseInsensitiveOption);
+    if (xorg_n_log.match(suffix).hasMatch())
+        return Syntax::XorgLog;
     suffix = suffix.section('.', -1);
     static QHash<QString, Syntax> suffixes;
     if (!suffixes.isEmpty())

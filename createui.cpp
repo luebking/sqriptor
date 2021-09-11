@@ -671,7 +671,7 @@ void Sqriptor::createUI()
     ADD_SYNTAX(Diff); ADD_SYNTAX2(Journal, "\tSystemD"); ADD_SYNTAX(JSON);
     ADD_SYNTAX2(PO, "\teg. gettext"); ADD_SYNTAX(POV);
     ADD_SYNTAX2(Properties, "\teg. ini syntax"); ADD_SYNTAX(SQL);
-    ADD_SYNTAX(XML); ADD_SYNTAX(Xorg);
+    ADD_SYNTAX(XML); ADD_SYNTAX(Xorg); ADD_SYNTAX(XorgLog);
     
     menu = syntaxMenu->addMenu(tr("&Obscure && ancient stuff"));
     ADD_SYNTAX2(EDIFACT, "\tUN Data Interchange");

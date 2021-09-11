@@ -156,16 +156,21 @@ static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
     document->setEdgeMode(syntax == Syntax::Markdown2 ? QsciScintilla::EdgeBackground : QsciScintilla::EdgeLine);
     document->setMarginsFont(Sqriptor::config.font);
 
-    int extents = 0;
-    if (syntax == Syntax::Markdown2) {
-        QFont fnt = Sqriptor::config.font;
-        int hght1 = QFontMetrics(fnt).height();
+    int asc = 0, dsc = 0;
+    if (syntax == Syntax::Markdown2 && syntaxDict[syntax]) {
+        QFont fnt = syntaxDict[syntax]->font(0);
+        QFontMetrics fm(fnt);
+        asc = fm.ascent();
+        dsc = fm.descent();
         fnt.setPointSize(fnt.pointSize()*1.4);
-        int hght2 = QFontMetrics(fnt).height();
-        extents = hght1 - hght2; // yup - negative
+        fm = QFontMetrics(fnt);
+        asc -= fm.ascent();
+        asc = 3*asc/2;
+        dsc -= fm.descent();
+        dsc = 3*dsc/2;
     }
-    document->setExtraAscent(extents);
-    document->setExtraDescent(extents);
+    document->setExtraAscent(asc);
+    document->setExtraDescent(dsc);
 }
 
 #define TRICK_QSCINTILLA_DETACHLEXER document->setLexer(nullptr); resetColors(document, syntax); document->SendScintilla(QsciScintilla::SCI_STYLECLEARALL);

@@ -200,6 +200,7 @@ bool Sqriptor::closeTab(int idx)
         idx = m_documents->currentIndex();
     if (maybeSave(idx)) {
         QString fileName = m_documents->widget(idx)->property("sqriptor_filename").toString();
+        fileName = QFileInfo(fileName).canonicalFilePath();
         if (!fileName.isEmpty()) {
             config.recentFiles.removeAll(fileName);
             config.recentFiles.prepend(fileName);

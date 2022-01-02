@@ -153,7 +153,23 @@ static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
     document->setIndentationGuidesForegroundColor(fg);
     document->setEdgeColor(fg);
     document->setWhitespaceForegroundColor(fg);
-    document->setEdgeMode(syntax == Syntax::Markdown2 ? QsciScintilla::EdgeBackground : QsciScintilla::EdgeLine);
+    QsciScintilla::EdgeMode mode = QsciScintilla::EdgeNone;
+    if (Sqriptor::config.wrap.indicator) {
+        mode = QsciScintilla::EdgeLine;
+        if (syntax == Syntax::Markdown2)
+            mode = QsciScintilla::EdgeBackground;
+        else if (syntax == Syntax::Fortran77) {
+            mode = QsciScintilla::EdgeMultipleLines;
+            document->clearEdgeColumns();
+            document->addEdgeColumn(6, fg);
+            fg = COLOR_ERROR;
+            fg = QColor((bg.red()+fg.red())/2, (bg.green()+fg.green())/2, (bg.green()+fg.green())/2);
+            document->addEdgeColumn(72, fg);
+        }
+        if (mode != QsciScintilla::EdgeMultipleLines)
+            document->setEdgeColumn(Sqriptor::config.wrap.indicatorPos);
+    }
+    document->setEdgeMode(mode);
     document->setMarginsFont(Sqriptor::config.font);
 
     int asc = 0, dsc = 0;

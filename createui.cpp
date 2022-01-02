@@ -580,6 +580,7 @@ void Sqriptor::createUI()
     connect(m_wrapped, &QAction::triggered, [=](bool checked){
         textEdit()->setWrapMode(checked ? QsciScintilla::WrapWhitespace : QsciScintilla::WrapNone);
         });
+    m_wrapped->setChecked(config.wrap.words);
     menu->addAction(m_wrapped);
     
     m_folds = new QAction(tr("&Folding"), this);

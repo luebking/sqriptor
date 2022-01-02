@@ -149,13 +149,15 @@ int Sqriptor::addTab()
     
     doc->setBraceMatching(QsciScintilla::StrictBraceMatch);
     doc->setWhitespaceVisibility(QsciScintilla::WsVisibleOnlyInIndent);
-    doc->setEdgeMode(QsciScintilla::EdgeLine);
-    doc->setEdgeColumn(80);
+    doc->setEdgeMode(config.wrap.indicator ? QsciScintilla::EdgeLine : QsciScintilla::EdgeNone);
+    doc->setEdgeColumn(config.wrap.indicatorPos);
     
     doc->markerDefine(QsciScintilla::Bookmark, 1);
     doc->setMarkerForegroundColor(config.color.bg, 1);
     doc->setMarkerBackgroundColor(palette().color(QPalette::Link), 1);
     doc->setWrapVisualFlags(QsciScintilla::WrapFlagNone, QsciScintilla::WrapFlagInMargin, 0);
+    doc->setWrapMode(config.wrap.words ? QsciScintilla::WrapWhitespace : QsciScintilla::WrapNone);
+    m_wrapped->setChecked(config.wrap.words);
     doc->setMarginWidth(0, "14444");
     doc->setMarginWidth(1, 16);
     
@@ -272,9 +274,21 @@ void Sqriptor::prevBookmark()
 void Sqriptor::readSettings()
 {
     QSettings settings("sqriptor");
-    QRect geo = QGuiApplication::screenAt(pos())->availableGeometry();
-    resize(settings.value("size", QSize(qRound(geo.width()/1.618f),
-                                        qRound(geo.height()/1.618f))).toSize());
+
+    config.sizeMode = Size::Mode(settings.value("sizeMode", Size::Relative).toInt());
+    QSize size(settings.value("size", QSize(62,62)).toSize());
+    config.size = size;
+    if (config.sizeMode == Size::Relative && size.width() < 101 && size.height() < 101) {
+        QRect geo = QGuiApplication::screenAt(pos())->availableGeometry();
+        size.setWidth(qRound(geo.width()*size.width()/100.0f));
+        size.setHeight(qRound(geo.height()*size.height()/100.0f));
+    }
+    resize(size);
+    settings.beginGroup("wrap");
+    config.wrap.words = settings.value("words", false).toBool();
+    config.wrap.indicator = settings.value("indicator", true).toBool();
+    config.wrap.indicatorPos = settings.value("indicatorPos", 80).toInt();
+    settings.endGroup();
     config.recentFiles = settings.value("recent").toStringList();
     settings.beginGroup("font");
     config.font.setFamily(settings.value("family", "monospace").toString());
@@ -303,8 +317,18 @@ void Sqriptor::writeSettings()
 {
     QSettings settings("sqriptor");
     settings.setValue("recent", config.recentFiles);
+    QSize size(width(), height());
+    if (config.sizeMode == Size::Remember)
+        settings.setValue("size", size);
     if (!config.changed)
         return;
+    settings.setValue("sizeMode", config.sizeMode);
+    settings.setValue("size", config.size);
+    settings.beginGroup("wrap");
+    settings.setValue("words", config.wrap.words);
+    settings.setValue("indicator", config.wrap.indicator);
+    settings.setValue("indicatorPos", config.wrap.indicatorPos);
+    settings.endGroup();
     settings.beginGroup("font");
     settings.setValue("family", config.font.family());
     settings.setValue("size", config.font.pointSize());

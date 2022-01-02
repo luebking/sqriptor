@@ -2,6 +2,7 @@
 #include <QDragMoveEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QScreen>
 
 #include <Qsci/qsciscintilla.h>
 
@@ -119,8 +120,66 @@ void Sqriptor::showSettings()
                 config = config_bak;
                 config.changed = true;
                 updatePalette();
+                QSize size = config.size;
+                if (config.sizeMode == Size::Relative && size.width() < 101 && size.height() < 101) {
+                    QRect geo = QGuiApplication::screenAt(pos())->availableGeometry();
+                    size.setWidth(qRound(geo.width()*size.width()/100.0f));
+                    size.setHeight(qRound(geo.height()*size.height()/100.0f));
+                }
+                resize(size);
             }
         });
+        connect (gs_ui->windowSizeMode, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                                        [=](const int index) {
+            config_bak.sizeMode = Size::Mode(index);
+            gs_ui->windowSizeX->setRange(0, 8194);
+            gs_ui->windowSizeY->setRange(0, 8194);
+            if (index == Size::Relative) {
+                gs_ui->windowSizeX->setSuffix(" %");
+                gs_ui->windowSizeY->setSuffix(" %");
+                if (gs_ui->windowSizeX->value() > 100) { // comes from relative
+                    QRect geo = QGuiApplication::screenAt(pos())->availableGeometry();
+                    gs_ui->windowSizeX->setValue(qRound(gs_ui->windowSizeX->value()*100.0f/geo.width()));
+                    gs_ui->windowSizeY->setValue(qRound(gs_ui->windowSizeY->value()*100.0f/geo.height()));
+                }
+                gs_ui->windowSizeX->setRange(0, 100);
+                gs_ui->windowSizeY->setRange(0, 100);
+            } else if (index == Size::Absolute) {
+                gs_ui->windowSizeX->setSuffix(" px");
+                gs_ui->windowSizeY->setSuffix(" px");
+                if (gs_ui->windowSizeX->value() < 101) { // comes from relative
+                    QRect geo = QGuiApplication::screenAt(pos())->availableGeometry();
+                    gs_ui->windowSizeX->setValue(qRound(geo.width()*gs_ui->windowSizeX->value()/100.0f));
+                    gs_ui->windowSizeY->setValue(qRound(geo.height()*gs_ui->windowSizeY->value()/100.0f));
+                }
+                gs_ui->windowSizeX->setRange(101, 8194);
+                gs_ui->windowSizeY->setRange(101, 8194);
+            } else if (index == Size::Remember) {
+                gs_ui->windowSizeX->setSuffix(" px");
+                gs_ui->windowSizeY->setSuffix(" px");
+            }
+            gs_ui->windowSizeX->setEnabled(index != Size::Remember);
+            gs_ui->windowSizeY->setEnabled(index != Size::Remember);
+        });
+        gs_ui->windowSizeX->setValue(config.sizeMode == Size::Remember ? width() : config.size.width());
+        connect (gs_ui->windowSizeX, QOverload<int>::of(&QSpinBox::valueChanged),
+                                        [=](int v) {config_bak.size.setWidth(v);});
+        gs_ui->windowSizeY->setValue(config.sizeMode == Size::Remember ? height() : config.size.height());
+        connect (gs_ui->windowSizeY, QOverload<int>::of(&QSpinBox::valueChanged),
+                                        [=](int v) {config_bak.size.setHeight(v);});
+        // apply...
+        gs_ui->windowSizeMode->setCurrentIndex(config.sizeMode);
+
+        gs_ui->wrapWords->setChecked(config.wrap.words);
+        connect (gs_ui->wrapWords, &QCheckBox::stateChanged,
+                                        [=](int s) {config_bak.wrap.words = s;});
+        gs_ui->wrapIndicator->setChecked(config.wrap.indicator);
+        connect (gs_ui->wrapIndicator, &QCheckBox::stateChanged,
+                                        [=](int s) {config_bak.wrap.indicator = s;});
+        gs_ui->wrapIndicatorPos->setValue(config.wrap.indicatorPos);
+        connect (gs_ui->wrapIndicatorPos, QOverload<int>::of(&QSpinBox::valueChanged),
+                                        [=](int v) {config_bak.wrap.indicatorPos = v;});
+
         gs_ui->tabIsTab->setChecked(config.tab.isTab);
         connect (gs_ui->tabIsTab, &QCheckBox::stateChanged,
                                         [=](int s) {config_bak.tab.isTab = s;});

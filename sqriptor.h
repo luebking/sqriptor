@@ -39,9 +39,18 @@ namespace Syntax {
     };
 };
 
+namespace Size { enum Mode { Relative = 0, Absolute, Remember }; };
+
 typedef struct Config
 {
+    Size::Mode sizeMode;
+    QSize size;
     QFont font;
+    struct wrap {
+        bool words;
+        bool indicator;
+        int indicatorPos;
+    } wrap;
     struct tab {
         bool isTab;
         int width;

@@ -68,6 +68,7 @@
 #include "lexer/awk.h"
 #include "lexer/journal.h"
 #include "lexer/markdown2.h"
+#include "lexer/nim.h"
 #include "lexer/pkgbuild.h"
 #include "lexer/xorg.h"
 #include "lexer/xorglog.h"
@@ -124,6 +125,7 @@ static QsciLexer *syntaxDict[Syntax::Count] = {nullptr};
 static void setColorsAWK(QsciLexerAWK *lexer) { setColorsBash(lexer); }
 static void setColorsJournal(QsciLexerJournal *lexer) { lexer->updateColors(); }
 static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(); }
+static void setColorsNIM(QsciLexerNIM *lexer) { setColorsPython(lexer); }
 static void setColorsPkgBuild(QsciLexerPkgBuild *lexer) { setColorsBash(lexer); }
 static void setColorsXorg(QsciLexerXorg *lexer) { lexer->updateColors(); }
 static void setColorsXorgLog(QsciLexerXorgLog *lexer) { lexer->updateColors(); }
@@ -288,6 +290,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         MAKE_LEXER(Lua)
         MAKE_LEXER(Makefile)
         MAKE_LEXER(Markdown2)
+            
+        MAKE_LEXER(NIM)
 
         case Syntax::Octave:
             if (!hook) hook = syntaxDict[syntax] = new QsciLexerMatlab(this);
@@ -413,7 +417,7 @@ bool Sqriptor::toggleComment()
         return true;
     }
 
-    if (name == "Bash" || name == "Python" || name == "Ruby" || name == "Perl" || 
+    if (name == "Bash" || name == "NIM" || name == "Python" || name == "Ruby" || name == "Perl" ||
         name == "Makefile" || name == "CMake" || name.startsWith("Fortran") ||
         name == "TCL" || name == "AWK" || name == "Xorg" || name == "PkgBuild") { // tcltk might or not require ";#" inline
         const QChar bang = name.startsWith("Fortran") ? '!' : '#';

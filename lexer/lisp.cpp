@@ -136,7 +136,7 @@ void QsciLexerLISP::styleText(int start, int end)
             finishStyle(); setStyling(token.toUtf8().length(), Style::QuasiLiteral);// match.capturedLength(0); - this sucks
             continue;
         }
-        if (m_keywords.contains(token)) {
+        if (m_keywords.contains(token, Qt::CaseInsensitive)) {
             finishStyle(); setStyling(token.toUtf8().length(), Style::Keyword);// match.capturedLength(0); - this sucks
             continue;
         }

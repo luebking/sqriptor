@@ -113,6 +113,9 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffixes["conf"] = Syntax::Properties;
     suffixes["awk"] = Syntax::AWK;
     suffixes["nim"] = Syntax::NIM;
+    suffixes["lsp"] = Syntax::LISP;
+    suffixes["lisp"] = Syntax::LISP;
+    suffixes["el"] = Syntax::LISP;
     
     suffixes["Makefile"] = Syntax::Makefile;
 

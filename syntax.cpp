@@ -67,6 +67,7 @@
 
 #include "lexer/awk.h"
 #include "lexer/journal.h"
+#include "lexer/lisp.h"
 #include "lexer/markdown2.h"
 #include "lexer/nim.h"
 #include "lexer/pkgbuild.h"
@@ -124,6 +125,7 @@ static QsciLexer *syntaxDict[Syntax::Count] = {nullptr};
 
 static void setColorsAWK(QsciLexerAWK *lexer) { setColorsBash(lexer); }
 static void setColorsJournal(QsciLexerJournal *lexer) { lexer->updateColors(); }
+static void setColorsLISP(QsciLexerLISP *lexer) { lexer->updateColors(); }
 static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(); }
 static void setColorsNIM(QsciLexerNIM *lexer) { setColorsPython(lexer); }
 static void setColorsPkgBuild(QsciLexerPkgBuild *lexer) { setColorsBash(lexer); }
@@ -287,6 +289,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
 
         MAKE_LEXER(Journal)
         MAKE_LEXER(JSON)
+        MAKE_LEXER(LISP)
         MAKE_LEXER(Lua)
         MAKE_LEXER(Makefile)
         MAKE_LEXER(Markdown2)

@@ -158,6 +158,7 @@ int Sqriptor::addTab()
     doc->setWrapVisualFlags(QsciScintilla::WrapFlagNone, QsciScintilla::WrapFlagInMargin, 0);
     doc->setWrapMode(config.wrap.words ? QsciScintilla::WrapWhitespace : QsciScintilla::WrapNone);
     m_wrapped->setChecked(config.wrap.words);
+    doc->setMarginsFont(Sqriptor::config.font);
     doc->setMarginWidth(0, "14444");
     doc->setMarginWidth(1, 16);
     

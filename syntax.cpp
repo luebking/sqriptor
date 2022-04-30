@@ -140,8 +140,8 @@ static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
     document->setColor(fg);
     // document->setCaretForegroundColor(fg);
     document->setCaretLineVisible(true);
-    document->setMatchedBraceBackgroundColor(COLOR_OPERATOR);
-    document->setMatchedBraceForegroundColor(bg);
+    document->setMatchedBraceBackgroundColor(bg.value() < fg.value() ? COLOR_OPERATOR.darker(200) : COLOR_OPERATOR.lighter(200));
+    document->setMatchedBraceForegroundColor(COLOR_OPERATOR);
     document->setUnmatchedBraceForegroundColor(COLOR_OPERATOR);
     // accentuate background color
     bg = bg.value() < fg.value() ? bg.darker(120) : bg.lighter(120);

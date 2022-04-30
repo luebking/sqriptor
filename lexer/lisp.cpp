@@ -88,7 +88,10 @@ void QsciLexerLISP::styleText(int start, int end)
     QString text = editor()->text(start, end);
     QRegularExpressionMatchIterator i = tokenizer.globalMatch(text/*, 0, QRegularExpression::PartialPreferFirstMatch*/);
 
-    bool comment = false, string = false, isNum;
+    bool comment = false,
+         string  = (start > 0) ? editor()->SendScintilla(QsciScintillaBase::SCI_GETSTYLEAT, start - 1) == Style::String : false,
+         isNum;
+
     int length = 0;
     auto finishStyle = [&]() {
         setStyling(length, Style::Default);
@@ -118,6 +121,9 @@ void QsciLexerLISP::styleText(int start, int end)
         }
         if (string) {
             length += token.toUtf8().length(); // match.capturedLength(0); - this sucks
+            if (linebreak.match(token).hasMatch()) {
+                setStyling(length, Style::String); length = 0; // we assume that the string continues in the next line
+            }
             continue;
         }
         if (token == ";") {

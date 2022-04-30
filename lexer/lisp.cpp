@@ -82,7 +82,7 @@ static bool operator==(const QStringView&view, const char* string) {
 
 void QsciLexerLISP::styleText(int start, int end)
 {
-    static const QRegularExpression tokenizer(";|\\(|\\)|\\\"|#'|\\s+|['`]*[A-Za-z\\d_#\\+@$%\\.\\^&=\\*-?\\!<>]+|'|`|\\W");
+    static const QRegularExpression tokenizer(";|\\(|\\)|\\\"|#'|,@|,|\\s+|['`]*[A-Za-z\\d_#\\+@$%\\.\\^&=\\*-?\\!<>]+|'|`|\\W");
     static const QRegularExpression linebreak("\\s*(\\n|\\r)+\\s*");
 
     QString text = editor()->text(start, end);
@@ -130,11 +130,13 @@ void QsciLexerLISP::styleText(int start, int end)
             finishStyle(); length = 1; comment = true;
             continue;
         }
-        if (token == "(" || token == ")") {
+        if (token == "(" || token == ")" ||
+            token == ",") { // unquote operator
             finishStyle(); setStyling(1, Style::Operator);
             continue;
         }
-        if (token == "#'") { // abbreviation for function special operator, returning a function object.
+        if (token == "#'" || // abbreviation for function special operator, returning a function object.
+            token == ",@") { // splice operator
             finishStyle(); setStyling(2, Style::Operator);
             continue;
         }

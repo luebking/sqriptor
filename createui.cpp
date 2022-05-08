@@ -400,6 +400,7 @@ void Sqriptor::createUI()
 
         if (filter.isEmpty()) {
             doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, 0, doc->lines() - 1);
+            doc->ensureCursorVisible();
         } else if (searchRegExp->isChecked()) {
             const QRegularExpression rx(filter, searchCaseSens->isChecked() ?
                                                 QRegularExpression::NoPatternOption :

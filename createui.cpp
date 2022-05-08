@@ -237,6 +237,11 @@ void Sqriptor::createUI()
     QAction *replaceAll = new QAction(tr("Replace all"), searchBar);
     tbmenu->addAction(replaceAll);
     replaceAll->setVisible(false);
+    QAction *showFilterContext = new QAction(tr("Show Context"), searchBar);
+    tbmenu->addAction(showFilterContext);
+    showFilterContext->setCheckable(true);
+    showFilterContext->setChecked(false);
+    showFilterContext->setVisible(false);
     btn->setMenu(tbmenu);
     
     static bool menuWasVisible = true;
@@ -368,9 +373,13 @@ void Sqriptor::createUI()
     for (int i = 1; i < doc->lines(); ++i) { \
         if ((grow || doc->SendScintilla(QsciScintillaBase::SCI_GETLINEVISIBLE, i)) \
                                             && doc->text(i).contains(_T_, _R_)) { \
-            if (lastMatch < i - 1) \
-                doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, lastMatch + 1, i - 1); \
-            doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i, i); \
+            if (lastMatch + context < i - 1 - context) { \
+                doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, lastMatch + 1 + context, i - 1 - context); \
+                if (context) \
+                    doc->markerAdd(lastMatch + context, s_filtersplitter); \
+            } \
+            context = showFilterContext->isChecked() ? 5 : 0; \
+            doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i - context, i + context); \
             lastMatch = i; \
         } \
         PROCESS_EVENTS /* allow interaction if this is slow */ \
@@ -379,13 +388,20 @@ void Sqriptor::createUI()
             break; /* user altered pattern, abort current filter */ \
         } \
     } \
-    if (lastMatch + 1 < doc->lines()) /* hide tail */ \
-        doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, lastMatch + 1, doc->lines() - 1)
+    if (lastMatch + 1 + context < doc->lines()) /* hide tail */ \
+        doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, lastMatch + 1 + context, doc->lines() - 1)
 
     auto l_filter = [=]() {
         bool filterTimerWasActive = false;
         QsciScintilla *doc = textEdit();
         const QString filter = m_filterLine->text();
+
+        int context = 0;
+        static const int s_filtersplitter = 31;
+        doc->markerDefine(QsciScintilla::Underline, s_filtersplitter);
+        QColor bg = config.color.bg, fg = config.color.fg;
+        QColor mid = QColor((2*bg.red()+fg.red())/3, (2*bg.green()+fg.green())/3, (2*bg.green()+fg.green())/3);
+        doc->setMarkerBackgroundColor(mid, s_filtersplitter);
 
         /** In addition to the above, also shortcut the filtering if we know that
             the filter got narrower... this could be a problem w/ regexp
@@ -393,6 +409,8 @@ void Sqriptor::createUI()
         */
         static QString lastFilter;
         const bool grow = searchRegExp->isChecked() || !filter.contains(lastFilter);
+        if (grow && showFilterContext->isChecked())
+            doc->markerDeleteAll(s_filtersplitter);
         lastFilter = filter;
 
         QElapsedTimer profiler;
@@ -449,7 +467,8 @@ void Sqriptor::createUI()
     menuBar()->setCornerWidget(searchBar);
     
 #define HIDE_STUFF  searchBar->hide(); gotoLine->hide(); findLine->hide(); m_filterLine->hide();\
-                    replaceLine->hide(); btn->hide(); findAllAct->setVisible(false); replaceAll->setVisible(false);
+                    replaceLine->hide(); btn->hide(); findAllAct->setVisible(false); \
+                    replaceAll->setVisible(false); showFilterContext->setVisible(false);
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
     menu = editMenu->addMenu(tr("&Search and replace"));
@@ -536,6 +555,7 @@ void Sqriptor::createUI()
         btn->setText(tr("Filter:"));
         btn->show();
         m_filterLine->show();
+        showFilterContext->setVisible(true);
         m_filterLine->setFocus();
         m_filterLine->selectAll();
         SHOW_STUFF

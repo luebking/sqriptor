@@ -66,6 +66,7 @@
 #include <Qsci/qscilexeryaml.h>
 
 #include "lexer/awk.h"
+#include "lexer/fontconfig.h"
 #include "lexer/journal.h"
 #include "lexer/lisp.h"
 #include "lexer/markdown2.h"
@@ -124,6 +125,7 @@ static QsciLexer *syntaxDict[Syntax::Count] = {nullptr};
 #include "colors/yaml.cpp"
 
 static void setColorsAWK(QsciLexerAWK *lexer) { setColorsBash(lexer); }
+static void setColorsFontConfig(QsciLexerFontConfig *lexer) { setColorsHTML(lexer); }
 static void setColorsJournal(QsciLexerJournal *lexer) { lexer->updateColors(); }
 static void setColorsLISP(QsciLexerLISP *lexer) { lexer->updateColors(); }
 static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(); }
@@ -215,6 +217,16 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
                 syntax = Syntax::Diff;
             else if (shebang.startsWith("-- Journal begins at"))
                 syntax = Syntax::Journal;
+            else if (shebang.startsWith("<?xml")) {
+                syntax = Syntax::XML;
+                if (shebang.contains("<!DOCTYPE fontconfig")) {
+                    syntax = Syntax::FontConfig;
+                } else {
+                    shebang = document->text(1).section("\n",0,0);
+                    if (shebang.startsWith("<!DOCTYPE fontconfig"))
+                        syntax = Syntax::FontConfig;
+                }
+            }
         }
         if (syntax == Syntax::Auto)
             return;
@@ -276,6 +288,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         MAKE_LEXER(D)
         MAKE_LEXER(Diff)
         MAKE_LEXER(EDIFACT)
+        MAKE_LEXER(FontConfig)
 
         case Syntax::Fortran:
             if (!hook) hook = syntaxDict[syntax] = new QsciLexerFortran(this);
@@ -364,14 +377,14 @@ bool Sqriptor::toggleComment()
     bool isHtml = false;
     if (name == "CPP" || name == "CSharp" || name == "Java" ||  name == "CSS" ||
         name == "JavaScript" || name == "D" || // D also supports /++/
-        (isHtml = (name == "HTML")) || name == "XML" || name == "Pascal") {
+        (isHtml = (name == "HTML")) || name == "XML" || name == "Pascal" || name == "FontConfig") {
         if (isHtml) {
 //            QString suffix = doc->property("sqriptor_filename").toString().section('.', -1);
 //            isHtml = !(suffix.startsWith("php") || suffix == "phtml");
             // And what do we do with hybrids that are mostly html with some php code inside?
         }
         QString head = "/*", tail = "*/";
-        if (isHtml || name == "XML") {
+        if (isHtml || name == "XML" || name == "FontConfig") {
             head = "<!--"; tail = "-->";
         } else if (name == "Pascal") {
             head = "{"; tail = "}";
@@ -399,7 +412,7 @@ bool Sqriptor::toggleComment()
             return true;
         }
 
-        if (isHtml || name == "CSS" || name == "XML") {
+        if (isHtml || name == "CSS" || name == "XML" || name == "FontConfig") {
             // only supports /**/, <!-- --> syntax
             doc->insertAt(tail, line, text.length()-1);
             doc->insertAt(head, line, 0);

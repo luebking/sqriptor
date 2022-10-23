@@ -755,7 +755,9 @@ void Sqriptor::createUI()
         QString help =
         tr("<html><h2>Block selection</h2>"
         "Hold <b>Alt+Shift</b> while using the <b>arrow keys</b> or press "
-        "<b>Ctrl</b> while selecting text with the <b>mouse</b>.<br><br>You're welcome."
+        "<b>Ctrl</b> while selecting text with the <b>mouse</b>.<br>"
+        "(Only) text cut or copied this way will be pasted in block mode.<br>"
+        "<br>You're welcome."
         "</html>");
         QMessageBox *blockHelp = new QMessageBox(QMessageBox::Information, tr("Block selection"),
                                                 help, QMessageBox::Ok, nullptr, Qt::Dialog);

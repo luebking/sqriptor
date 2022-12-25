@@ -70,6 +70,7 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffixes["plx"] = Syntax::Perl;
     suffixes["pm"] = Syntax::Perl;
     suffixes["perl"] = Syntax::Perl;
+    suffixes["py"] = Syntax::Python;
     suffixes["python"] = Syntax::Python;
     suffixes["python2"] = Syntax::Python; // shebang
     suffixes["python3"] = Syntax::Python; // dto.

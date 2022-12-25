@@ -392,6 +392,8 @@ void Sqriptor::createUI()
     if (lastMatch + 1 + context < doc->lines()) /* hide tail */ \
         doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, lastMatch + 1 + context, doc->lines() - 1)
 
+    static QString lastFilter;
+    connect(m_documents, &QTabWidget::currentChanged, [=](int idx) { lastFilter.clear(); });
     auto l_filter = [=]() {
         bool filterTimerWasActive = false;
         QsciScintilla *doc = textEdit();
@@ -408,8 +410,7 @@ void Sqriptor::createUI()
             the filter got narrower... this could be a problem w/ regexp
             @todo test that, too...
         */
-        static QString lastFilter;
-        const bool grow = searchRegExp->isChecked() || !filter.contains(lastFilter);
+        const bool grow = searchRegExp->isChecked() || lastFilter.isEmpty() || !filter.contains(lastFilter);
         if (grow && showFilterContext->isChecked())
             doc->markerDeleteAll(s_filtersplitter);
         lastFilter = filter;

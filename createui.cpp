@@ -68,6 +68,7 @@ protected:
                 case Qt::Key_Down:
                 case Qt::Key_PageUp:
                 case Qt::Key_PageDown:
+                case Qt::Key_Tab:
                     QCoreApplication::sendEvent(static_cast<Sqriptor*>(parent())->textEdit(), ev);
                     return true;
                 default:

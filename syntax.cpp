@@ -336,6 +336,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         default:
             break;
     }
+    if (syntax == Syntax::YAML)
+        document->setIndentationsUseTabs(false); // they're illegal
     if (updateColorsOnly)
         return; // we're not touching the document here at all
     TRICK_QSCINTILLA_DETACHLEXER
@@ -435,7 +437,8 @@ bool Sqriptor::toggleComment()
 
     if (name == "Bash" || name == "NIM" || name == "Python" || name == "Ruby" || name == "Perl" ||
         name == "Makefile" || name == "CMake" || name.startsWith("Fortran") || name.contains("LISP") ||
-        name == "TCL" || name == "AWK" || name == "Xorg" || name == "PkgBuild") { // tcltk might or not require ";#" inline
+        name == "TCL" || name == "AWK" || name == "Xorg" || name == "PkgBuild" || name == "YAML") {
+        // tcltk might or not require ";#" inline
         const QChar bang = name.startsWith("Fortran") ? '!' : name.contains("LISP") ? ';' : '#';
         QString text = doc->selectedText();
         if (!text.isEmpty()) {

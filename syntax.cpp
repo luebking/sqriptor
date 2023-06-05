@@ -215,7 +215,9 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
                 syntax = Sqriptor::syntax(shebang);
             else if (shebang.startsWith("diff --git"))
                 syntax = Syntax::Diff;
-            else if (shebang.startsWith("-- Journal begins at"))
+            else if (shebang.startsWith("-- Journal begins at") ||
+                        shebang.contains(" kernel: Linux version ") ||
+                        shebang.contains(" kernel: microcode: updated early: "))
                 syntax = Syntax::Journal;
             else if (shebang.startsWith("<?xml")) {
                 syntax = Syntax::XML;

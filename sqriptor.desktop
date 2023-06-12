@@ -1,8 +1,12 @@
 [Desktop Entry]
+Version=1.0
+Name=sqriptor
+Comment=The greatest and best TextEditor in the world (tribute)
+GenericName=Text Editor
 Type=Application
+Exec=sqriptor %F
 Icon=sqriptor
-Name=Sqriptor
-Exec=sqriptor
 Terminal=false
-Hidden=false
-Comment=Greatest and best text editor in the world (tribute)
+StartupNotify=false
+Categories=TextEditor;Development;Qt;
+MimeType=text/plain;

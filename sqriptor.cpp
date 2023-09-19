@@ -526,7 +526,7 @@ bool Sqriptor::saveFile(const QString &fileName)
 
 void Sqriptor::setCurrentFile(const QString &fileName)
 {
-    textEdit()->setProperty("sqriptor_filename", fileName);
+    textEdit()->setProperty("sqriptor_filename", fileName.startsWith("scratch:") ? "" : fileName);
     textEdit()->setModified(false);
     setWindowModified(false);
 

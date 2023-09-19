@@ -54,8 +54,9 @@
 class NavHelper : public QObject {
     public:
         NavHelper(Sqriptor *parent) : QObject(parent) {}
+        bool allowTab = false;
 protected:
-    bool eventFilter(QObject *, QEvent *ev) {
+    bool eventFilter(QObject *obj, QEvent *ev) {
         if (ev->type() == QEvent::KeyPress || ev->type() == QEvent::KeyRelease) {
             QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
             switch (kev->key()) {
@@ -64,11 +65,22 @@ protected:
                     if (!(kev->modifiers() & Qt::ControlModifier))
                         return false;
                     [[fallthrough]];
+                case Qt::Key_Tab:
+                    if (allowTab && ev->type() == QEvent::KeyPress) {
+                        QWidget *w = qobject_cast<QWidget*>(obj);
+                        if (w && !(qobject_cast<QLineEdit*>(w->nextInFocusChain()) &&
+                                                w->nextInFocusChain()->isVisible()) &&
+                                  qobject_cast<QLineEdit*>(w->previousInFocusChain())) {
+                            w->previousInFocusChain()->setFocus();
+                            return true;
+                        }
+                        return false;
+                    }
+                    [[fallthrough]];
                 case Qt::Key_Up:
                 case Qt::Key_Down:
                 case Qt::Key_PageUp:
                 case Qt::Key_PageDown:
-                case Qt::Key_Tab:
                     QCoreApplication::sendEvent(static_cast<Sqriptor*>(parent())->textEdit(), ev);
                     return true;
                 default:
@@ -485,7 +497,8 @@ void Sqriptor::createUI()
 #define HIDE_STUFF  searchBar->hide(); gotoLine->hide(); findLine->hide(); m_filterLine->hide();\
                     replaceLine->hide(); btn->hide(); findAllAct->setVisible(false); \
                     replaceAll->setVisible(false); showFilterContext->setVisible(false); \
-                    filterInvert->setVisible(false); searchWord->setVisible(false); searchForward->setVisible(false);
+                    filterInvert->setVisible(false); searchWord->setVisible(false); \
+                    searchForward->setVisible(false); navHelper->allowTab = false;
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
     menu = editMenu->addMenu(tr("&Search and replace"));
@@ -520,6 +533,7 @@ void Sqriptor::createUI()
         searchWord->setVisible(true);
         searchForward->setVisible(true);
         textEdit()->cancelFind(); // clear previous finds to no replace them
+        navHelper->allowTab = true;
         QString text = textEdit()->selectedText();
         if (!text.isEmpty()) {
             findLine->setText(text);

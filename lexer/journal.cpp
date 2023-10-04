@@ -128,7 +128,7 @@ void QsciLexerJournal::styleText (int start, int end)
             */
             continue;
         }
-        if (text.at(i) == '-' || text.at(i) == -30) { // ░
+        if (text.at(i) == '-' || text.at(i) == -30 || text.at(i) == '#') { // ░
             newline = false;
             comment = true;
             continue;
@@ -138,7 +138,7 @@ void QsciLexerJournal::styleText (int start, int end)
             while (i < end - start && text.at(i) != ' ') {
                 if (text.at(i) == '\n') { // error, jump to next line
 //                    qDebug() << "unexpected newline" << i;
-                    --i; --length;
+                    --i;
                     return false;
                 }
                 ++i;

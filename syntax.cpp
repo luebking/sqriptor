@@ -18,6 +18,7 @@
 
 #include <QAction>
 #include <QApplication>
+#include <QLineEdit>
 #include <QMenu>
 #include <QDebug>
 
@@ -345,8 +346,10 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
     TRICK_QSCINTILLA_DETACHLEXER
     document->setLexer(syntaxDict[syntax]);
     document->setProperty("sqriptor_syntax", syntax);
-    if (document == textEdit())
+    if (document == textEdit()) {
         indicateCurrentSyntax();
+        m_filterLine->setText(m_filterLine->text());
+    }
     resetColors(document, syntax);
 }
 

@@ -48,6 +48,7 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffixes["cxx"] = Syntax::CPP;
     suffixes["cc"] = Syntax::CPP;
     suffixes["c"] = Syntax::CPP;
+    suffixes["C"] = Syntax::CPP;
     suffixes["h"] = Syntax::CPP;
     suffixes["hh"] = Syntax::CPP;
     suffixes["cs"] = Syntax::CSharp;

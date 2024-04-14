@@ -27,7 +27,7 @@ QsciLexerFontConfig::QsciLexerFontConfig(QObject *parent) : QsciLexerXML(parent)
 
 const char *QsciLexerFontConfig::keywords(int set) const
 {
-    qDebug() << "queried set " << set;
+    // qDebug() << "queried set " << set;
     if (set == 1)
         return  "fontconfig dir cachedir include match alias config blank rescan selectfont "
                 "acceptfont rejectfont glob pattern patelt match test edit int double string bool "

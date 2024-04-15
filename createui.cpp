@@ -91,6 +91,41 @@ protected:
     }
 };
 
+class StatusMenuBackground : public QObject {
+    public:
+        StatusMenuBackground(QMenuBar *parent, const Sqriptor *s) : QObject(parent), m_sqriptor(s) {}
+    protected:
+        bool eventFilter(QObject *obj, QEvent *ev) {
+            if (ev->type() != QEvent::Paint)
+                return false;
+            QMenuBar *bar = static_cast<QMenuBar*>(obj);
+            QRect rect = bar->cornerWidget()->geometry();
+            int right = rect.left();
+            rect.setLeft(bar->actionGeometry(bar->actions().constLast()).right());
+            rect.setRight(right);
+
+            const int align = Qt::AlignVCenter|QStyle::visualAlignment(bar->layoutDirection(), Qt::AlignRight);
+            QsciScintilla *doc = m_sqriptor->textEdit();
+            QColor c;
+            if (doc->isModified()) {
+                c = m_sqriptor->config.color.error;
+            } else {
+                const QColor bg = bar->palette().color(bar->backgroundRole()),
+                             fg = bar->palette().color(bar->foregroundRole());
+                c = QColor((2*bg.red()+fg.red())/3, (2*bg.green()+fg.green())/3, (2*bg.green()+fg.green())/3);
+            }
+            QPainter p(bar);
+            p.setPen(c);
+            QString text = doc->property("sqriptor_filepath").toString();
+            text = p.fontMetrics().elidedText(text, Qt::ElideLeft, rect.width());
+            p.drawText(rect, align|Qt::TextSingleLine, text);
+            p.end();
+            return false;
+        }
+    private:
+        const Sqriptor *m_sqriptor;
+};
+
 void Sqriptor::createUI()
 {
     QPixmap pix(64,64);
@@ -830,6 +865,9 @@ void Sqriptor::createUI()
         shortcutHelp->show();
     });
     menu->addAction(act);
+
+    StatusMenuBackground *smb = new StatusMenuBackground(menuBar(), this);
+    menuBar()->installEventFilter(smb);
 
 /*     act = new QAction(tr("About &Qt"), this);
     act->setStatusTip(tr("Show the Qt library's About box"));

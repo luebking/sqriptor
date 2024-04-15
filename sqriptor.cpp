@@ -23,6 +23,7 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QMenu>
+#include <QMenuBar>
 #include <QMessageBox>
 #include <QPoint>
 #include <QProcess>
@@ -63,6 +64,7 @@ Sqriptor::Sqriptor()
         QsciScintilla *doc = textEdit();
         setWindowModified(doc->isModified());
         setWindowTitle(tr("%1[*]").arg(m_documents->tabText(idx)));
+        menuBar()->update();
         indicateCurrentSyntax();
         indicateCurrentEOL();
         m_EolVis->setChecked(doc->eolVisibility());
@@ -186,8 +188,10 @@ int Sqriptor::addTab()
     connect(doc, &QsciScintilla::modificationChanged, [=](){
         m_documents->tabBar()->setTabTextColor(m_documents->indexOf(doc),
                                                doc->isModified() ? config.color.error : QColor());
-        if (doc == m_documents->currentWidget())
+        if (doc == m_documents->currentWidget()) {
             setWindowModified(doc->isModified());
+            menuBar()->update();
+        }
     });
 
     setSyntax(Syntax::None, doc);
@@ -530,14 +534,18 @@ void Sqriptor::setCurrentFile(const QString &fileName)
     textEdit()->setModified(false);
     setWindowModified(false);
 
-    QString shownName;
+    QString shownName, path;
     if (fileName.isEmpty()) {
         static const char *leet[4] = {"5cr4tchp4d", "$¢r@t¢hp@d", "unt1tl3d", "n3w_f1l3"};
-        shownName = leet[rand() % 4];
+        path = shownName = leet[rand() % 4];
     }
     else {
-        shownName = QFileInfo(fileName).fileName();
+        QFileInfo info(fileName);
+        shownName = info.fileName();
+        path = info.absoluteFilePath();
     }
+    textEdit()->setProperty("sqriptor_filepath", path);
+    menuBar()->update();
     m_documents->setTabText(m_documents->currentIndex(), shownName);
     setWindowTitle(tr("%1[*]").arg(shownName));
     setSyntax(Syntax::Auto);

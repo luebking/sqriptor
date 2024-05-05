@@ -143,6 +143,40 @@ void Sqriptor::open(QString fileName, bool forceNewTab)
     loadFile(fileName);
 }
 
+class Embracer : public QObject {
+    public:
+        Embracer(Sqriptor *parent) : QObject(parent) {}
+protected:
+    bool eventFilter(QObject *obj, QEvent *ev) {
+        if (ev->type() == QEvent::KeyPress) {
+            QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
+            if (kev->modifiers() & Qt::ControlModifier)
+                return false;
+
+            Qt::Key other = Qt::Key_unknown;
+            switch (kev->key()) {
+                case Qt::Key_BracketLeft:   other = Qt::Key_BracketRight; break;
+                case Qt::Key_BraceLeft:     other = Qt::Key_BraceRight; break;
+                case Qt::Key_Less:          other = Qt::Key_Greater; break;
+                case Qt::Key_ParenLeft:     other = Qt::Key_ParenRight; break;
+                case Qt::Key_QuoteDbl:      other = Qt::Key_QuoteDbl; break;
+                case Qt::Key_Apostrophe:    other = Qt::Key_Apostrophe; break;
+            }
+            if (other == Qt::Key_unknown)
+                return false;
+
+            QsciScintilla *doc = qobject_cast<QsciScintilla*>(obj);
+            QString text = doc->selectedText();
+            if (text.isEmpty())
+                return false;
+
+            doc->replaceSelectedText(kev->key() + text + other);
+            return true;
+        }
+        return false;
+    }
+};
+
 int Sqriptor::addTab()
 {
     QsciScintilla *doc = new QsciScintilla;
@@ -196,6 +230,9 @@ int Sqriptor::addTab()
 
     setSyntax(Syntax::None, doc);
     doc->setFocus();
+
+    static Embracer *embracer = new Embracer(this);
+    doc->installEventFilter(embracer);
 
     m_tabMenu->setVisible(m_documents->count() > 6); // soon gonna be 8+
     return m_documents->addTab(doc, "");

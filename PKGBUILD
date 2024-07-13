@@ -7,7 +7,7 @@ pkgdesc="Greatest and best TextEditor in the World. Tribute."
 arch=('i686' 'x86_64')
 url="https://github.com/luebking/sqriptor"
 license=('GPL')
-depends=(qt5-base qscintilla-qt5)
+depends=(qt6-base qscintilla-qt6)
 makedepends=('gcc')
 license=('GPL')
 provides=(sqriptor)
@@ -20,7 +20,7 @@ pkgver() {
 
 build()
 {
-    qmake-qt5 ..
+    qmake6 ..
     make
 }
 

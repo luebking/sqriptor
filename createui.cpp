@@ -17,6 +17,7 @@
 */
 
 #include <QAction>
+#include <QActionGroup>
 #include <QApplication>
 #include <QComboBox>
 #include <QElapsedTimer>
@@ -34,7 +35,7 @@
 #include <QPushButton>
 #include <QScrollBar>
 #include <QSpinBox>
-#include <QTextCodec>
+#include <QStringConverter>
 #include <QTextEdit>
 #include <QToolButton>
 
@@ -991,9 +992,7 @@ QString Sqriptor::ask4Codec(const QString &codec, const QString &fileName)
     gld->addWidget(lbl, 1, 0);
     QComboBox *codecs = new QComboBox(warning);
     codecs->setEditable(true);
-    QStringList codecNames;
-    for (const QByteArray &ba : QTextCodec::availableCodecs())
-        codecNames << ba;
+    QStringList codecNames = QStringConverter::availableCodecs();
     codecNames.removeDuplicates();
     codecNames.sort(Qt::CaseInsensitive);
     codecs->addItems(codecNames);

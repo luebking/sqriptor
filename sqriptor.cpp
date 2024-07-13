@@ -170,7 +170,7 @@ protected:
             if (text.isEmpty())
                 return false;
 
-            doc->replaceSelectedText(kev->key() + text + other);
+            doc->replaceSelectedText(QChar(kev->key()) + text + QChar(other));
             return true;
         }
         return false;
@@ -495,7 +495,7 @@ void Sqriptor::loadFile(const QString &fileName)
                         "<b>Do not save the file!</b><br>It would be <b>converted to UTF-8!</b>"
                         "</html>").arg(fileName));
         else
-            in.setCodec(ask4Codec(codec, fileName).toLatin1());
+            in.setEncoding(*QStringConverter::encodingForName(ask4Codec(codec, fileName).toLatin1()));
         QApplication::setOverrideCursor(Qt::WaitCursor);
     }
     doc->setText(in.readAll());

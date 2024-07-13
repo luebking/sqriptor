@@ -1,5 +1,5 @@
 CONFIG      += qscintilla2
-
+QT          += gui widgets
 HEADERS     = sqriptor.h scrollbar.h \
               lexer/awk.h lexer/journal.h lexer/markdown2.h lexer/xorg.h \
               lexer/pkgbuild.h  lexer/xorglog.h lexer/nim.h lexer/lisp.h lexer/fontconfig.h 

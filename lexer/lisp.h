@@ -19,7 +19,7 @@
 #ifndef QSCILEXERLISP_H
 #define QSCILEXERLISP_H
 
-class QStringList;
+// class QStringList;
 
 #include <Qsci/qscilexercustom.h>
 

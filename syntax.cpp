@@ -17,6 +17,7 @@
 */
 
 #include <QAction>
+#include <QActionGroup>
 #include <QApplication>
 #include <QLineEdit>
 #include <QMenu>
@@ -428,10 +429,10 @@ bool Sqriptor::toggleComment()
         }
 
         // Not "pascal", but delphi supports this style
-        if (text.midRef(index, 2) == "//") {
+        if (QStringView(text).mid(index, 2).toString() == "//") {
             doc->setSelection(line, index, line, index + 2);
             doc->removeSelectedText();
-        } else if (text.midRef(0, 2) == "//") {
+        } else if (QStringView(text).mid(0, 2).toString() == "//") {
             doc->setSelection(line, 0, line, 2);
             doc->removeSelectedText();
             doc->setCursorPosition(line, index - 2);
@@ -460,10 +461,10 @@ bool Sqriptor::toggleComment()
         int begin = text.lastIndexOf(bang, index >= text.size() ? -1 : index);
         if (begin > 2) // full line has better cursor management
             index = begin; // caught next line
-        if (text.midRef(index, 1) == bang) {
+        if (QStringView(text).mid(index, 1).toString() == bang) {
             doc->setSelection(line, index, line, index + 1);
             doc->removeSelectedText();
-        } else if (text.midRef(0, 1) == bang) {
+        } else if (QStringView(text).mid(0, 1).toString() == bang) {
             doc->setSelection(line, 0, line, 1);
             doc->removeSelectedText();
             doc->setCursorPosition(line, index - 1);

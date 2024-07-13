@@ -211,11 +211,12 @@ int Sqriptor::addTab()
     doc->setTabWidth(config.tab.width);
     doc->setTabDrawMode(QsciScintilla::TabStrikeOut);
 
-    if (QsciCommand *cmd = doc->standardCommands()->boundTo(Qt::CTRL + Qt::Key_D))
+    #define COMBO(_CMB_) QKeyCombination(_CMB_).toCombined()
+    if (QsciCommand *cmd = doc->standardCommands()->boundTo(COMBO(Qt::CTRL|Qt::Key_D)))
         cmd->setKey(0); // double line, nobody uses that and I want it for the comment toggle
-    if (QsciCommand *cmd = doc->standardCommands()->boundTo(Qt::CTRL + Qt::Key_L))
+    if (QsciCommand *cmd = doc->standardCommands()->boundTo(COMBO(Qt::CTRL|Qt::Key_L)))
         cmd->setKey(0); // delete line, nobody uses that and I want it for the filter
-    if (QsciCommand *cmd = doc->standardCommands()->boundTo(Qt::CTRL + Qt::Key_C))
+    if (QsciCommand *cmd = doc->standardCommands()->boundTo(COMBO(Qt::CTRL|Qt::Key_C)))
         cmd->setKey(0); // we replace this with our filter-aware copy function
 
     connect(doc, SIGNAL(copyAvailable(bool)), SIGNAL(copyAvailable(bool)));
@@ -402,24 +403,20 @@ bool Sqriptor::maybeSave(int idx)
         int ret = QMessageBox::warning(this, tr("Sqriptor"),
                      tr("<html><h2>Save me?</h2>%1 has been modified.<br>"
                         "Do you want to save your changes?</html>").arg(fileName),
-                     QMessageBox::Yes | QMessageBox::Default,
-                     QMessageBox::No,
-                     QMessageBox::Cancel | QMessageBox::Escape);
+                     QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel, QMessageBox::Yes);
         if (ret == QMessageBox::Yes)
             return save();
-        else if (ret == QMessageBox::Cancel)
+        else if (ret & (QMessageBox::Cancel|QMessageBox::Escape))
             return false;
     }
     if (!fileName.isEmpty() && !QFileInfo::exists(fileName)) {
         int ret = QMessageBox::warning(this, tr("Sqriptor"),
                      tr("<html><h2>Rescue me?</h2>%1 no longer exists!<br>"
                         "Do you want to save it?</html>").arg(fileName),
-                     QMessageBox::Save | QMessageBox::Default,
-                     QMessageBox::Discard,
-                     QMessageBox::Cancel | QMessageBox::Escape);
+                     QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel, QMessageBox::Save);
         if (ret == QMessageBox::Save)
             return save();
-        else if (ret == QMessageBox::Cancel)
+        else if (ret & (QMessageBox::Cancel|QMessageBox::Escape))
             return false;
     }
     return true;
@@ -440,8 +437,7 @@ void Sqriptor::checkTimestamp()
         int ret = QMessageBox::warning(this, tr("Sqriptor"),
                      tr("<html><h2>Update me?</h2>%1 was updated outside Sqriptor.<br>"
                         "Do you want to reload it?</html>").arg(fileName),
-                     QMessageBox::Yes,
-                     QMessageBox::No | QMessageBox::Default);
+                     QMessageBox::Yes|QMessageBox::No, QMessageBox::No);
         if (ret == QMessageBox::Yes)
             loadFile(fileName);
         else
@@ -456,8 +452,7 @@ void Sqriptor::loadFile(const QString &fileName)
         int ret = QMessageBox::warning(this, tr("How much do you RAM, Bro?"),
             tr("<b>The file </b>%1<b><br> is really huge!</b> (%2 MB)<br><br>"
             "Sure you want to open that?!").arg(fileName.section('/',-1,-1)).arg(file.size()/(1024*1024)),
-                     QMessageBox::Yes,
-                     QMessageBox::No | QMessageBox::Default);
+                     QMessageBox::Yes|QMessageBox::No, QMessageBox::No);
         if (ret == QMessageBox::No)
             return;
     }

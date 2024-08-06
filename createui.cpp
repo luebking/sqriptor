@@ -35,7 +35,11 @@
 #include <QPushButton>
 #include <QScrollBar>
 #include <QSpinBox>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 #include <QStringConverter>
+#else
+#include <QTextCodec>
+#endif
 #include <QTextEdit>
 #include <QToolButton>
 
@@ -992,7 +996,13 @@ QString Sqriptor::ask4Codec(const QString &codec, const QString &fileName)
     gld->addWidget(lbl, 1, 0);
     QComboBox *codecs = new QComboBox(warning);
     codecs->setEditable(true);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     QStringList codecNames = QStringConverter::availableCodecs();
+#else
+    QStringList codecNames;
+    for (const QByteArray &ba : QTextCodec::availableCodecs())
+        codecNames << ba;
+#endif
     codecNames.removeDuplicates();
     codecNames.sort(Qt::CaseInsensitive);
     codecs->addItems(codecNames);

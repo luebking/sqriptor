@@ -210,8 +210,11 @@ int Sqriptor::addTab()
     doc->setIndentationsUseTabs(config.tab.isTab);
     doc->setTabWidth(config.tab.width);
     doc->setTabDrawMode(QsciScintilla::TabStrikeOut);
-
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     #define COMBO(_CMB_) QKeyCombination(_CMB_).toCombined()
+#else
+    #define COMBO(_CMB_) int(_CMB_)
+#endif
     if (QsciCommand *cmd = doc->standardCommands()->boundTo(COMBO(Qt::CTRL|Qt::Key_D)))
         cmd->setKey(0); // double line, nobody uses that and I want it for the comment toggle
     if (QsciCommand *cmd = doc->standardCommands()->boundTo(COMBO(Qt::CTRL|Qt::Key_L)))
@@ -490,7 +493,11 @@ void Sqriptor::loadFile(const QString &fileName)
                         "<b>Do not save the file!</b><br>It would be <b>converted to UTF-8!</b>"
                         "</html>").arg(fileName));
         else
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
             in.setEncoding(*QStringConverter::encodingForName(ask4Codec(codec, fileName).toLatin1()));
+#else
+            in.setCodec(ask4Codec(codec, fileName).toLatin1());
+#endif
         QApplication::setOverrideCursor(Qt::WaitCursor);
     }
     doc->setText(in.readAll());

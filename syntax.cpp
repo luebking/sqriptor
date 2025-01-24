@@ -444,7 +444,8 @@ bool Sqriptor::toggleComment()
 
     if (name == "Bash" || name == "NIM" || name == "Python" || name == "Ruby" || name == "Perl" ||
         name == "Makefile" || name == "CMake" || name.startsWith("Fortran") || name.contains("LISP") ||
-        name == "TCL" || name == "AWK" || name == "Xorg" || name == "PkgBuild" || name == "YAML") {
+        name == "TCL" || name == "AWK" || name == "Xorg" || name == "PkgBuild" || name == "YAML" ||
+        name == "Properties") {
         // tcltk might or not require ";#" inline
         const QChar bang = name.startsWith("Fortran") ? '!' : name.contains("LISP") ? ';' : '#';
         QString text = doc->selectedText();

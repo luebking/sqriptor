@@ -266,7 +266,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
             finishStyle();
             length = 1;
             tag = true;
-            while (!(NEXT_IS_WS)) {
+            while (i.hasNext() && !(NEXT_IS_WS)) {
                 token = i.next().capturedView(0);
                 if (token == ">") {
                     ++length;

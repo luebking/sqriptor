@@ -111,9 +111,9 @@ void QsciLexerMarkdown2::updateColors()
     setColor(mid, Style::StrikeBoldItalicQuote);
 }
 
-static bool operator==(const QStringView&view, const char* string) {
-    return !view.compare(QLatin1String(string));
-}
+//static bool operator==(const QStringView&view, const char* string) {
+//    return !view.compare(QLatin1String(string));
+//}
 
 void QsciLexerMarkdown2::styleText(int start, int end)
 {

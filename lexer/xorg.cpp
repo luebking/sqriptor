@@ -50,9 +50,9 @@ void QsciLexerXorg::updateColors()
     setColor(Sqriptor::config.color.string, Style::Quote);
 }
 
-static bool operator==(const QStringView&view, const char* string) {
-    return !view.compare(QLatin1String(string));
-}
+//static bool operator==(const QStringView&view, const char* string) {
+//    return !view.compare(QLatin1String(string));
+//}
 
 void QsciLexerXorg::styleText (int start, int end)
 {

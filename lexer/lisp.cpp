@@ -76,9 +76,9 @@ void QsciLexerLISP::updateColors()
     setFont(Sqriptor::config.font, Style::Default);
 }
 
-static bool operator==(const QStringView&view, const char* string) {
-    return !view.compare(QLatin1String(string));
-}
+//static bool operator==(const QStringView&view, const char* string) {
+//    return !view.compare(QLatin1String(string));
+//}
 
 void QsciLexerLISP::styleText(int start, int end)
 {

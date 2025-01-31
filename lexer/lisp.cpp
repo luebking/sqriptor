@@ -80,6 +80,12 @@ void QsciLexerLISP::updateColors()
 //    return !view.compare(QLatin1String(string));
 //}
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+#define MATCH_VIEW matchView
+#else
+#define MATCH_VIEW match
+#endif
+
 void QsciLexerLISP::styleText(int start, int end)
 {
     static const QRegularExpression tokenizer(";|\\(|\\)|\\\"|#'|,@|,|\\s+|['`]*[A-Za-z\\d_#\\+@$%\\.\\^&=\\*-?\\!<>]+|'|`|\\W");
@@ -106,7 +112,7 @@ void QsciLexerLISP::styleText(int start, int end)
         // qDebug() << token;
         if (comment) {
             length += token.toUtf8().length(); // match.capturedLength(0); - this sucks
-            if (linebreak.match(token).hasMatch()) {
+            if (linebreak.MATCH_VIEW(token).hasMatch()) {
                 setStyling(length, Style::Comment); length = 0; comment = false;
             }
             continue;
@@ -121,7 +127,7 @@ void QsciLexerLISP::styleText(int start, int end)
         }
         if (string) {
             length += token.toUtf8().length(); // match.capturedLength(0); - this sucks
-            if (linebreak.match(token).hasMatch()) {
+            if (linebreak.MATCH_VIEW(token).hasMatch()) {
                 setStyling(length, Style::String); length = 0; // we assume that the string continues in the next line
             }
             continue;

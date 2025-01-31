@@ -113,7 +113,7 @@ void QsciLexerXorg::styleText (int start, int end)
             setStyling(length, Style::Default);
         length = 0;
     };
-                
+
     QString text = editor()->text(start, end);
     QRegularExpressionMatchIterator i = tokenizer.globalMatch(text/*, 0, QRegularExpression::PartialPreferFirstMatch*/);
     startStyling(start);
@@ -121,7 +121,11 @@ void QsciLexerXorg::styleText (int start, int end)
     while (i.hasNext()) {
         match = i.next();
         QStringView token = match.capturedView(0);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+        if (linebreak.matchView(token).hasMatch()) {
+#else
         if (linebreak.match(token).hasMatch()) {
+#endif
             haveKey = false;
             if (comment) {
                 setStyling(length, Style::Comment);

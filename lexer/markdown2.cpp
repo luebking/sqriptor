@@ -115,6 +115,12 @@ void QsciLexerMarkdown2::updateColors()
 //    return !view.compare(QLatin1String(string));
 //}
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+#define MATCH_VIEW matchView
+#else
+#define MATCH_VIEW match
+#endif
+
 void QsciLexerMarkdown2::styleText(int start, int end)
 {
     static const QRegularExpression tokenizer("######|#####|####|###|##|---+|====+|~~|"
@@ -169,8 +175,10 @@ void QsciLexerMarkdown2::styleText(int start, int end)
         prev = match;
         match = i.next();
         QStringView token = match.capturedView(0);
-#define NEXT_IS_WS i.hasNext() && !nonWS.match(i.peekNext().capturedView(0)).hasMatch()
-        if (linebreak.match(token).hasMatch()) {
+
+#define NEXT_IS_WS i.hasNext() && !nonWS.MATCH_VIEW(i.peekNext().capturedView(0)).hasMatch()
+
+        if (linebreak.MATCH_VIEW(token).hasMatch()) {
             if (header || quote) {
                 finishStyle();
             }
@@ -238,8 +246,8 @@ void QsciLexerMarkdown2::styleText(int start, int end)
             } else if ((token == "*" || token == "-" || token == "+") && NEXT_IS_WS) {
                 finishStyle(); newline = false; setStyling(1, Style::List);
                 continue;
-            } else if ((header1.match(token).hasMatch() || header2.match(token).hasMatch()) &&
-                        i.hasNext() && linebreak.match(i.peekNext().capturedView(0)).hasMatch()) {
+            } else if ((header1.MATCH_VIEW(token).hasMatch() || header2.MATCH_VIEW(token).hasMatch()) &&
+                        i.hasNext() && linebreak.MATCH_VIEW(i.peekNext().capturedView(0)).hasMatch()) {
                 finishStyle(); newline = false; setStyling(match.capturedLength(0), Style::BoldQuote);
                 continue;
             } else {
@@ -252,7 +260,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
             }
         }
         
-        if (newline && nonWS.match(token).hasMatch())
+        if (newline && nonWS.MATCH_VIEW(token).hasMatch())
             newline = false;
         
         if (token == "[") {
@@ -282,7 +290,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
             for (int fs = 0; fs < FontStyleCount; ++fs) {
                 if (token == fsIndicator[fs]) {
                     const bool nexWS = NEXT_IS_WS;
-                    if ((style & (1<<fs)) && nonWS.match(prev.capturedView()).hasMatch()) {
+                    if ((style & (1<<fs)) && nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()) {
                         length += match.capturedLength(0); // capture indicator
                         finishStyle();
                         length -= match.capturedLength(0); // sanitized below!

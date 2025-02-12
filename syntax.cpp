@@ -31,7 +31,6 @@
 #include <Qsci/qscilexerbatch.h>
 #include <Qsci/qscilexercmake.h>
 #include <Qsci/qscilexercoffeescript.h>
-#include <Qsci/qscilexercpp.h>
 #include <Qsci/qscilexercsharp.h>
 #include <Qsci/qscilexercss.h>
 #include <Qsci/qscilexercustom.h>
@@ -68,6 +67,7 @@
 #include <Qsci/qscilexeryaml.h>
 
 #include "lexer/awk.h"
+#include "lexer/cppqt.h"
 #include "lexer/fontconfig.h"
 #include "lexer/journal.h"
 #include "lexer/lisp.h"
@@ -257,8 +257,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         return;
     }
 
-#define MAKE_LEXER(_TYPE_) case Syntax::_TYPE_ : \
-            if (!hook) syntaxDict[syntax] = new QsciLexer##_TYPE_(this); \
+#define MAKE_LEXER_2(_TYPE_,_CLASS_) case Syntax::_TYPE_ : \
+            if (!hook) syntaxDict[syntax] = new QsciLexer##_CLASS_(this); \
             syntaxDict[syntax]->setDefaultFont(config.font);\
             syntaxDict[syntax]->setFont(config.font);\
             syntaxDict[syntax]->setDefaultPaper(COLOR_BACKGROUND);\
@@ -267,6 +267,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
             syntaxDict[syntax]->setColor(COLOR_FOREGROUND);\
             setColors##_TYPE_(static_cast<QsciLexer##_TYPE_ * >(syntaxDict[syntax])); \
             break;
+
+#define MAKE_LEXER(_TYPE_) MAKE_LEXER_2(_TYPE_,_TYPE_)
     
     QsciLexer *hook = syntaxDict[syntax];
     if (updateColorsOnly && !hook)
@@ -293,7 +295,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         case Syntax::JavaScript:
             if (!hook) hook = syntaxDict[syntax] = new QsciLexerJavaScript(this);
             [[fallthrough]];
-        MAKE_LEXER(CPP)
+        MAKE_LEXER_2(CPP,CPPQt)
         MAKE_LEXER(CSS)
         MAKE_LEXER(D)
         MAKE_LEXER(Diff)

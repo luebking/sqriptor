@@ -22,6 +22,7 @@ static void setColorsCPP(QsciLexerCPP *lexer)
     lexer->setColor(c, QsciLexerCPP::Regex);
     lexer->setColor(c, QsciLexerCPP::TaskMarker);
     lexer->setColor(c, QsciLexerCPP::UserLiteral);
+    lexer->setColor(c, QsciLexerCPP::KeywordSet2); // we use that for Qt macros
     //lexer->setColor(c, QsciLexerCPP::Identifier); // everything is an identifier…
     c = COLOR_NUMBER;
     lexer->setColor(c, QsciLexerCPP::Number);
@@ -31,7 +32,6 @@ static void setColorsCPP(QsciLexerCPP *lexer)
     lexer->setColor(c, QsciLexerCPP::CommentDocKeyword);
     c = COLOR_KEYWORD;
     lexer->setColor(c, QsciLexerCPP::Keyword);
-    lexer->setColor(c, QsciLexerCPP::KeywordSet2);
     lexer->setColor(c, QsciLexerCPP::GlobalClass);
     c = COLOR_ERROR;
     lexer->setColor(c, QsciLexerCPP::CommentDocKeywordError);

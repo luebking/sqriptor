@@ -233,6 +233,11 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
                 }
             }
         }
+        if (syntax == Syntax::Auto) {
+            QString shebang = document->text(1).section("\n",0,0);
+            if (shebang.contains("X.Org X Server"))
+                syntax = Syntax::XorgLog;
+        }
         if (syntax == Syntax::Auto)
             return;
     }

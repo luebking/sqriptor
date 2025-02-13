@@ -74,6 +74,7 @@
 #include "lexer/markdown2.h"
 #include "lexer/nim.h"
 #include "lexer/pkgbuild.h"
+#include "lexer/qtpro.h"
 #include "lexer/xorg.h"
 #include "lexer/xorglog.h"
 
@@ -133,6 +134,7 @@ static void setColorsLISP(QsciLexerLISP *lexer) { lexer->updateColors(); }
 static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(); }
 static void setColorsNIM(QsciLexerNIM *lexer) { setColorsPython(lexer); }
 static void setColorsPkgBuild(QsciLexerPkgBuild *lexer) { setColorsBash(lexer); }
+static void setColorsQtPro(QsciLexerQtPro *lexer) { setColorsBash(lexer); }
 static void setColorsXorg(QsciLexerXorg *lexer) { lexer->updateColors(); }
 static void setColorsXorgLog(QsciLexerXorgLog *lexer) { lexer->updateColors(); }
 
@@ -336,6 +338,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         MAKE_LEXER(POV)
         MAKE_LEXER(Properties)
         MAKE_LEXER(Python)
+        MAKE_LEXER(QtPro)
         MAKE_LEXER(Ruby)
         MAKE_LEXER(Spice)
         MAKE_LEXER(SQL)
@@ -454,7 +457,7 @@ bool Sqriptor::toggleComment()
     if (name == "Bash" || name == "NIM" || name == "Python" || name == "Ruby" || name == "Perl" ||
         name == "Makefile" || name == "CMake" || name.startsWith("Fortran") || name.contains("LISP") ||
         name == "TCL" || name == "AWK" || name == "Xorg" || name == "PkgBuild" || name == "YAML" ||
-        name == "Properties") {
+        name == "Properties" || name == "QtPro") {
         // tcltk might or not require ";#" inline
         const QChar bang = name.startsWith("Fortran") ? '!' : name.contains("LISP") ? ';' : '#';
         QString text = doc->selectedText();

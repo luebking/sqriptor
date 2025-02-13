@@ -763,7 +763,7 @@ void Sqriptor::createUI()
     ADD_SYNTAX2(IDL, "\tInteractive Data Language"); ADD_SYNTAX(Matlab); ADD_SYNTAX(Octave);
     
     menu = syntaxMenu->addMenu(tr("&Buildsystem"));
-    ADD_SYNTAX(CMake); ADD_SYNTAX(Makefile); ADD_SYNTAX(PkgBuild);
+    ADD_SYNTAX(CMake); ADD_SYNTAX(Makefile); ADD_SYNTAX(QtPro); ADD_SYNTAX(PkgBuild);
     
     menu = syntaxMenu->addMenu(tr("&Config/Data"));
     ADD_SYNTAX(Diff); ADD_SYNTAX(FontConfig); ADD_SYNTAX2(Journal, "\tSystemD"); ADD_SYNTAX(JSON);

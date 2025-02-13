@@ -391,7 +391,7 @@ bool Sqriptor::toggleComment()
     QString name = lexer->metaObject()->className();
     name.remove("QsciLexer");
     bool isHtml = false;
-    if (name == "CPP" || name == "CSharp" || name == "Java" ||  name == "CSS" ||
+    if (name == "CPPQt" || name == "CSharp" || name == "Java" ||  name == "CSS" ||
         name == "JavaScript" || name == "D" || // D also supports /++/
         (isHtml = (name == "HTML")) || name == "XML" || name == "Pascal" || name == "FontConfig") {
         if (isHtml) {

@@ -231,6 +231,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
                     if (shebang.startsWith("<!DOCTYPE fontconfig"))
                         syntax = Syntax::FontConfig;
                 }
+            } else if (shebang.contains("/var/log/Xorg.")) {
+                syntax = Syntax::XorgLog;
             }
         }
         if (syntax == Syntax::Auto) {

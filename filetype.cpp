@@ -119,6 +119,7 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffixes["lisp"] = Syntax::LISP;
     suffixes["el"] = Syntax::LISP;
     suffixes["pro"] = Syntax::QtPro;
+    suffixes["qrc"] = Syntax::XML;
     
     suffixes["Makefile"] = Syntax::Makefile;
 

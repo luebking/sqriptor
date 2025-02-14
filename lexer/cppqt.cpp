@@ -66,12 +66,12 @@ const char *QsciLexerCPPQt::keywords(int set) const
             "explicit export extern false float for friend goto if "
             "inline int long mutable namespace new not not_eq "
             "operator or or_eq private protected public register "
-            "reinterpret_cast return short signed sizeof static "
+            "reinterpret_cast short signed sizeof static"
             "static_cast struct switch template this throw true "
             "try typedef typeid typename union unsigned using "
             "virtual void volatile wchar_t while xor xor_eq"
             // extra stuff
-            "char8_t char16_t char32_t constexpr decltype noexcept "
+            "char8_t char16_t char32_t constexpr decltype noexcept override final "
             // Qt stuff
             "foreach "
             "qint8 qint16 qint32 qint64 qint128 qintptr qlonglong "
@@ -81,7 +81,7 @@ const char *QsciLexerCPPQt::keywords(int set) const
     if (set == 2) {
 //        qDebug() << QsciLexerCPP::keywords(set);
         return 
-            "nullptr alignas alignof override final import module "
+            "return nullptr alignas alignof import module "
             "connect disconnect emit SIGNAL signals SLOT slots tr "
             "qobject_cast Q_ARG Q_ENUM Q_OBJECT Q_RETURN_ARG Q_FLAG Q_UNUSED qDebug";
     }

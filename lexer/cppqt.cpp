@@ -64,16 +64,16 @@ const char *QsciLexerCPPQt::keywords(int set) const
             "catch char class compl const const_cast continue "
             "default delete do double dynamic_cast else enum "
             "explicit export extern false float for friend goto if "
-            "inline int long mutable namespace new not not_eq "
+            "inline int long mutable namespace new "
             "operator or or_eq private protected public register "
-            "reinterpret_cast short signed sizeof static"
+            "reinterpret_cast short signed sizeof static "
             "static_cast struct switch template this throw true "
             "try typedef typeid typename union unsigned using "
-            "virtual void volatile wchar_t while xor xor_eq"
+            "virtual void volatile wchar_t while"
             // extra stuff
             "char8_t char16_t char32_t constexpr decltype noexcept override final "
             // Qt stuff
-            "foreach "
+            "foreach qobject_cast "
             "qint8 qint16 qint32 qint64 qint128 qintptr qlonglong "
             "qptrdiff qreal qsizetype quint8 quint16 quint32 quint64 "
             "quint128 quintptr qulonglong uchar uint ulong ushort";
@@ -83,7 +83,28 @@ const char *QsciLexerCPPQt::keywords(int set) const
         return 
             "return nullptr alignas alignof import module "
             "connect disconnect emit SIGNAL signals SLOT slots tr "
-            "qobject_cast Q_ARG Q_ENUM Q_OBJECT Q_RETURN_ARG Q_FLAG Q_UNUSED qDebug";
+            "Q_ARG Q_ENUM Q_OBJECT Q_RETURN_ARG Q_FLAG Q_UNUSED qDebug";
+    }
+/*
+    if (set == 3) {
+        return
+            "a addindex addtogroup anchor arg attention author b "
+            "brief bug c class code date def defgroup deprecated "
+            "dontinclude e em endcode endhtmlonly endif "
+            "endlatexonly endlink endverbatim enum example "
+            "exception f$ f[ f] file fn hideinitializer "
+            "htmlinclude htmlonly if image include ingroup "
+            "internal invariant interface latexonly li line link "
+            "mainpage name namespace nosubgrouping note overload "
+            "p page par param post pre ref relates remarks return "
+            "retval sa section see showinitializer since skip "
+            "skipline struct subsection test throw todo typedef "
+            "union until var verbatim verbinclude version warning "
+            "weakgroup $ @ \\ & < > # { }";
+    }
+*/
+    if (set == 4) {
+        return "xor xor_eq not not_eq";
     }
     return QsciLexerCPP::keywords(set);
 }

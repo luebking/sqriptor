@@ -30,9 +30,9 @@ static void setColorsCPP(QsciLexerCPP *lexer)
     c = COLOR_OPERATOR;
     lexer->setColor(c, QsciLexerCPP::Operator);
     lexer->setColor(c, QsciLexerCPP::CommentDocKeyword);
+    lexer->setColor(c, QsciLexerCPP::GlobalClass); // type isn't used by QsciLexerCPP, we use it for more ops
     c = COLOR_KEYWORD;
     lexer->setColor(c, QsciLexerCPP::Keyword);
-    lexer->setColor(c, QsciLexerCPP::GlobalClass);
     c = COLOR_ERROR;
     lexer->setColor(c, QsciLexerCPP::CommentDocKeywordError);
     lexer->setColor(c, QsciLexerCPP::UnclosedString);

@@ -191,6 +191,9 @@ int Sqriptor::addTab()
     doc->markerDefine(QsciScintilla::Bookmark, 1);
     doc->setMarkerForegroundColor(config.color.bg, 1);
     doc->setMarkerBackgroundColor(palette().color(QPalette::Link), 1);
+    doc->markerDefine(QsciScintilla::LeftRectangle, 2);
+//    doc->setMarkerForegroundColor(config.color.error, 2);
+    doc->setMarkerBackgroundColor(config.color.error, 2);
     doc->setWrapVisualFlags(QsciScintilla::WrapFlagNone, QsciScintilla::WrapFlagInMargin, 0);
     doc->setWrapMode(config.wrap.words ? QsciScintilla::WrapWhitespace : QsciScintilla::WrapNone);
     m_wrapped->setChecked(config.wrap.words);
@@ -230,6 +233,14 @@ int Sqriptor::addTab()
             setWindowModified(doc->isModified());
             menuBar()->update();
         }
+    });
+    connect(doc, &QsciScintilla::textChanged, [=]() {
+        int line, index;
+        doc->getCursorPosition(&line, &index);
+        if (doc->text(line).endsWith(" \n"))
+            textEdit()->markerAdd(line, 2);
+        else
+            textEdit()->markerDelete(line, 2);
     });
 
     setSyntax(Syntax::None, doc);
@@ -293,7 +304,7 @@ void Sqriptor::toggleBookmark()
 {
     int line, index;
     textEdit()->getCursorPosition(&line, &index);
-    if (textEdit()->markersAtLine(line) == 2)
+    if (textEdit()->markersAtLine(line) & 2)
         textEdit()->markerDelete(line, 1);
     else
         textEdit()->markerAdd(line, 1);
@@ -303,7 +314,7 @@ void Sqriptor::nextBookmark()
 {
     int line, index;
     textEdit()->getCursorPosition(&line, &index);
-    if (textEdit()->markersAtLine(line) == 2)
+    if (textEdit()->markersAtLine(line) & 2)
         ++line;
     textEdit()->setCursorPosition(textEdit()->markerFindNext(line, 2), 0);
 }
@@ -312,7 +323,7 @@ void Sqriptor::prevBookmark()
 {
     int line, index;
     textEdit()->getCursorPosition(&line, &index);
-    if (textEdit()->markersAtLine(line) == 2)
+    if (textEdit()->markersAtLine(line) & 2)
         --line;
     textEdit()->setCursorPosition(textEdit()->markerFindPrevious(line, 2), 0);
 }

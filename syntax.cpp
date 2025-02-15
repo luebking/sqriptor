@@ -213,6 +213,9 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
             syntax = Sqriptor::syntax(filename);
             if (syntax == Syntax::Properties && filename.contains("xorg.conf"))
                 syntax = Syntax::Xorg;
+            if (syntax == Syntax::Auto && (filename.endsWith("git-rebase-todo") ||
+                                           filename.endsWith("COMMIT_EDITMSG")))
+                syntax = Syntax::Bash;
         }
         if (syntax == Syntax::Auto) {
             QString shebang = document->text(0).section("\n",0,0);

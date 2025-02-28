@@ -69,7 +69,7 @@ const char *QsciLexerCPPQt::keywords(int set) const
             "reinterpret_cast short signed sizeof static "
             "static_cast struct switch template this throw true "
             "try typedef typeid typename union unsigned using "
-            "virtual void volatile wchar_t while"
+            "virtual void volatile wchar_t while "
             // extra stuff
             "char8_t char16_t char32_t constexpr decltype noexcept override final "
             // Qt stuff

@@ -745,8 +745,8 @@ void Sqriptor::createUI()
     
     menu = syntaxMenu->addMenu(tr("&Code"));
     ADD_SYNTAX(CPP); ADD_SYNTAX(CSharp); ADD_SYNTAX(D); ADD_SYNTAX(Fortran);
-    ADD_SYNTAX(Fortran77); ADD_SYNTAX(Java); ADD_SYNTAX(LISP); ADD_SYNTAX(NIM); ADD_SYNTAX(Pascal);
-    ADD_SYNTAX(Python);
+    ADD_SYNTAX(Fortran77); ADD_SYNTAX(GLSL); ADD_SYNTAX(Java); ADD_SYNTAX(LISP); ADD_SYNTAX(NIM);
+    ADD_SYNTAX(Pascal); ADD_SYNTAX(Python);
     
     menu = syntaxMenu->addMenu(tr("&Script"));
     ADD_SYNTAX(AVS); ADD_SYNTAX(AWK); ADD_SYNTAX(Bash); ADD_SYNTAX(Batch); ADD_SYNTAX(CoffeeScript);

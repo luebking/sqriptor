@@ -69,6 +69,7 @@
 #include "lexer/awk.h"
 #include "lexer/cppqt.h"
 #include "lexer/fontconfig.h"
+#include "lexer/glsl.h"
 #include "lexer/journal.h"
 #include "lexer/lisp.h"
 #include "lexer/markdown2.h"
@@ -129,6 +130,7 @@ static QsciLexer *syntaxDict[Syntax::Count] = {nullptr};
 
 static void setColorsAWK(QsciLexerAWK *lexer) { setColorsBash(lexer); }
 static void setColorsFontConfig(QsciLexerFontConfig *lexer) { setColorsHTML(lexer); }
+static void setColorsGLSL(QsciLexerGLSL *lexer) { setColorsCPP(lexer); }
 static void setColorsJournal(QsciLexerJournal *lexer) { lexer->updateColors(); }
 static void setColorsLISP(QsciLexerLISP *lexer) { lexer->updateColors(); }
 static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(); }
@@ -319,6 +321,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
             [[fallthrough]];
             MAKE_LEXER(HTML)
 
+        MAKE_LEXER(GLSL)
         MAKE_LEXER(Journal)
         MAKE_LEXER(JSON)
         MAKE_LEXER(LISP)

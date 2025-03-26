@@ -76,6 +76,7 @@
 #include "lexer/nim.h"
 #include "lexer/pkgbuild.h"
 #include "lexer/qtpro.h"
+#include "lexer/rust.h"
 #include "lexer/xorg.h"
 #include "lexer/xorglog.h"
 
@@ -137,6 +138,7 @@ static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(
 static void setColorsNIM(QsciLexerNIM *lexer) { setColorsPython(lexer); }
 static void setColorsPkgBuild(QsciLexerPkgBuild *lexer) { setColorsBash(lexer); }
 static void setColorsQtPro(QsciLexerQtPro *lexer) { setColorsBash(lexer); }
+static void setColorsRust(QsciLexerRust *lexer) { setColorsCPP(lexer); }
 static void setColorsXorg(QsciLexerXorg *lexer) { lexer->updateColors(); }
 static void setColorsXorgLog(QsciLexerXorgLog *lexer) { lexer->updateColors(); }
 
@@ -346,6 +348,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         MAKE_LEXER(Python)
         MAKE_LEXER(QtPro)
         MAKE_LEXER(Ruby)
+        MAKE_LEXER(Rust)
         MAKE_LEXER(Spice)
         MAKE_LEXER(SQL)
         MAKE_LEXER(TCL)

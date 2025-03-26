@@ -121,6 +121,7 @@ Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
     suffixes["pro"] = Syntax::QtPro;
     suffixes["qrc"] = Syntax::XML;
     suffixes["glsl"] = Syntax::GLSL;
+    suffixes["rs"] = Syntax::Rust;
     
     suffixes["Makefile"] = Syntax::Makefile;
 

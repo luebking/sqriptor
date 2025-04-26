@@ -170,7 +170,7 @@ protected:
             if (text.isEmpty())
                 return false;
 
-            doc->replaceSelectedText(QChar(kev->key()) + text + QChar(other));
+            doc->replaceSelectedText(QLatin1Char(kev->key()) + text + QLatin1Char(other));
             return true;
         }
         return false;

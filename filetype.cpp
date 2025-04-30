@@ -32,7 +32,8 @@ CSharp, IDL, Java, JavaScript, Fortran, XML, Octave
 */
 
 Sqriptor::Syntax Sqriptor::syntax(QString suffix) const {
-    suffix = suffix.section('/', -1);
+    static QRegularExpression whitespace("\\s");
+    suffix = suffix.section('/', -1).section(whitespace, 0, 0);
     if (suffix == "CMakeLists.txt")
         return Syntax::CMake;
     static QRegularExpression xorg_n_log("^xorg\\.[0-9\\.]*log\(\\.old)*$", QRegularExpression::CaseInsensitiveOption);

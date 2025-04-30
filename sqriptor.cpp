@@ -523,6 +523,7 @@ void Sqriptor::loadFile(const QString &fileName)
             doc->setEolMode(QsciScintilla::EolUnix);
         static const QRegularExpression blank_colon("[\\s:]");
         static const QRegularExpression tabstop_ts("(tabstop|ts)=.*");
+        static const QRegularExpression filetype_ft("(filetype|ft)=.*");
         for (int i = 0; i < doc->lines(); ++i) {
             vimHints = doc->text(i);
             if (vimHints.contains("vim:")) {
@@ -544,6 +545,11 @@ void Sqriptor::loadFile(const QString &fileName)
                     }
                     // if (vimmodes.contains("shiftwidth") || vimmodes.contains("sw"))
                     // nobody cares about the stupid shiftwidth
+                }
+                int filetype = vimmodes.indexOf(filetype_ft);
+                if (filetype > -1) {
+                    setSyntax(Sqriptor::syntax(vimmodes.at(filetype).section('=',-1)), doc);
+                    isModeline = true;
                 }
                 // TODO: apply ft/filetype?
                 if (isModeline)

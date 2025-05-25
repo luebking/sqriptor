@@ -406,7 +406,7 @@ bool Sqriptor::toggleComment()
     name.remove("QsciLexer");
     bool isHtml = false;
     if (name == "CPPQt" || name == "CSharp" || name == "Java" ||  name == "CSS" ||
-        name == "JavaScript" || name == "D" || // D also supports /++/
+        name == "JavaScript" || name == "D" || /* D also supports /++/ */ name == "Lua" ||
         (isHtml = (name == "HTML")) || name == "XML" || name == "Pascal" || name == "FontConfig") {
         if (isHtml) {
 //            QString suffix = doc->property("sqriptor_filename").toString().section('.', -1);
@@ -418,6 +418,8 @@ bool Sqriptor::toggleComment()
             head = "<!--"; tail = "-->";
         } else if (name == "Pascal") {
             head = "{"; tail = "}";
+        } else if (name == "Lua") {
+            head = "--[["; tail = "--]]";
         }
 #define COMMENT_SEGMENT head.length(), text.length() - (head.length() + tail.length())
         QString text = doc->selectedText();
@@ -450,15 +452,18 @@ bool Sqriptor::toggleComment()
         }
 
         // Not "pascal", but delphi supports this style
-        if (QStringView(text).mid(index, 2).toString() == "//") {
+        QString bangs = "//";
+        if (name == "Lua")
+            bangs = "--";
+        if (QStringView(text).mid(index, 2).toString() == bangs) {
             doc->setSelection(line, index, line, index + 2);
             doc->removeSelectedText();
-        } else if (QStringView(text).mid(0, 2).toString() == "//") {
+        } else if (QStringView(text).mid(0, 2).toString() == bangs) {
             doc->setSelection(line, 0, line, 2);
             doc->removeSelectedText();
             doc->setCursorPosition(line, index - 2);
         } else {
-            doc->insertAt("//", line, 0);
+            doc->insertAt(bangs, line, 0);
         }
         return true;
     }

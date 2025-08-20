@@ -122,7 +122,7 @@ void Sqriptor::showSettings()
                 updatePalette();
                 QSize size = config.size;
                 if (config.sizeMode == Size::Relative && size.width() < 101 && size.height() < 101) {
-                    QRect geo = QGuiApplication::screenAt(pos())->availableGeometry();
+                    QRect geo = availableGeometry();
                     size.setWidth(qRound(geo.width()*size.width()/100.0f));
                     size.setHeight(qRound(geo.height()*size.height()/100.0f));
                 }
@@ -138,7 +138,7 @@ void Sqriptor::showSettings()
                 gs_ui->windowSizeX->setSuffix(" %");
                 gs_ui->windowSizeY->setSuffix(" %");
                 if (gs_ui->windowSizeX->value() > 100) { // comes from relative
-                    QRect geo = QGuiApplication::screenAt(pos())->availableGeometry();
+                    QRect geo = availableGeometry();
                     gs_ui->windowSizeX->setValue(qRound(gs_ui->windowSizeX->value()*100.0f/geo.width()));
                     gs_ui->windowSizeY->setValue(qRound(gs_ui->windowSizeY->value()*100.0f/geo.height()));
                 }
@@ -148,7 +148,7 @@ void Sqriptor::showSettings()
                 gs_ui->windowSizeX->setSuffix(" px");
                 gs_ui->windowSizeY->setSuffix(" px");
                 if (gs_ui->windowSizeX->value() < 101) { // comes from relative
-                    QRect geo = QGuiApplication::screenAt(pos())->availableGeometry();
+                    QRect geo = availableGeometry();
                     gs_ui->windowSizeX->setValue(qRound(geo.width()*gs_ui->windowSizeX->value()/100.0f));
                     gs_ui->windowSizeY->setValue(qRound(geo.height()*gs_ui->windowSizeY->value()/100.0f));
                 }

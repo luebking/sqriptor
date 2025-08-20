@@ -336,7 +336,7 @@ void Sqriptor::readSettings()
     QSize size(settings.value("size", QSize(62,62)).toSize());
     config.size = size;
     if (config.sizeMode == Size::Relative && size.width() < 101 && size.height() < 101) {
-        QRect geo = QGuiApplication::screenAt(pos())->availableGeometry();
+        QRect geo = availableGeometry();
         size.setWidth(qRound(geo.width()*size.width()/100.0f));
         size.setHeight(qRound(geo.height()*size.height()/100.0f));
     }
@@ -631,6 +631,17 @@ void Sqriptor::readStdin()
         input = nullptr;
     }
 }
+
+QRect Sqriptor::availableGeometry() const
+{
+    QScreen *s = QGuiApplication::screenAt(pos());
+    if (!s)
+        s = QGuiApplication::primaryScreen();
+    if (!s)
+        return QRect(0,0,1024,768); // XGA *shrug*
+    return s->availableGeometry();
+}
+
 // ===========================================
 
 int main(int argc, char **argv)

@@ -99,6 +99,7 @@ private slots:
     void copy();
 
 private:
+    QRect availableGeometry() const;
     void createUI();
     void readSettings();
     void writeSettings();

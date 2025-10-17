@@ -303,11 +303,15 @@ bool Sqriptor::saveAs()
 void Sqriptor::toggleBookmark()
 {
     int line, index;
+    bool setMarker = true;
     textEdit()->getCursorPosition(&line, &index);
-    if (textEdit()->markersAtLine(line) & 2)
+    while (textEdit()->markersAtLine(line) & 2) {
         textEdit()->markerDelete(line, 1);
-    else
+        setMarker = false;
+    }
+    if (setMarker) {
         textEdit()->markerAdd(line, 1);
+    }
 }
 
 void Sqriptor::nextBookmark()

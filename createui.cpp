@@ -298,6 +298,12 @@ void Sqriptor::createUI()
     showFilterContext->setCheckable(true);
     showFilterContext->setChecked(false);
     showFilterContext->setVisible(false);
+    QAction *filterBookmarks = new QAction(tr("Filter Bookmarks"), searchBar);
+    tbmenu->addAction(filterBookmarks);
+    filterBookmarks->setCheckable(true);
+    filterBookmarks->setChecked(false);
+    filterBookmarks->setVisible(false);
+    filterBookmarks->setShortcut(tr("Alt+B"));
     btn->setMenu(tbmenu);
     
     static bool menuWasVisible = true;
@@ -424,17 +430,16 @@ void Sqriptor::createUI()
         also presses Enter for no reason... I should maybe @todo test that...
     */
 
-#define FILTER_TEXT(_T_, _R_, _I_) \
+#define FILTER_TEXT(_MATCH_) \
     int lastMatch = 0; /* skip first line because scintilla won't hide it */ \
     for (int i = 1; i < doc->lines(); ++i) { \
-        if ((grow || doc->SendScintilla(QsciScintillaBase::SCI_GETLINEVISIBLE, i)) \
-                                            && _I_ doc->text(i).contains(_T_, _R_)) { \
+        if ((grow || doc->SendScintilla(QsciScintillaBase::SCI_GETLINEVISIBLE, i)) && _MATCH_) { \
             if (lastMatch + context < i - 1 - context) { \
                 doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, lastMatch + 1 + context, i - 1 - context); \
                 if (context) \
                     doc->markerAdd(lastMatch + context, s_filtersplitter); \
             } \
-            context = showFilterContext->isChecked() ? 5 : 0; \
+            context = showContext ? 5 : 0; \
             doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, i - context, i + context); \
             lastMatch = i; \
         } \
@@ -449,6 +454,7 @@ void Sqriptor::createUI()
 
     static QString lastFilter;
     static bool wasInverted = filterInvert->isChecked();
+    static bool hadContext = showFilterContext->isChecked() || filterBookmarks->isChecked();
     connect(m_documents, &QTabWidget::currentChanged, [=](int idx) { lastFilter.clear(); });
     auto l_filter = [=]() {
         bool filterTimerWasActive = false;
@@ -456,6 +462,7 @@ void Sqriptor::createUI()
         const QString filter = m_filterLine->text();
 
         int context = 0;
+        const bool showContext = showFilterContext->isChecked() || filterBookmarks->isChecked();
         static const int s_filtersplitter = 31;
         doc->markerDefine(QsciScintilla::Underline, s_filtersplitter);
         QColor bg = config.color.bg, fg = config.color.fg;
@@ -466,17 +473,21 @@ void Sqriptor::createUI()
             the filter got narrower... this could be a problem w/ regexp
             @todo test that, too...
         */
-        const bool grow = searchRegExp->isChecked() || lastFilter.isEmpty() ||
-                          !filter.contains(lastFilter) || wasInverted != filterInvert->isChecked();
-        if (grow && showFilterContext->isChecked())
+        const bool grow =   searchRegExp->isChecked() || lastFilter.isEmpty() ||
+                            !filter.contains(lastFilter) || wasInverted != filterInvert->isChecked() ||
+                            (showContext && !hadContext);
+        if ((grow && showContext) || (!showContext && hadContext))
             doc->markerDeleteAll(s_filtersplitter);
         lastFilter = filter;
         wasInverted = filterInvert->isChecked();
+        hadContext = showContext;
 
         QElapsedTimer profiler;
         profiler.start();
 
-        if (filter.isEmpty()) {
+        if (filterBookmarks->isChecked()) {
+            FILTER_TEXT((doc->markersAtLine(i) & 2));
+        } else if (filter.isEmpty()) {
             doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, 0, doc->lines() - 1);
             doc->ensureCursorVisible();
         } else if (searchRegExp->isChecked()) {
@@ -484,17 +495,17 @@ void Sqriptor::createUI()
                                                 QRegularExpression::NoPatternOption :
                                                 QRegularExpression::CaseInsensitiveOption);
             if (filterInvert->isChecked()) {
-                FILTER_TEXT(rx, nullptr, !);
+                FILTER_TEXT(!doc->text(i).contains(rx));
             } else {
-                FILTER_TEXT(rx, nullptr, );
+                FILTER_TEXT(doc->text(i).contains(rx));
             }
         } else {
             Qt::CaseSensitivity cs = searchCaseSens->isChecked() ?
                                             Qt::CaseSensitive : Qt::CaseInsensitive;
             if (filterInvert->isChecked()) {
-                FILTER_TEXT(filter, cs, !);
+                FILTER_TEXT(!doc->text(i).contains(filter, cs));
             } else {
-                FILTER_TEXT(filter, cs, );
+                FILTER_TEXT(doc->text(i).contains(filter, cs));
             }
         }
         if (filterTimerWasActive)
@@ -504,6 +515,7 @@ void Sqriptor::createUI()
     connect(filterTimer, &QTimer::timeout, [=]() { l_filter(); });
     connect(m_filterLine, &QLineEdit::returnPressed, [=]() { filterTimer->stop(); l_filter(); });
     connect(m_filterLine, &QLineEdit::textEdited, [=]() { filterTimer->start(); });
+    connect(filterBookmarks, &QAction::toggled, [=]() { filterTimer->stop(); l_filter(); });
 
     QSpinBox *gotoLine = new QSpinBox(searchBar);
     connect(qApp, &QApplication::focusChanged, [=]() {
@@ -538,7 +550,8 @@ void Sqriptor::createUI()
                     replaceLine->hide(); btn->hide(); findAllAct->setVisible(false); \
                     replaceAll->setVisible(false); showFilterContext->setVisible(false); \
                     filterInvert->setVisible(false); searchWord->setVisible(false); \
-                    searchForward->setVisible(false); navHelper->allowTab = false;
+                    searchForward->setVisible(false); navHelper->allowTab = false; \
+                    filterBookmarks->setVisible(false);
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
     menu = editMenu->addMenu(tr("&Search and replace"));
@@ -631,6 +644,7 @@ void Sqriptor::createUI()
         btn->show();
         m_filterLine->show();
         showFilterContext->setVisible(true);
+        filterBookmarks->setVisible(true);
         filterInvert->setVisible(true);
         m_filterLine->setFocus();
         m_filterLine->selectAll();

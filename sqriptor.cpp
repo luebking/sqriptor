@@ -332,6 +332,20 @@ void Sqriptor::prevBookmark()
     textEdit()->setCursorPosition(textEdit()->markerFindPrevious(line, 2), 0);
 }
 
+QMap<int, QString> Sqriptor::bookmarks() const
+{
+    QMap<int, QString> bmarks;
+    QsciScintilla *doc = textEdit();
+    int line = -1;
+    while (true) {
+        int newLine = doc->markerFindNext(line, 2);
+        if (newLine < 0)
+            return bmarks;
+        bmarks.insert(newLine+1, doc->text(newLine).simplified());
+        line = newLine + 1;
+    }
+}
+
 void Sqriptor::readSettings()
 {
     QSettings settings("sqriptor");

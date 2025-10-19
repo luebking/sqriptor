@@ -100,6 +100,7 @@ private slots:
 
 private:
     QRect availableGeometry() const;
+    QMap<int, QString> bookmarks() const;
     void createUI();
     void readSettings();
     void writeSettings();

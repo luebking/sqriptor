@@ -453,8 +453,10 @@ void Sqriptor::createUI()
         doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, lastMatch + 1 + context, doc->lines() - 1)
 
     static QString lastFilter;
-    static bool wasInverted = filterInvert->isChecked();
     static bool hadContext = showFilterContext->isChecked() || filterBookmarks->isChecked();
+    static bool wasCaseSens = searchCaseSens->isChecked();
+    static bool wasInverted = filterInvert->isChecked();
+    static bool wasRegExp = searchRegExp->isChecked();
     connect(m_documents, &QTabWidget::currentChanged, [=](int idx) { lastFilter.clear(); });
     auto l_filter = [=]() {
         bool filterTimerWasActive = false;
@@ -475,12 +477,15 @@ void Sqriptor::createUI()
         */
         const bool grow =   searchRegExp->isChecked() || lastFilter.isEmpty() ||
                             !filter.contains(lastFilter) || wasInverted != filterInvert->isChecked() ||
-                            (showContext && !hadContext);
+                            (showContext && !hadContext) || (wasCaseSens && !searchCaseSens->isChecked()) ||
+                            (wasRegExp != searchRegExp->isChecked());
         if ((grow && showContext) || (!showContext && hadContext))
             doc->markerDeleteAll(s_filtersplitter);
         lastFilter = filter;
-        wasInverted = filterInvert->isChecked();
         hadContext = showContext;
+        wasCaseSens = searchCaseSens->isChecked();
+        wasInverted = filterInvert->isChecked();
+        wasRegExp = searchRegExp->isChecked();
 
         QElapsedTimer profiler;
         profiler.start();
@@ -516,6 +521,9 @@ void Sqriptor::createUI()
     connect(m_filterLine, &QLineEdit::returnPressed, [=]() { filterTimer->stop(); l_filter(); });
     connect(m_filterLine, &QLineEdit::textEdited, [=]() { filterTimer->start(); });
     connect(filterBookmarks, &QAction::toggled, [=]() { filterTimer->stop(); l_filter(); });
+    connect(filterInvert, &QAction::toggled, [=]() { filterTimer->stop(); l_filter(); });
+    connect(searchRegExp, &QAction::toggled, [=]() { if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
+    connect(searchCaseSens, &QAction::toggled, [=]() { if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
 
     QSpinBox *gotoLine = new QSpinBox(searchBar);
     connect(qApp, &QApplication::focusChanged, [=]() {

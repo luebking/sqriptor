@@ -298,12 +298,12 @@ void Sqriptor::createUI()
     showFilterContext->setCheckable(true);
     showFilterContext->setChecked(false);
     showFilterContext->setVisible(false);
-    QAction *filterBookmarks = new QAction(tr("Filter Bookmarks"), searchBar);
-    tbmenu->addAction(filterBookmarks);
-    filterBookmarks->setCheckable(true);
-    filterBookmarks->setChecked(false);
-    filterBookmarks->setVisible(false);
-    filterBookmarks->setShortcut(tr("Alt+B"));
+    m_filterBookmarks = new QAction(tr("Filter Bookmarks"), searchBar);
+    tbmenu->addAction(m_filterBookmarks);
+    m_filterBookmarks->setCheckable(true);
+    m_filterBookmarks->setChecked(false);
+    m_filterBookmarks->setVisible(false);
+    m_filterBookmarks->setShortcut(tr("Alt+B"));
     btn->setMenu(tbmenu);
     
     static bool menuWasVisible = true;
@@ -453,7 +453,7 @@ void Sqriptor::createUI()
         doc->SendScintilla(QsciScintillaBase::SCI_HIDELINES, lastMatch + 1 + context, doc->lines() - 1)
 
     static QString lastFilter;
-    static bool hadContext = showFilterContext->isChecked() || filterBookmarks->isChecked();
+    static bool hadContext = showFilterContext->isChecked() || m_filterBookmarks->isChecked();
     static bool wasCaseSens = searchCaseSens->isChecked();
     static bool wasInverted = filterInvert->isChecked();
     static bool wasRegExp = searchRegExp->isChecked();
@@ -464,7 +464,7 @@ void Sqriptor::createUI()
         const QString filter = m_filterLine->text();
 
         int context = 0;
-        const bool showContext = showFilterContext->isChecked() || filterBookmarks->isChecked();
+        const bool showContext = showFilterContext->isChecked() || m_filterBookmarks->isChecked();
         static const int s_filtersplitter = 31;
         doc->markerDefine(QsciScintilla::Underline, s_filtersplitter);
         QColor bg = config.color.bg, fg = config.color.fg;
@@ -490,7 +490,7 @@ void Sqriptor::createUI()
         QElapsedTimer profiler;
         profiler.start();
 
-        if (filterBookmarks->isChecked()) {
+        if (m_filterBookmarks->isChecked()) {
             FILTER_TEXT((doc->markersAtLine(i) & 2));
         } else if (filter.isEmpty()) {
             doc->SendScintilla(QsciScintillaBase::SCI_SHOWLINES, 0, doc->lines() - 1);
@@ -520,7 +520,7 @@ void Sqriptor::createUI()
     connect(filterTimer, &QTimer::timeout, [=]() { l_filter(); });
     connect(m_filterLine, &QLineEdit::returnPressed, [=]() { filterTimer->stop(); l_filter(); });
     connect(m_filterLine, &QLineEdit::textEdited, [=]() { filterTimer->start(); });
-    connect(filterBookmarks, &QAction::toggled, [=]() { filterTimer->stop(); l_filter(); });
+    connect(m_filterBookmarks, &QAction::toggled, [=]() { filterTimer->stop(); l_filter(); });
     connect(filterInvert, &QAction::toggled, [=]() { filterTimer->stop(); l_filter(); });
     connect(searchRegExp, &QAction::toggled, [=]() { if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
     connect(searchCaseSens, &QAction::toggled, [=]() { if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
@@ -559,7 +559,7 @@ void Sqriptor::createUI()
                     replaceAll->setVisible(false); showFilterContext->setVisible(false); \
                     filterInvert->setVisible(false); searchWord->setVisible(false); \
                     searchForward->setVisible(false); navHelper->allowTab = false; \
-                    filterBookmarks->setVisible(false);
+                    m_filterBookmarks->setVisible(false);
 #define SHOW_STUFF menuWasVisible = menuBar()->isVisible(); searchBar->show(); menuBar()->show();
     
     menu = editMenu->addMenu(tr("&Search and replace"));
@@ -652,7 +652,7 @@ void Sqriptor::createUI()
         btn->show();
         m_filterLine->show();
         showFilterContext->setVisible(true);
-        filterBookmarks->setVisible(true);
+        m_filterBookmarks->setVisible(true);
         filterInvert->setVisible(true);
         m_filterLine->setFocus();
         m_filterLine->selectAll();
@@ -944,7 +944,7 @@ void Sqriptor::findAll(QString text, bool rx, bool cs, bool wo)
 void Sqriptor::copy()
 {
     QsciScintilla *doc = textEdit();
-    if (m_filterLine->text().isEmpty()) {
+    if (m_filterLine->text().isEmpty() && !m_filterBookmarks->isChecked()) {
         doc->SendScintilla(QsciScintilla::SCI_COPY);
         return;
     }

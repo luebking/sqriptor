@@ -121,7 +121,7 @@ private:
     QActionGroup *m_syntaxActions;
     QMenu *m_eolMenu;
     QAction *m_tabMenu;
-    QAction *m_EolVis, *m_wrapped, *m_folds;
+    QAction *m_EolVis, *m_wrapped, *m_folds, *m_filterBookmarks;
     QLineEdit *m_filterLine;
 };
 

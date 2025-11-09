@@ -428,6 +428,7 @@ void Sqriptor::writeSettings()
 
 bool Sqriptor::maybeSave(int idx)
 {
+    togglePreview(idx, Qt::Unchecked);
     QString fileName = textEdit(idx)->property("sqriptor_filename").toString();
     if (textEdit(idx)->isModified()) {
         if (!textEdit(idx)->length() && fileName.isEmpty())

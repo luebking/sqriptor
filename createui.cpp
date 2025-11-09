@@ -40,7 +40,7 @@
 #else
 #include <QTextCodec>
 #endif
-#include <QTextEdit>
+#include <QTextBrowser>
 #include <QToolButton>
 
 
@@ -129,6 +129,24 @@ class StatusMenuBackground : public QObject {
         }
     private:
         const Sqriptor *m_sqriptor;
+};
+
+class PreView : public QTextBrowser
+{
+public:
+    PreView(QWidget *parent) : QTextBrowser(parent) {
+        setFrameShape(QFrame::NoFrame);
+        setOpenLinks(true);
+        setOpenExternalLinks(true);
+        parent->installEventFilter(this);
+    }
+protected:
+    bool eventFilter(QObject *obj, QEvent *ev) {
+        if (ev->type() == QEvent::Resize && obj == parentWidget()) {
+            setGeometry(parentWidget()->rect());
+        }
+        return false;
+    }
 };
 
 void Sqriptor::createUI()
@@ -893,6 +911,14 @@ void Sqriptor::createUI()
     });
     menu->addAction(act);
 
+    menuBar()->addSeparator();
+
+    m_previewAction = act = menuBar()->addAction(tr("Toggle Preview"));
+    connect(act, &QAction::triggered, [=]() {togglePreview();} );
+    act->setShortcut(tr("Ctrl+P"));
+    act->setToolTip(tr("Ctrl+P"));
+    act->setVisible(false);
+
     StatusMenuBackground *smb = new StatusMenuBackground(menuBar(), this);
     menuBar()->installEventFilter(smb);
 
@@ -1038,4 +1064,38 @@ QString Sqriptor::ask4Codec(const QString &codec, const QString &fileName)
     QString ret = codecs->currentText();
     delete warning;
     return ret;
+}
+
+void Sqriptor::togglePreview(int idx, Qt::CheckState state)
+{
+    QsciScintilla *doc = textEdit(idx);
+    QTextBrowser *preview = doc->findChild<QTextBrowser*>(QAnyStringView());
+    if (!preview && state == Qt::Unchecked)
+        return;
+    if (!preview) {
+        preview = new PreView(doc);
+        preview->setGeometry(doc->rect());
+        preview->hide();
+    }
+    if (state == Qt::PartiallyChecked) {
+        if (preview->isVisible())
+            state = Qt::Unchecked;
+        else
+            state = Qt::Checked;
+    }
+    if (state == Qt::Unchecked) {
+        preview->hide();
+        doc->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        doc->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        return;
+    }
+    const int syntax = doc->property("sqriptor_syntax").toInt();
+    if (syntax == Syntax::Markdown2)
+        preview->setMarkdown(doc->text());
+    else if (syntax == Syntax::HTML)
+        preview->setHtml(doc->text());
+    doc->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    doc->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    preview->show();
+    preview->raise();
 }

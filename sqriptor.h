@@ -97,6 +97,7 @@ private slots:
     void checkTimestamp();
     void analyzeSyntaxOnce();
     void copy();
+    void togglePreview(int idx = -1, Qt::CheckState state = Qt::PartiallyChecked);
 
 private:
     QRect availableGeometry() const;
@@ -121,7 +122,7 @@ private:
     QActionGroup *m_syntaxActions;
     QMenu *m_eolMenu;
     QAction *m_tabMenu;
-    QAction *m_EolVis, *m_wrapped, *m_folds, *m_filterBookmarks;
+    QAction *m_EolVis, *m_wrapped, *m_folds, *m_filterBookmarks, *m_previewAction;
     QLineEdit *m_filterLine;
 };
 

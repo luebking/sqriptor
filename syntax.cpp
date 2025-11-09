@@ -378,6 +378,8 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
 
 void Sqriptor::indicateCurrentSyntax()
 {
+    const int syntax = textEdit()->property("sqriptor_syntax").toInt();
+    m_previewAction->setVisible(syntax == Syntax::Markdown2 || syntax == Syntax::HTML);
     const QsciLexer *lexer = textEdit()->lexer();
     QString name = "None";
     if (lexer) {

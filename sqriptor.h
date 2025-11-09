@@ -61,6 +61,7 @@ typedef struct Config
     } color;
     bool changed;
     QStringList recentFiles;
+    QString markdownProcessor;
 } Config;
 
 

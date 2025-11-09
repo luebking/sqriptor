@@ -167,8 +167,12 @@ void Sqriptor::showSettings()
         gs_ui->windowSizeY->setValue(config.sizeMode == Size::Remember ? height() : config.size.height());
         connect (gs_ui->windowSizeY, QOverload<int>::of(&QSpinBox::valueChanged),
                                         [=](int v) {config_bak.size.setHeight(v);});
+        connect (gs_ui->markdownProcessor, &QLineEdit::textEdited,
+                                        [=](const QString &t) { config_bak.markdownProcessor = t; });
         // apply...
         gs_ui->windowSizeMode->setCurrentIndex(config.sizeMode);
+
+        gs_ui->markdownProcessor->setText(config.markdownProcessor);
 
         gs_ui->wrapWords->setChecked(config.wrap.words);
         connect (gs_ui->wrapWords, &QCheckBox::stateChanged,

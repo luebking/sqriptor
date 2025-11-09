@@ -359,6 +359,7 @@ void Sqriptor::readSettings()
         size.setHeight(qRound(geo.height()*size.height()/100.0f));
     }
     resize(size);
+    config.markdownProcessor = settings.value("mdProc", "").toString();
     settings.beginGroup("wrap");
     config.wrap.words = settings.value("words", false).toBool();
     config.wrap.indicator = settings.value("indicator", true).toBool();
@@ -397,6 +398,7 @@ void Sqriptor::writeSettings()
         settings.setValue("size", size);
     if (!config.changed)
         return;
+    settings.setValue("mdProc", config.markdownProcessor);
     settings.setValue("sizeMode", config.sizeMode);
     settings.setValue("size", config.size);
     settings.beginGroup("wrap");

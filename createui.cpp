@@ -32,6 +32,7 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QPainterPath>
+#include <QProcess>
 #include <QPushButton>
 #include <QScrollBar>
 #include <QSpinBox>
@@ -1090,10 +1091,23 @@ void Sqriptor::togglePreview(int idx, Qt::CheckState state)
         return;
     }
     const int syntax = doc->property("sqriptor_syntax").toInt();
-    if (syntax == Syntax::Markdown2)
-        preview->setMarkdown(doc->text());
-    else if (syntax == Syntax::HTML)
+    if (syntax == Syntax::Markdown2) {
+        if (!config.markdownProcessor.isEmpty()) {
+            QProcess mdProc;
+            mdProc.startCommand(config.markdownProcessor);
+            mdProc.waitForStarted();
+            mdProc.write(doc->text().toLocal8Bit());
+            mdProc.closeWriteChannel();
+            mdProc.waitForFinished();
+            preview->document()->setDefaultStyleSheet(QString());
+            preview->setHtml(QString::fromLocal8Bit(mdProc.readAllStandardOutput()));
+        } else {
+            preview->setMarkdown(doc->text());
+        }
+    } else if (syntax == Syntax::HTML) {
+        preview->document()->setDefaultStyleSheet(QString());
         preview->setHtml(doc->text());
+    }
     doc->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     doc->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     preview->show();

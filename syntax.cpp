@@ -172,7 +172,7 @@ static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
     if (Sqriptor::config.wrap.indicator) {
         mode = QsciScintilla::EdgeLine;
         if (syntax == Syntax::Markdown2)
-            mode = QsciScintilla::EdgeBackground;
+            mode = QsciScintilla::EdgeNone; //Background;
         else if (syntax == Syntax::Fortran77) {
             mode = QsciScintilla::EdgeMultipleLines;
             document->clearEdgeColumns();

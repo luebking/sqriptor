@@ -99,6 +99,6 @@ void QsciLexerXorgLog::styleText (int start, int end)
         testToken(text.at(i), &type[Style::Warning],        "(WW)");
         testToken(text.at(i), &type[Style::Error],          "(EE)");
         testToken(text.at(i), &type[Style::Unimplemented],  "(NI)");
-        testToken(text.at(i), &type[Style::Unknown],        "(??)");
+        testToken(text.at(i), &type[Style::Unknown],        "(?""?)");
     }
 }

@@ -196,9 +196,9 @@ static void resetColors(QsciScintilla *document, Syntax::Lexer syntax) {
         fnt.setPointSize(fnt.pointSize()*1.4);
         fm = QFontMetrics(fnt);
         asc -= fm.ascent();
-        asc = 3*asc/2;
+        asc = 3*asc/2 + 3;
         dsc -= fm.descent();
-        dsc = 3*dsc/2;
+        dsc = 3*dsc/2 + 1;
     }
     document->setExtraAscent(asc);
     document->setExtraDescent(dsc);

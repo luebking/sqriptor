@@ -135,7 +135,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
     QString text = editor()->text(start, end);
     QRegularExpressionMatchIterator i = tokenizer.globalMatch(text/*, 0, QRegularExpression::PartialPreferFirstMatch*/);
 
-    bool newline = true, quote = false, tag = false, bracket = false, brace = false, isInt;
+    bool newline = true, quote = false, tag = false, bracket = false, brace = false, isInt, maybeBracket = false;
     int header = 0, length = 0, style = 0;
     enum FontStyle { I1 = 0, B1, BI1, I2, B2, BI2, S, Mono, FontStyleCount };
     static const char *fsIndicator[FontStyleCount] = {"*", "**", "***", "_", "__", "___", "~~", "`"};
@@ -191,10 +191,19 @@ void QsciLexerMarkdown2::styleText(int start, int end)
             length += token.toUtf8().length(); // match.capturedLength(0); - this sucks
             continue;
         }
-        if (bracket) {
+        if (bracket || maybeBracket) {
             if (token == "]") {
-                setStyling(length+1, Style::Bracket); length = 0; bracket = false;
-                continue;
+                maybeBracket = false;
+                QStringView next;
+                if (i.hasNext())
+                    next = i.peekNext().capturedView(0);
+                if (!bracket) {
+                    bracket = (next == ":" || next == "(");
+                }
+                if (bracket) {
+                    setStyling(length+1, Style::Bracket); length = 0; bracket = (next == "[");
+                    continue;
+                }
             }
             length += token.toUtf8().length(); // match.capturedLength(0); - this sucks
             continue;
@@ -265,7 +274,9 @@ void QsciLexerMarkdown2::styleText(int start, int end)
         
         if (token == "[") {
             finishStyle();
-            bracket = true;
+            maybeBracket = true;
+            if (!bracket)
+                bracket = prev.capturedView() == "!" || (i.hasNext() && i.peekNext().capturedView(0) == "!");
         } else if (token == "(" && !length && prev.capturedView() == "]") {
             // !length because we just closed a bracket!
             // we therefore also don't need to finishStyle();

@@ -68,7 +68,7 @@ void QsciLexerMarkdown2::updateColors()
     QFont bold = font; bold.setBold(true);
     setFont(bold, Style::Bold);
     setFont(bold, Style::BoldQuote);
-    
+
     QFont italic = font; italic.setItalic(true);
     setFont(italic, Style::Italic);
     setFont(italic, Style::ItalicQuote);
@@ -124,8 +124,8 @@ void QsciLexerMarkdown2::updateColors()
 void QsciLexerMarkdown2::styleText(int start, int end)
 {
     static const QRegularExpression tokenizer("######|#####|####|###|##|---+|====+|~~|"
-                                              "[^\\\\]\\*\\*\\*|[^\\\\]\\*\\*|"
-                                              "[^\\\\]___|[^\\\\]__|_|"
+                                              "\\*\\*\\*|\\*\\*|\\*|"
+                                              "___|__|_|"
                                               "\\s+|[A-Za-z\\d]+|\\W");
     static const QRegularExpression nonWS("[^\\s]"); // \\W?
     static const QRegularExpression linebreak("\\s*(\\n|\\r)+\\s*");
@@ -301,12 +301,12 @@ void QsciLexerMarkdown2::styleText(int start, int end)
             for (int fs = 0; fs < FontStyleCount; ++fs) {
                 if (token == fsIndicator[fs]) {
                     const bool nexWS = NEXT_IS_WS;
-                    if ((style & (1<<fs)) && nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()) {
+                    if ((style & (1<<fs)) && nexWS && nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()) {
                         length += match.capturedLength(0); // capture indicator
                         finishStyle();
                         length -= match.capturedLength(0); // sanitized below!
                         style &= ~(1<<fs);
-                    } else if (!(style&(1<<fs)) && !nexWS) {
+                    } else if (!(style&(1<<fs)) && !nexWS && !nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()) {
                         finishStyle();
                         style |= (1<<fs);
                     }

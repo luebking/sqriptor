@@ -128,6 +128,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
                                               "___|__|_|"
                                               "\\s+|[A-Za-z\\d]+|\\W");
     static const QRegularExpression nonWS("[^\\s]"); // \\W?
+    static const QRegularExpression word("\\W");
     static const QRegularExpression linebreak("\\s*(\\n|\\r)+\\s*");
     static const QRegularExpression header1("====+");
     static const QRegularExpression header2("----+");
@@ -300,13 +301,13 @@ void QsciLexerMarkdown2::styleText(int start, int end)
         } else if (!prev.capturedView().endsWith('\\')) {
             for (int fs = 0; fs < FontStyleCount; ++fs) {
                 if (token == fsIndicator[fs]) {
-                    const bool nexWS = NEXT_IS_WS;
-                    if ((style & (1<<fs)) && nexWS && nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()) {
+                    const bool nexWS = i.hasNext() && word.MATCH_VIEW(i.peekNext().capturedView(0)).hasMatch(); // NEXT_IS_WS;
+                    if ((style & (1<<fs)) && (fs == Mono || (nexWS && nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()))) {
                         length += match.capturedLength(0); // capture indicator
                         finishStyle();
                         length -= match.capturedLength(0); // sanitized below!
                         style &= ~(1<<fs);
-                    } else if (!(style&(1<<fs)) && !nexWS && !nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()) {
+                    } else if (!(style&(1<<fs)) && (fs == Mono || (!nexWS && !nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()))) {
                         finishStyle();
                         style |= (1<<fs);
                     }

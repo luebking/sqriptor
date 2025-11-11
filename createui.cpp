@@ -24,6 +24,7 @@
 #include <QFileDialog>
 #include <QGridLayout>
 #include <QHBoxLayout>
+#include <QHelpEvent>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
@@ -43,6 +44,7 @@
 #endif
 #include <QTextBrowser>
 #include <QToolButton>
+#include <QToolTip>
 
 
 #include <QDebug>
@@ -102,6 +104,14 @@ class StatusMenuBackground : public QObject {
         StatusMenuBackground(QMenuBar *parent, const Sqriptor *s) : QObject(parent), m_sqriptor(s) {}
     protected:
         bool eventFilter(QObject *obj, QEvent *ev) {
+            if (ev->type() == QEvent::ToolTip) {
+                QAction *act = static_cast<QMenuBar*>(obj)->activeAction();
+                if (!act)
+                    return false;
+                QToolTip::showText(static_cast<QHelpEvent*>(ev)->globalPos(), act->shortcut().toString());
+                return false;
+            }
+            QToolTip::hideText();
             if (ev->type() != QEvent::Paint)
                 return false;
             QMenuBar *bar = static_cast<QMenuBar*>(obj);

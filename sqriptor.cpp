@@ -360,6 +360,7 @@ void Sqriptor::readSettings()
     }
     resize(size);
     config.markdownProcessor = settings.value("mdProc", "").toString();
+    config.previewCSS = settings.value("previewCSS", "*{font-family:sans;} a{text-decoration:none;} blockquote{padding-left:3em;}").toString();
     settings.beginGroup("wrap");
     config.wrap.words = settings.value("words", false).toBool();
     config.wrap.indicator = settings.value("indicator", true).toBool();
@@ -399,6 +400,7 @@ void Sqriptor::writeSettings()
     if (!config.changed)
         return;
     settings.setValue("mdProc", config.markdownProcessor);
+    settings.setValue("previewCSS", config.previewCSS);
     settings.setValue("sizeMode", config.sizeMode);
     settings.setValue("size", config.size);
     settings.beginGroup("wrap");

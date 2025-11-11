@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>425</width>
-    <height>471</height>
+    <width>406</width>
+    <height>484</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -84,6 +84,31 @@
           <string>Drop a color</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
+          <item row="1" column="0">
+           <widget class="QLabel" name="c_foreground">
+            <property name="acceptDrops">
+             <bool>true</bool>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Shape::StyledPanel</enum>
+            </property>
+            <property name="text">
+             <string>Foreground</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+            <property name="margin">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0" colspan="2">
+           <widget class="QPlainTextEdit" name="previewCSS"/>
+          </item>
           <item row="2" column="0">
            <widget class="QLabel" name="c_string">
             <property name="acceptDrops">
@@ -147,8 +172,8 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="c_foreground">
+          <item row="1" column="1">
+           <widget class="QLabel" name="c_keyword">
             <property name="acceptDrops">
              <bool>true</bool>
             </property>
@@ -159,7 +184,86 @@
              <enum>QFrame::Shape::StyledPanel</enum>
             </property>
             <property name="text">
-             <string>Foreground</string>
+             <string>Keyword</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+            <property name="margin">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="c_background">
+            <property name="acceptDrops">
+             <bool>true</bool>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Shape::StyledPanel</enum>
+            </property>
+            <property name="text">
+             <string>Background</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+            <property name="margin">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="c_comment">
+            <property name="acceptDrops">
+             <bool>true</bool>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Shape::StyledPanel</enum>
+            </property>
+            <property name="text">
+             <string>Comment</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+            <property name="margin">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0" colspan="2">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="c_preproc">
+            <property name="acceptDrops">
+             <bool>true</bool>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Shape::StyledPanel</enum>
+            </property>
+            <property name="text">
+             <string>Preprocessor</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -213,94 +317,6 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="c_background">
-            <property name="acceptDrops">
-             <bool>true</bool>
-            </property>
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::Shape::StyledPanel</enum>
-            </property>
-            <property name="text">
-             <string>Background</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
-            </property>
-            <property name="margin">
-             <number>4</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="c_keyword">
-            <property name="acceptDrops">
-             <bool>true</bool>
-            </property>
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::Shape::StyledPanel</enum>
-            </property>
-            <property name="text">
-             <string>Keyword</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
-            </property>
-            <property name="margin">
-             <number>4</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="c_comment">
-            <property name="acceptDrops">
-             <bool>true</bool>
-            </property>
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::Shape::StyledPanel</enum>
-            </property>
-            <property name="text">
-             <string>Comment</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
-            </property>
-            <property name="margin">
-             <number>4</number>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLabel" name="c_preproc">
-            <property name="acceptDrops">
-             <bool>true</bool>
-            </property>
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::Shape::StyledPanel</enum>
-            </property>
-            <property name="text">
-             <string>Preprocessor</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
-            </property>
-            <property name="margin">
-             <number>4</number>
-            </property>
-           </widget>
-          </item>
           <item row="5" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
@@ -326,17 +342,16 @@
            </layout>
           </item>
           <item row="6" column="0" colspan="2">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Orientation::Vertical</enum>
+           <widget class="QLabel" name="label_6">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
+            <property name="text">
+             <string>Preview style</string>
             </property>
-           </spacer>
+           </widget>
           </item>
          </layout>
         </widget>

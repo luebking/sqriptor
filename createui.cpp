@@ -1099,13 +1099,13 @@ void Sqriptor::togglePreview(int idx, Qt::CheckState state)
             mdProc.write(doc->text().toLocal8Bit());
             mdProc.closeWriteChannel();
             mdProc.waitForFinished();
-            preview->document()->setDefaultStyleSheet(QString());
+            preview->document()->setDefaultStyleSheet(config.previewCSS);
             preview->setHtml(QString::fromLocal8Bit(mdProc.readAllStandardOutput()));
         } else {
             preview->setMarkdown(doc->text());
         }
     } else if (syntax == Syntax::HTML) {
-        preview->document()->setDefaultStyleSheet(QString());
+        preview->document()->setDefaultStyleSheet(config.previewCSS);
         preview->setHtml(doc->text());
     }
     doc->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

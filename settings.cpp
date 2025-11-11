@@ -169,10 +169,13 @@ void Sqriptor::showSettings()
                                         [=](int v) {config_bak.size.setHeight(v);});
         connect (gs_ui->markdownProcessor, &QLineEdit::textEdited,
                                         [=](const QString &t) { config_bak.markdownProcessor = t; });
+        connect (gs_ui->previewCSS, &QPlainTextEdit::textChanged,
+                                        [=]() { config_bak.previewCSS = gs_ui->previewCSS->toPlainText(); });
         // apply...
         gs_ui->windowSizeMode->setCurrentIndex(config.sizeMode);
 
         gs_ui->markdownProcessor->setText(config.markdownProcessor);
+        gs_ui->previewCSS->setPlainText(config.previewCSS);
 
         gs_ui->wrapWords->setChecked(config.wrap.words);
         connect (gs_ui->wrapWords, &QCheckBox::stateChanged,

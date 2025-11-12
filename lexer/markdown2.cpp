@@ -125,7 +125,7 @@ void QsciLexerMarkdown2::styleText(int start, int end)
 {
     static const QRegularExpression tokenizer("######|#####|####|###|##|---+|====+|~~|"
                                               "\\*\\*\\*|\\*\\*|\\*|"
-                                              "___|__|_|"
+                                              "___|__|_|`+|"
                                               "\\s+|[A-Za-z\\d]+|\\W");
     static const QRegularExpression nonWS("[^\\s]"); // \\W?
     static const QRegularExpression word("\\W");
@@ -138,13 +138,13 @@ void QsciLexerMarkdown2::styleText(int start, int end)
 
     bool newline = true, quote = false, tag = false, bracket = false, brace = false, isInt, maybeBracket = false;
     int header = 0, length = 0, style = 0;
-    enum FontStyle { I1 = 0, B1, BI1, I2, B2, BI2, S, Mono, FontStyleCount };
-    static const char *fsIndicator[FontStyleCount] = {"*", "**", "***", "_", "__", "___", "~~", "`"};
+    enum FontStyle { I1 = 0, B1, BI1, I2, B2, BI2, S, Mono1, Mono2, Mono3, FontStyleCount };
+    static const char *fsIndicator[FontStyleCount] = {"*", "**", "***", "_", "__", "___", "~~", "`", "``", "```"};
     auto finishStyle = [&]() {
         if (header) {
             setStyling(length, header);
         } else {
-            if (style & (1<<Mono)) {
+            if (style & (1<<Mono1|1<<Mono2|1<<Mono3)) {
                 setStyling(length, style & (1<<S) ? Style::StrikeMono : Style::Monospace);
             } else if (quote) {
                 if (style & (1<<S)) {
@@ -302,12 +302,15 @@ void QsciLexerMarkdown2::styleText(int start, int end)
             for (int fs = 0; fs < FontStyleCount; ++fs) {
                 if (token == fsIndicator[fs]) {
                     const bool nexWS = i.hasNext() && word.MATCH_VIEW(i.peekNext().capturedView(0)).hasMatch(); // NEXT_IS_WS;
-                    if ((style & (1<<fs)) && (fs == Mono || (nexWS && nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()))) {
+                    if ((style & (1<<fs)) && (fs >= Mono1 || (nexWS && nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()))) {
                         length += match.capturedLength(0); // capture indicator
                         finishStyle();
                         length -= match.capturedLength(0); // sanitized below!
-                        style &= ~(1<<fs);
-                    } else if (!(style&(1<<fs)) && (fs == Mono || (!nexWS && !nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()))) {
+                        if (fs >= Mono1)
+                            style &= ~(1<<Mono1|1<<Mono2|1<<Mono3); // clear all open mono styles, they're nested
+                        else
+                            style &= ~(1<<fs);
+                    } else if (!(style&(1<<fs)) && (fs >= Mono1 || (!nexWS && !nonWS.MATCH_VIEW(prev.capturedView()).hasMatch()))) {
                         finishStyle();
                         style |= (1<<fs);
                     }

@@ -21,6 +21,8 @@
 #include <QApplication>
 #include <QLineEdit>
 #include <QMenu>
+#include <QMessageBox>
+#include <QRegularExpression>
 #include <QDebug>
 
 #include <Qsci/qsciscintilla.h>
@@ -378,13 +380,33 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
 
 void Sqriptor::indicateCurrentSyntax()
 {
-    const int syntax = textEdit()->property("sqriptor_syntax").toInt();
+    QsciScintilla *document = textEdit();
+    const int syntax = document->property("sqriptor_syntax").toInt();
     m_previewAction->setVisible(syntax == Syntax::Markdown2 || syntax == Syntax::HTML);
     const QsciLexer *lexer = textEdit()->lexer();
     QString name = "None";
     if (lexer) {
         name = lexer->metaObject()->className();
         name.remove("QsciLexer");
+    }
+    if (syntax == Syntax::PkgBuild) {
+        QRegularExpression nonascii("[^[:ascii:]]"), nonasciiG("([^[:ascii:]])");
+        QStringList shadyLines;
+        for (int i = 0; i < document->lines(); ++i) {
+            const QString &line = document->text(i);
+            if (line.startsWith("#"))
+                continue; // comment
+            if (line.contains(nonascii)) {
+                QString lline = "#" + QString::number(i+1) + ": " + line;
+                lline.replace(nonasciiG, "<u><b><span style=color:red>\\1</span></b></u>");
+                shadyLines << lline;
+            }
+        }
+        if (!shadyLines.isEmpty()) {
+            QMessageBox msg(QMessageBox::Warning, tr("Sqriptor"), tr( "<html><h2>PKGBUILD contains non-ASCII chars</h2>Make sure this is not a homographic attack<hr></html>"), QMessageBox::Ok, this);
+            msg.setInformativeText(shadyLines.join("<br>"));
+            msg.exec();
+        }
     }
     foreach (QAction *act, m_syntaxActions->actions()) {
         if (act->data().toString() == name) {

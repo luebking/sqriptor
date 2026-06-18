@@ -35,6 +35,7 @@ public:
     QsciLexerPkgBuild(QObject *parent);
     virtual const char *language () const { return "PkgBuild"; }
     virtual QString description(int style) const {Q_UNUSED(style); return "PkgBuild"; }
+    virtual const char *keywords(int set) const;
 };
 
 #endif // QSCILEXERPKGBUILD_H

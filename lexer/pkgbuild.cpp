@@ -54,3 +54,21 @@ QsciLexerPkgBuild::QsciLexerPkgBuild(QObject *parent) : QsciLexerBash(parent)
 {
     setAPIs(new PkgBuildAPI(this));
 }
+
+const char *QsciLexerPkgBuild::keywords(int set) const
+{
+    if (set == 1) {
+        static QByteArray qba;
+        if (qba.isNull()) {
+            QString pkgbuild = QString(
+                "pkgname pkgver pkgrel epoch pkgdesc url license install changelog "
+                "source validpgpkeys noextract cksums md5sums sha1sums sha224sums "
+                "sha256sums sha384sums sha512sums b2sums groups arch backup depends "
+                "makedepends checkdepends optdepends conflicts provides replaces options "
+                "package prepare build check srcdir pkgdir pkgbase ") + QsciLexerBash::keywords(set);
+            qba = pkgbuild.toLatin1();
+        }
+        return qba.constData();
+    }
+    return QsciLexerBash::keywords(set);
+}

@@ -104,6 +104,9 @@ class StatusMenuBackground : public QObject {
         StatusMenuBackground(QMenuBar *parent, const Sqriptor *s) : QObject(parent), m_sqriptor(s) {}
     protected:
         bool eventFilter(QObject *obj, QEvent *ev) {
+            static bool skipThisOne = false;
+            if (skipThisOne)
+                return false;
             if (ev->type() == QEvent::ToolTip) {
                 QAction *act = static_cast<QMenuBar*>(obj)->activeAction();
                 if (!act)
@@ -115,6 +118,9 @@ class StatusMenuBackground : public QObject {
             if (ev->type() != QEvent::Paint)
                 return false;
             QMenuBar *bar = static_cast<QMenuBar*>(obj);
+            skipThisOne = true;
+            QApplication::sendEvent(bar, ev);
+            skipThisOne = false;
             QRect rect = bar->cornerWidget()->geometry();
             int right = rect.left();
             rect.setLeft(bar->actionGeometry(bar->actions().constLast()).right());
@@ -136,7 +142,7 @@ class StatusMenuBackground : public QObject {
             text = p.fontMetrics().elidedText(text, Qt::ElideLeft, rect.width());
             p.drawText(rect, align|Qt::TextSingleLine, text);
             p.end();
-            return false;
+            return true;
         }
     private:
         const Sqriptor *m_sqriptor;

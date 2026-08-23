@@ -73,6 +73,7 @@
 #include "lexer/fontconfig.h"
 #include "lexer/glsl.h"
 #include "lexer/journal.h"
+#include "lexer/kdl.h"
 #include "lexer/lisp.h"
 #include "lexer/markdown2.h"
 #include "lexer/nim.h"
@@ -135,6 +136,7 @@ static void setColorsAWK(QsciLexerAWK *lexer) { setColorsBash(lexer); }
 static void setColorsFontConfig(QsciLexerFontConfig *lexer) { setColorsHTML(lexer); }
 static void setColorsGLSL(QsciLexerGLSL *lexer) { setColorsCPP(lexer); }
 static void setColorsJournal(QsciLexerJournal *lexer) { lexer->updateColors(); }
+static void setColorsKDL(QsciLexerKDL *lexer) { setColorsCPP(lexer); }
 static void setColorsLISP(QsciLexerLISP *lexer) { lexer->updateColors(); }
 static void setColorsMarkdown2(QsciLexerMarkdown2 *lexer) { lexer->updateColors(); }
 static void setColorsNIM(QsciLexerNIM *lexer) { setColorsPython(lexer); }
@@ -328,6 +330,7 @@ void Sqriptor::setSyntax(Syntax syntax, QsciScintilla *document, bool updateColo
         MAKE_LEXER(GLSL)
         MAKE_LEXER(Journal)
         MAKE_LEXER(JSON)
+        MAKE_LEXER(KDL)
         MAKE_LEXER(LISP)
         MAKE_LEXER(Lua)
         MAKE_LEXER(Makefile)
@@ -429,7 +432,7 @@ bool Sqriptor::toggleComment()
     QString name = lexer->metaObject()->className();
     name.remove("QsciLexer");
     bool isHtml = false;
-    if (name == "CPPQt" || name == "CSharp" || name == "Java" ||  name == "CSS" ||
+    if (name == "CPPQt" || name == "CSharp" || name == "Java" ||  name == "CSS" || name == "KDL" ||
         name == "JavaScript" || name == "D" || /* D also supports /++/ */ name == "Lua" ||
         (isHtml = (name == "HTML")) || name == "XML" || name == "Pascal" || name == "FontConfig") {
         if (isHtml) {

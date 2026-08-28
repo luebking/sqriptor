@@ -16,6 +16,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include <QAbstractButton>
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDateTime>
@@ -237,10 +238,12 @@ int Sqriptor::addTab()
     connect(doc, &QsciScintilla::textChanged, [=]() {
         int line, index;
         doc->getCursorPosition(&line, &index);
-        if (doc->text(line).endsWith(" \n"))
+        if (doc->text(line).endsWith(" \n")) {
             textEdit()->markerAdd(line, 2);
-        else
-            textEdit()->markerDelete(line, 2);
+        } else {
+            while (textEdit()->markersAtLine(line) & 4)
+                textEdit()->markerDelete(line, 2);
+        }
     });
 
     setSyntax(Syntax::None, doc);
@@ -588,6 +591,39 @@ void Sqriptor::loadFile(const QString &fileName)
 
 bool Sqriptor::saveFile(const QString &fileName)
 {
+    QsciScintilla *doc = textEdit();
+    int sulliedLine = doc->markerFindNext(0, 4);
+    if (sulliedLine > -1) {
+        QMessageBox msgBox(QMessageBox::Warning, tr("Whitespace alert!"),
+                            tr( "<html><h2>Whitespace alert!</h2>"
+                                "You have created some tailing white space during this session.<br>"
+                                "Do you want me to remove them for you or clean up your own mess?<br><br>"
+                                "<small>We'll talk about the racist undertone of your habits later…<small>"
+                                "</html>"), QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel, this);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        msgBox.button(QMessageBox::Yes)->setText(tr("Please fix this for me"));
+        msgBox.button(QMessageBox::No)->setText(tr("This is deliberate, shut up!"));
+        msgBox.button(QMessageBox::Cancel)->setText(tr("I'll fix it myself."));
+        int ret = msgBox.exec();
+        if (ret & (QMessageBox::Cancel|QMessageBox::Escape))
+            return false;
+        if (ret == QMessageBox::Yes) {
+            if (doc->findFirst("\\s+$", true /*regex*/, false /*there's no case*/,
+                                false /*no idea how words fit here*/, false /*no wrap!*/,
+                                true /*forward*/, 0, 0 /*at the beginning*/, false /*no show*/)) {
+                int line, index;
+                doc->getCursorPosition(&line, &index);
+                if (doc->markersAtLine(line) & 4)
+                    doc->replace("");
+                while (doc->findNext()) {
+                    doc->getCursorPosition(&line, &index);
+                    if (doc->markersAtLine(line) & 4)
+                        doc->replace("");
+                }
+            }
+        }
+    }
+
     QFile file(fileName);
     if (!file.open(QFile::WriteOnly)) {
         QMessageBox::warning(this, tr("Sqriptor"),

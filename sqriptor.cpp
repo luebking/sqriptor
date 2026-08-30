@@ -608,6 +608,8 @@ bool Sqriptor::saveFile(const QString &fileName)
         if (ret & (QMessageBox::Cancel|QMessageBox::Escape))
             return false;
         if (ret == QMessageBox::Yes) {
+            int oline, oindex;
+            doc->getCursorPosition(&oline, &oindex);
             if (doc->findFirst("\\s+$", true /*regex*/, false /*there's no case*/,
                                 false /*no idea how words fit here*/, false /*no wrap!*/,
                                 true /*forward*/, 0, 0 /*at the beginning*/, false /*no show*/)) {
@@ -621,6 +623,7 @@ bool Sqriptor::saveFile(const QString &fileName)
                         doc->replace("");
                 }
             }
+            doc->setCursorPosition(oline, oindex);
         }
     }
 

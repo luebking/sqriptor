@@ -474,14 +474,21 @@ void Sqriptor::checkTimestamp()
     QString fileName = doc->property("sqriptor_filename").toString();
     QFileInfo info(fileName);
     if (info.exists() && info.lastModified() > date) {
+        const bool hadFocus = doc->hasFocus();
         int ret = QMessageBox::warning(this, tr("Sqriptor"),
                      tr("<html><h2>Update me?</h2>%1 was updated outside Sqriptor.<br>"
                         "Do you want to reload it?</html>").arg(fileName),
                      QMessageBox::Yes|QMessageBox::No, QMessageBox::No);
-        if (ret == QMessageBox::Yes)
+        if (ret == QMessageBox::Yes) {
+            int oline, oindex;
+            doc->getCursorPosition(&oline, &oindex);
             loadFile(fileName);
-        else
+            doc->setCursorPosition(oline, oindex);
+        } else {
             updateTimestamp(doc); // otherwise we'll be asked forever
+        }
+        if (hadFocus)
+            doc->setFocus();
     }
 }
 

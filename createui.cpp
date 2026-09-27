@@ -52,6 +52,7 @@
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscicommandset.h>
 #include <Qsci/qscicommand.h>
+#include <Qsci/qscilexer.h>
 
 #include "scrollbar.h"
 #include "sqriptor.h"
@@ -679,7 +680,7 @@ void Sqriptor::createUI()
     });
     ADD_ACT
 
-    act = new QAction(tr("Fi&lter"), this);
+    QAction *filterAction = act = new QAction(tr("Fi&lter"), this);
     act->setShortcut(tr("Ctrl+L"));
     connect(act, &QAction::triggered, [=]() {
         HIDE_STUFF
@@ -759,6 +760,43 @@ void Sqriptor::createUI()
         menuBar()->QWidget::setVisible(checked);
         });
     act->setShortcut(tr("Ctrl+M"));
+    ADD_ACT
+
+    menu->addSeparator();
+
+    act = new QAction(tr("Filter out &Comments"), this);
+    act->setCheckable(false);
+    connect(act, &QAction::triggered, [=](bool checked){
+        QsciScintilla *doc = textEdit();
+        const QsciLexer *lexer = doc->lexer();
+        if (!lexer)
+            return;
+        QString name = lexer->metaObject()->className();
+        name.remove("QsciLexer");
+        QString bangs;
+        if (name == "CPPQt" || name == "CSharp" || name == "Java" ||  name == "KDL" || name == "JavaScript" || name == "D" || name == "Pascal")
+            bangs = "//";
+        else if (   name == "Bash" || name == "NIM" || name == "Python" || name == "Ruby" || name == "Perl" || name == "Makefile" ||
+                    name == "CMake" || name == "TCL" || name == "AWK" || name == "Xorg" || name == "PkgBuild" || name == "YAML"  || name == "QtPro")
+            bangs = "#";
+        else if (name == "Lua")
+            bangs = "--";
+        else if (name == "Properties")
+            bangs = "[;!#]";
+        else if (name.startsWith("Fortran"))
+            bangs = "!";
+        else if (name.contains("LISP"))
+            bangs = ";";
+        if (bangs.isEmpty())
+            return;
+        bangs = "^\\s*(" + bangs + "|$)";
+        filterAction->trigger();
+        m_filterLine->setText(bangs);
+        searchRegExp->setChecked(true);
+        filterInvert->setChecked(true);
+        filterTimer->stop(); l_filter();
+        });
+//    act->setShortcut(tr("Ctrl+M"));
     ADD_ACT
 
     menu->addSeparator();

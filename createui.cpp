@@ -535,6 +535,14 @@ void Sqriptor::createUI()
             const QRegularExpression rx(filter, searchCaseSens->isChecked() ?
                                                 QRegularExpression::NoPatternOption :
                                                 QRegularExpression::CaseInsensitiveOption);
+            if (rx.isValid()) {
+                m_filterLine->setPalette(QPalette());
+            } else {
+                QPalette pal = findLine->palette();
+                pal.setColor(findLine->foregroundRole(), config.color.error);
+                m_filterLine->setPalette(pal);
+                return;
+            }
             if (filterInvert->isChecked()) {
                 FILTER_TEXT(!doc->text(i).contains(rx));
             } else {
@@ -553,18 +561,37 @@ void Sqriptor::createUI()
             filterTimer->start();
     };
 
+    auto l_updateBtnFnt = [=]() {
+        QFont fnt = btn->font();
+        fnt.setStrikeOut(filterInvert->isChecked());
+        fnt.setItalic(searchRegExp->isChecked());
+        fnt.setCapitalization(searchCaseSens->isChecked() ? QFont::AllUppercase : QFont::MixedCase);
+        btn->setFont(fnt);
+    };
+
     connect(filterTimer, &QTimer::timeout, [=]() { l_filter(); });
     connect(m_filterLine, &QLineEdit::returnPressed, [=]() { filterTimer->stop(); l_filter(); });
     connect(m_filterLine, &QLineEdit::textEdited, [=]() { filterTimer->start(); });
     connect(m_filterBookmarks, &QAction::toggled, [=]() { filterTimer->stop(); l_filter(); });
-    connect(filterInvert, &QAction::toggled, [=]() { filterTimer->stop(); l_filter(); });
-    connect(searchRegExp, &QAction::toggled, [=]() { if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
-    connect(searchCaseSens, &QAction::toggled, [=]() { if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
+    connect(filterInvert, &QAction::toggled, [=]() { l_updateBtnFnt(); if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
+    connect(searchRegExp, &QAction::toggled, [=]() { l_updateBtnFnt(); if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
+    connect(searchCaseSens, &QAction::toggled, [=]() { l_updateBtnFnt(); if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
 
     QSpinBox *gotoLine = new QSpinBox(searchBar);
     connect(qApp, &QApplication::focusChanged, [=]() {
         if (gotoLine->hasFocus())
             gotoLine->setRange(1, textEdit()->lines());
+        if (m_filterLine->hasFocus() || findLine->hasFocus()) {
+            filterInvert->setShortcut(tr("Alt+I"));
+            searchRegExp->setShortcut(tr("Alt+R"));
+            searchCaseSens->setShortcut(tr("Alt+C"));
+            searchWord->setShortcut(findLine->hasFocus() ? tr("Alt+W") : QKeySequence());
+        } else {
+            filterInvert->setShortcut(QKeySequence());
+            searchRegExp->setShortcut(QKeySequence());
+            searchCaseSens->setShortcut(QKeySequence());
+            searchWord->setShortcut(QKeySequence());
+        }
     });
     connect(gotoLine, QOverload<int>::of(&QSpinBox::valueChanged), [=](int i) {
         textEdit()->setCursorPosition(i-1, 0); // humans start counting at 0...
@@ -695,6 +722,8 @@ void Sqriptor::createUI()
         SHOW_STUFF
     });
     ADD_ACT
+
+    l_updateBtnFnt();
 
     menu = editMenu->addMenu(tr("&Bookmarks"));
     

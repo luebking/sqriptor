@@ -11,6 +11,12 @@
 #include "sqriptor.h"
 #include "ui_settings.h"
 
+#if __cplusplus >= 202002L
+#define _LCD_ =,this
+#else
+#define _LCD_ =
+#endif
+
 static Ui::Settings *gs_ui = nullptr;
 static QDialog *gs_dlg = nullptr;
 static Config config_bak;
@@ -114,7 +120,7 @@ void Sqriptor::showSettings()
         cd->hide();
         connect (gs_ui->colorbutton, SIGNAL(clicked()), cd, SLOT(show()));
         connect (gs_ui->colorbutton, SIGNAL(clicked()), cd, SLOT(raise()));
-        connect (gs_dlg, &QDialog::finished, [=](int result) {
+        connect (gs_dlg, &QDialog::finished, [_LCD_](int result) {
             cd->hide();
             if (result == QDialog::Accepted) {
                 config = config_bak;
@@ -130,7 +136,7 @@ void Sqriptor::showSettings()
             }
         });
         connect (gs_ui->windowSizeMode, QOverload<int>::of(&QComboBox::currentIndexChanged),
-                                        [=](const int index) {
+                                        [this](const int index) {
             config_bak.sizeMode = Size::Mode(index);
             gs_ui->windowSizeX->setRange(0, 8194);
             gs_ui->windowSizeY->setRange(0, 8194);
@@ -163,14 +169,14 @@ void Sqriptor::showSettings()
         });
         gs_ui->windowSizeX->setValue(config.sizeMode == Size::Remember ? width() : config.size.width());
         connect (gs_ui->windowSizeX, QOverload<int>::of(&QSpinBox::valueChanged),
-                                        [=](int v) {config_bak.size.setWidth(v);});
+                                        [](int v) {config_bak.size.setWidth(v);});
         gs_ui->windowSizeY->setValue(config.sizeMode == Size::Remember ? height() : config.size.height());
         connect (gs_ui->windowSizeY, QOverload<int>::of(&QSpinBox::valueChanged),
-                                        [=](int v) {config_bak.size.setHeight(v);});
+                                        [](int v) {config_bak.size.setHeight(v);});
         connect (gs_ui->markdownProcessor, &QLineEdit::textEdited,
-                                        [=](const QString &t) { config_bak.markdownProcessor = t; });
+                                        [](const QString &t) { config_bak.markdownProcessor = t; });
         connect (gs_ui->previewCSS, &QPlainTextEdit::textChanged,
-                                        [=]() { config_bak.previewCSS = gs_ui->previewCSS->toPlainText(); });
+                                        []() { config_bak.previewCSS = gs_ui->previewCSS->toPlainText(); });
         // apply...
         gs_ui->windowSizeMode->setCurrentIndex(config.sizeMode);
 
@@ -179,26 +185,26 @@ void Sqriptor::showSettings()
 
         gs_ui->wrapWords->setChecked(config.wrap.words);
         connect (gs_ui->wrapWords, &QCheckBox::stateChanged,
-                                        [=](int s) {config_bak.wrap.words = s;});
+                                        [](int s) {config_bak.wrap.words = s;});
         gs_ui->wrapIndicator->setChecked(config.wrap.indicator);
         connect (gs_ui->wrapIndicator, &QCheckBox::stateChanged,
-                                        [=](int s) {config_bak.wrap.indicator = s;});
+                                        [](int s) {config_bak.wrap.indicator = s;});
         gs_ui->wrapIndicatorPos->setValue(config.wrap.indicatorPos);
         connect (gs_ui->wrapIndicatorPos, QOverload<int>::of(&QSpinBox::valueChanged),
-                                        [=](int v) {config_bak.wrap.indicatorPos = v;});
+                                        [](int v) {config_bak.wrap.indicatorPos = v;});
 
         gs_ui->tabIsTab->setChecked(config.tab.isTab);
         connect (gs_ui->tabIsTab, &QCheckBox::stateChanged,
-                                        [=](int s) {config_bak.tab.isTab = s;});
+                                        [](int s) {config_bak.tab.isTab = s;});
         gs_ui->tabWidth->setValue(config.tab.width);
         connect (gs_ui->tabWidth, QOverload<int>::of(&QSpinBox::valueChanged),
-                                        [=](int v) {config_bak.tab.width = v;});
+                                        [](int v) {config_bak.tab.width = v;});
         gs_ui->font->setCurrentFont(config.font);
         connect (gs_ui->font, &QFontComboBox::currentFontChanged,
-                                        [=](const QFont &font) {config_bak.font.setFamily(font.family());});
+                                        [](const QFont &font) {config_bak.font.setFamily(font.family());});
         gs_ui->fontSize->setValue(config.font.pointSize());
         connect (gs_ui->fontSize, QOverload<int>::of(&QSpinBox::valueChanged),
-                                        [=](int v) {config_bak.font.setPointSize(v);});
+                                        [](int v) {config_bak.font.setPointSize(v);});
     }
     config_bak = config;
     updateTiles();

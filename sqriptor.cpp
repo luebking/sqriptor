@@ -47,6 +47,12 @@
 
 #include <QtDebug>
 
+#if __cplusplus >= 202002L
+#define _LCD_ =,this
+#else
+#define _LCD_ =
+#endif
+
 Config Sqriptor::config;
 
 
@@ -61,7 +67,7 @@ Sqriptor::Sqriptor()
     m_documents->setTabsClosable(true);
     m_documents->setContentsMargins(0, 0, 0, 0);
     connect(m_documents, SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
-    connect(m_documents, &QTabWidget::currentChanged, [=](int idx) {
+    connect(m_documents, &QTabWidget::currentChanged, [this](int idx) {
         QsciScintilla *doc = textEdit();
         setWindowModified(doc->isModified());
         setWindowTitle(tr("%1[*]").arg(m_documents->tabText(idx)));
@@ -80,7 +86,7 @@ Sqriptor::Sqriptor()
     updatePalette();
     
     createUI();
-    connect(qApp, &QApplication::focusChanged, [=](QWidget *old, QWidget *now) {
+    connect(qApp, &QApplication::focusChanged, [this](QWidget *old, QWidget *now) {
         Q_UNUSED(old)
         if (now == m_documents->currentWidget())
             checkTimestamp();
@@ -227,7 +233,7 @@ int Sqriptor::addTab()
         cmd->setKey(0); // we replace this with our filter-aware copy function
 
     connect(doc, SIGNAL(copyAvailable(bool)), SIGNAL(copyAvailable(bool)));
-    connect(doc, &QsciScintilla::modificationChanged, [=](){
+    connect(doc, &QsciScintilla::modificationChanged, [this,doc](){
         m_documents->tabBar()->setTabTextColor(m_documents->indexOf(doc),
                                                doc->isModified() ? config.color.error : QColor());
         if (doc == m_documents->currentWidget()) {
@@ -235,7 +241,7 @@ int Sqriptor::addTab()
             menuBar()->update();
         }
     });
-    connect(doc, &QsciScintilla::textChanged, [=]() {
+    connect(doc, &QsciScintilla::textChanged, [this,doc]() {
         int line, index;
         doc->getCursorPosition(&line, &index);
         if (doc->text(line).endsWith(" \n")) {
@@ -688,7 +694,7 @@ void Sqriptor::readStdin()
     QFile *input = new QFile;
     if (input->open(stdin, QFile::ReadOnly)) {
         QSocketNotifier *snr = new QSocketNotifier(input->handle(), QSocketNotifier::Read, input);
-        connect (snr, &QSocketNotifier::activated, [=](){
+        connect (snr, &QSocketNotifier::activated, [_LCD_](){
             QsciScintilla *doc = textEdit();
             if (!(doc->length() || doc->isModified()))
                 doc->setText(QString::fromLocal8Bit(input->readAll()));

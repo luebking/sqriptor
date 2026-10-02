@@ -59,6 +59,12 @@
 
 #define ADD_ACT menu->addAction(act); addAction(act);
 
+#if __cplusplus >= 202002L
+#define _LCD_ =,this
+#else
+#define _LCD_ =
+#endif
+
 
 class NavHelper : public QObject {
     public:
@@ -177,7 +183,7 @@ void Sqriptor::createUI()
 
     act = new QAction(this);
     act->setShortcut(tr("Ctrl+0"));
-    connect(act, &QAction::triggered, [=](){
+    connect(act, &QAction::triggered, [this](){
         textEdit()->zoomTo(0);
     });
     addAction(act);
@@ -185,12 +191,12 @@ void Sqriptor::createUI()
     menu = menuBar()->addMenu("Ξ"); // ◎ (·) ⬤ Ξ • · ◉ ▣ ■ □ ▢ ◯ ◆ ★ •  
     m_tabMenu = menu->menuAction();
     m_tabMenu->setVisible(false);
-    connect(menu, &QMenu::aboutToShow, [=]() {
+    connect(menu, &QMenu::aboutToShow, [_LCD_]() {
         menu->clear();
         QAction *a;
         for (int i = 0; i < m_documents->count(); ++i) {
             a = new QAction(m_documents->tabText(i), menu);
-            connect(a, &QAction::triggered, [=](){
+            connect(a, &QAction::triggered, [_LCD_](){
                 m_documents->setCurrentIndex(i);
             });
             menu->addAction(a);
@@ -203,7 +209,7 @@ void Sqriptor::createUI()
 #define CREATE_EOL(_TYPE_) act->setCheckable(true); \
     act->setData(QsciScintilla::_TYPE_); \
     eolGroup->addAction(act);\
-    connect(act, &QAction::triggered, [=](){ \
+    connect(act, &QAction::triggered, [this](){ \
         if (textEdit()->eolMode() != QsciScintilla::_TYPE_) { \
             textEdit()->convertEols(QsciScintilla::_TYPE_); \
             textEdit()->setEolMode(QsciScintilla::_TYPE_); \
@@ -226,12 +232,12 @@ void Sqriptor::createUI()
 
     act = new QAction(tr("&New"), this);
     act->setShortcut(tr("Ctrl+N"));
-    connect(act, &QAction::triggered, [=](){ newFile(); });
+    connect(act, &QAction::triggered, [this](){ newFile(); });
     ADD_ACT
 
     act = new QAction(tr("&Open..."), this);
     act->setShortcut(tr("Ctrl+O"));
-    connect(act, &QAction::triggered, [=](){
+    connect(act, &QAction::triggered, [this](){
         QString path = textEdit()->property("sqriptor_filename").toString();
         path = QFileInfo(path).absolutePath();
         foreach (QString name, QFileDialog::getOpenFileNames(this, QString(), path))
@@ -240,7 +246,7 @@ void Sqriptor::createUI()
     ADD_ACT
     
     QMenu *lastWeek = menu->addMenu(tr("&Last Night on Sqriptor"));
-    connect(lastWeek, &QMenu::aboutToShow, [=]() {
+    connect(lastWeek, &QMenu::aboutToShow, [_LCD_]() {
         lastWeek->clear();
         if (config.recentFiles.isEmpty())
             return;
@@ -248,13 +254,13 @@ void Sqriptor::createUI()
         for (QString &recent : config.recentFiles) {
             act2 = lastWeek->addAction(QFileInfo(recent).fileName());
             act2->setData(recent);
-            connect(act2, &QAction::triggered, [=]() { open(act2->data().toString()); });
+            connect(act2, &QAction::triggered, [this,act2]() { open(act2->data().toString()); });
         }
         lastWeek->addSeparator();
         act2 = lastWeek->addAction(tr("That's not my porn library in the history!"));
-        connect(act2, &QAction::triggered, [=]() { config.recentFiles.clear(); });
+        connect(act2, &QAction::triggered, [this]() { config.recentFiles.clear(); });
     });
-    connect(menu, &QMenu::aboutToShow, [=]() { lastWeek->setEnabled(!config.recentFiles.isEmpty()); });
+    connect(menu, &QMenu::aboutToShow, [_LCD_]() { lastWeek->setEnabled(!config.recentFiles.isEmpty()); });
     
     act = new QAction(tr("&Close..."), this);
     act->setShortcut(tr("Ctrl+W"));
@@ -283,21 +289,21 @@ void Sqriptor::createUI()
     menu = editMenu->addMenu(tr("&Copy && Paste"));
     act = new QAction(tr("Cu&t"), this);
     act->setShortcut(tr("Ctrl+X"));
-    connect(act, &QAction::triggered, [=](){textEdit()->cut();});
+    connect(act, &QAction::triggered, [this](){textEdit()->cut();});
     connect(this, SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
     act->setEnabled(false);
     ADD_ACT
 
     act = new QAction(tr("&Copy"), this);
     act->setShortcut(tr("Ctrl+C"));
-    connect(act, &QAction::triggered, [=](){copy();});
+    connect(act, &QAction::triggered, [this](){copy();});
     connect(this, SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
     act->setEnabled(false);
     ADD_ACT
 
     act = new QAction(tr("&Paste"), this);
     act->setShortcut(tr("Ctrl+V"));
-    connect(act, &QAction::triggered, [=](){textEdit()->paste();});
+    connect(act, &QAction::triggered, [this](){textEdit()->paste();});
     ADD_ACT
 
     QWidget *searchBar = new QWidget(menuBar());
@@ -346,7 +352,7 @@ void Sqriptor::createUI()
     act = new QAction(searchBar);
     act->setShortcut(Qt::Key_Escape);
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(act, &QAction::triggered, [=]() {
+    connect(act, &QAction::triggered, [this]() {
         textEdit()->setFocus();
         if (!menuWasVisible)
             menuBar()->hide();
@@ -357,7 +363,7 @@ void Sqriptor::createUI()
 
     QLineEdit *findLine = new QLineEdit(searchBar);
     findLine->installEventFilter(navHelper);
-    auto l_search = [=](bool jump) {
+    auto l_search = [_LCD_](bool jump) {
         int line, index, dummy;
         jump = jump ? searchForward->isChecked() : !searchForward->isChecked();
         if (jump)
@@ -380,28 +386,28 @@ void Sqriptor::createUI()
         }
     };
     
-    connect(findLine, &QLineEdit::returnPressed, [=]() {
+    connect(findLine, &QLineEdit::returnPressed, [_LCD_]() {
         l_search(false);
         findAll(findLine->text(), searchRegExp->isChecked(), searchCaseSens->isChecked(), searchWord->isChecked());
         });
-    connect(findLine, &QLineEdit::textEdited, [=]() {
+    connect(findLine, &QLineEdit::textEdited, [_LCD_]() {
         l_search(true);
         findAll(QString(), false, false, false);
         });
-    connect(findAllAct, &QAction::triggered, [=]() {
+    connect(findAllAct, &QAction::triggered, [_LCD_]() {
         findAll(findLine->text(), searchRegExp->isChecked(), searchCaseSens->isChecked(), searchWord->isChecked());
         });
 
     QLineEdit *replaceLine = new QLineEdit(searchBar);
     replaceLine->installEventFilter(navHelper);
-    connect(replaceLine, &QLineEdit::returnPressed, [=]() {
+    connect(replaceLine, &QLineEdit::returnPressed, [_LCD_]() {
         if (textEdit()->selectedText().isEmpty())
             textEdit()->cancelFind(); // user clicked forward, voids the replace, we search on
         textEdit()->replace(replaceLine->text());
         l_search(false);
     });
     
-    connect(replaceAll, &QAction::triggered, [=]() {
+    connect(replaceAll, &QAction::triggered, [_LCD_]() {
         const QString text = findLine->text();
         if (text.isEmpty())
             return;
@@ -493,8 +499,8 @@ void Sqriptor::createUI()
     static bool wasCaseSens = searchCaseSens->isChecked();
     static bool wasInverted = filterInvert->isChecked();
     static bool wasRegExp = searchRegExp->isChecked();
-    connect(m_documents, &QTabWidget::currentChanged, [=](int idx) { lastFilter.clear(); });
-    auto l_filter = [=]() {
+    connect(m_documents, &QTabWidget::currentChanged, [_LCD_](int /* idx */) { lastFilter.clear(); });
+    auto l_filter = [_LCD_]() {
         bool filterTimerWasActive = false;
         QsciScintilla *doc = textEdit();
         const QString filter = m_filterLine->text();
@@ -561,7 +567,7 @@ void Sqriptor::createUI()
             filterTimer->start();
     };
 
-    auto l_updateBtnFnt = [=]() {
+    auto l_updateBtnFnt = [_LCD_]() {
         QFont fnt = btn->font();
         fnt.setStrikeOut(filterInvert->isChecked());
         fnt.setItalic(searchRegExp->isChecked());
@@ -569,16 +575,16 @@ void Sqriptor::createUI()
         btn->setFont(fnt);
     };
 
-    connect(filterTimer, &QTimer::timeout, [=]() { l_filter(); });
-    connect(m_filterLine, &QLineEdit::returnPressed, [=]() { filterTimer->stop(); l_filter(); });
-    connect(m_filterLine, &QLineEdit::textEdited, [=]() { filterTimer->start(); });
-    connect(m_filterBookmarks, &QAction::toggled, [=]() { filterTimer->stop(); l_filter(); });
-    connect(filterInvert, &QAction::toggled, [=]() { l_updateBtnFnt(); if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
-    connect(searchRegExp, &QAction::toggled, [=]() { l_updateBtnFnt(); if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
-    connect(searchCaseSens, &QAction::toggled, [=]() { l_updateBtnFnt(); if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
+    connect(filterTimer, &QTimer::timeout, [_LCD_]() { l_filter(); });
+    connect(m_filterLine, &QLineEdit::returnPressed, [_LCD_]() { filterTimer->stop(); l_filter(); });
+    connect(m_filterLine, &QLineEdit::textEdited, [_LCD_]() { filterTimer->start(); });
+    connect(m_filterBookmarks, &QAction::toggled, [_LCD_]() { filterTimer->stop(); l_filter(); });
+    connect(filterInvert, &QAction::toggled, [_LCD_]() { l_updateBtnFnt(); if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
+    connect(searchRegExp, &QAction::toggled, [_LCD_]() { l_updateBtnFnt(); if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
+    connect(searchCaseSens, &QAction::toggled, [_LCD_]() { l_updateBtnFnt(); if (m_filterLine->isVisible()) { filterTimer->stop(); l_filter(); } });
 
     QSpinBox *gotoLine = new QSpinBox(searchBar);
-    connect(qApp, &QApplication::focusChanged, [=]() {
+    connect(qApp, &QApplication::focusChanged, [_LCD_]() {
         if (gotoLine->hasFocus())
             gotoLine->setRange(1, textEdit()->lines());
         if (m_filterLine->hasFocus() || findLine->hasFocus()) {
@@ -593,14 +599,14 @@ void Sqriptor::createUI()
             searchWord->setShortcut(QKeySequence());
         }
     });
-    connect(gotoLine, QOverload<int>::of(&QSpinBox::valueChanged), [=](int i) {
+    connect(gotoLine, QOverload<int>::of(&QSpinBox::valueChanged), [this](int i) {
         textEdit()->setCursorPosition(i-1, 0); // humans start counting at 0...
         QScrollBar *sb;
         if ((sb = textEdit()->verticalScrollBar())) {
             sb->setValue(i-1+(sb->maximum()-textEdit()->lines())/2);
         }
     });
-    connect(gotoLine, &QSpinBox::editingFinished, [=]() {
+    connect(gotoLine, &QSpinBox::editingFinished, [this]() {
         textEdit()->setFocus();
     });
     
@@ -628,7 +634,7 @@ void Sqriptor::createUI()
     menu = editMenu->addMenu(tr("&Search and replace"));
     act = new QAction(tr("&Find"), this);
     act->setShortcut(tr("Ctrl+F"));
-    connect(act, &QAction::triggered, [=]() {
+    connect(act, &QAction::triggered, [_LCD_]() {
         HIDE_STUFF
         btn->setText(tr("Find:"));
         btn->show();
@@ -647,7 +653,7 @@ void Sqriptor::createUI()
     
     act = new QAction(tr("&Replace"), this);
     act->setShortcut(tr("Ctrl+R"));
-    connect(act, &QAction::triggered, [=]() {
+    connect(act, &QAction::triggered, [_LCD_]() {
         HIDE_STUFF
         btn->setText(tr("Replace:"));
         btn->show();
@@ -671,7 +677,7 @@ void Sqriptor::createUI()
     
     act = new QAction(tr("Find &Next"), this);
     act->setShortcut(tr("F3"));
-    connect(act, &QAction::triggered, [=]() {
+    connect(act, &QAction::triggered, [_LCD_]() {
         textEdit()->findFirst(  findLine->text(),
                                 searchRegExp->isChecked(),
                                 searchCaseSens->isChecked(),
@@ -683,7 +689,7 @@ void Sqriptor::createUI()
 
     act = new QAction(tr("Find &Prev"), this);
     act->setShortcut(tr("Ctrl+F3"));
-    connect(act, &QAction::triggered, [=]() {
+    connect(act, &QAction::triggered, [_LCD_]() {
         int line, index, dummy;
         textEdit()->getSelection(&line, &index, &dummy, &dummy);
         textEdit()->findFirst(  findLine->text(),
@@ -698,7 +704,7 @@ void Sqriptor::createUI()
 
     act = new QAction(tr("&Goto Line"), this);
     act->setShortcut(tr("Ctrl+G"));
-    connect(act, &QAction::triggered, [=]() {
+    connect(act, &QAction::triggered, [_LCD_]() {
         HIDE_STUFF
         gotoLine->show();
         gotoLine->setFocus();
@@ -709,7 +715,7 @@ void Sqriptor::createUI()
 
     QAction *filterAction = act = new QAction(tr("Fi&lter"), this);
     act->setShortcut(tr("Ctrl+L"));
-    connect(act, &QAction::triggered, [=]() {
+    connect(act, &QAction::triggered, [_LCD_]() {
         HIDE_STUFF
         btn->setText(tr("Filter:"));
         btn->show();
@@ -755,13 +761,13 @@ void Sqriptor::createUI()
 /*
     act = new QAction(tr("Show &Tip"), this);
     act->setShortcut(tr("Ctrl+?"));
-    connect(act, &QAction::triggered, [=](){ textEdit()->setCallTipsStyle(QsciScintilla::CallTipsContext); textEdit()->callTip(); });
+    connect(act, &QAction::triggered, [this](){ textEdit()->setCallTipsStyle(QsciScintilla::CallTipsContext); textEdit()->callTip(); });
     ADD_ACT
 */
     m_wrapped = new QAction(tr("&Wrap text"), this);
     m_wrapped->setShortcut(tr("F10"));
     m_wrapped->setCheckable(true);
-    connect(m_wrapped, &QAction::triggered, [=](bool checked){
+    connect(m_wrapped, &QAction::triggered, [this](bool checked){
         textEdit()->setWrapMode(checked ? QsciScintilla::WrapWhitespace : QsciScintilla::WrapNone);
         });
     m_wrapped->setChecked(config.wrap.words);
@@ -770,14 +776,14 @@ void Sqriptor::createUI()
     m_folds = new QAction(tr("&Folding"), this);
     m_folds->setShortcut(tr("F11"));
     m_folds->setCheckable(true);
-    connect(m_folds, &QAction::triggered, [=](bool checked){
+    connect(m_folds, &QAction::triggered, [this](bool checked){
         textEdit()->setFolding(checked ? QsciScintilla::PlainFoldStyle : QsciScintilla::NoFoldStyle);
         });
     menu->addAction(m_folds);
 
     m_EolVis = new QAction(tr("&EOL"), this);
     m_EolVis->setCheckable(true);
-    connect(m_EolVis, &QAction::triggered, [=](bool checked){
+    connect(m_EolVis, &QAction::triggered, [this](bool checked){
         textEdit()->setEolVisibility(checked);
         });
     menu->addAction(m_EolVis);
@@ -785,7 +791,7 @@ void Sqriptor::createUI()
     act = new QAction(tr("Show &Menu"), this);
     act->setCheckable(true);
     act->setChecked(true);
-    connect(act, &QAction::triggered, [=](bool checked){
+    connect(act, &QAction::triggered, [this](bool checked){
         menuBar()->QWidget::setVisible(checked);
         });
     act->setShortcut(tr("Ctrl+M"));
@@ -795,7 +801,7 @@ void Sqriptor::createUI()
 
     act = new QAction(tr("Filter out &Comments"), this);
     act->setCheckable(false);
-    connect(act, &QAction::triggered, [=](bool checked){
+    connect(act, &QAction::triggered, [_LCD_](bool /* checked */){
         QsciScintilla *doc = textEdit();
         const QsciLexer *lexer = doc->lexer();
         if (!lexer)
@@ -832,7 +838,7 @@ void Sqriptor::createUI()
 
     act = new QAction(tr("&Toggle 0x9-Indentation"), this);
     act->setShortcut(tr("Alt+T"));
-    connect(act, &QAction::triggered, [=](){
+    connect(act, &QAction::triggered, [this](){
         textEdit()->setIndentationsUseTabs(!textEdit()->indentationsUseTabs());
     });
     ADD_ACT
@@ -846,7 +852,7 @@ void Sqriptor::createUI()
     menu->addSeparator();
 
     act = new QAction(tr("&Flip colors"), this);
-    connect(act, &QAction::triggered, [=]() {
+    connect(act, &QAction::triggered, [this]() {
         QColor c = config.color.bg;
         config.color.bg = config.color.fg;
         config.color.fg = c;
@@ -856,12 +862,12 @@ void Sqriptor::createUI()
     
     QMenu *syntaxMenu = menuBar()->addMenu(tr("&Syntax"));
     m_syntaxActions = new QActionGroup(this);
-#define ADD_SYNTAX2(_SYN_, _COM_) act = m_syntaxActions->addAction(menu->addAction(#_SYN_ _COM_, [=](){setSyntax(Syntax::_SYN_);}));\
+#define ADD_SYNTAX2(_SYN_, _COM_) act = m_syntaxActions->addAction(menu->addAction(#_SYN_ _COM_, [_LCD_](){setSyntax(Syntax::_SYN_);}));\
         act->setCheckable(true); act->setData(#_SYN_)
 #define ADD_SYNTAX(_SYN_) ADD_SYNTAX2(_SYN_, "")
-    syntaxMenu->addAction(tr("Auto"), [=](){setSyntax(Syntax::Auto);});
+    syntaxMenu->addAction(tr("Auto"), [this](){setSyntax(Syntax::Auto);});
     syntaxMenu->addSeparator();
-    act = syntaxMenu->addAction(tr("None"), [=](){setSyntax(Syntax::None);});
+    act = syntaxMenu->addAction(tr("None"), [this](){setSyntax(Syntax::None);});
     act->setData("None");
     act->setCheckable(true);
     m_syntaxActions->addAction(act);
@@ -907,7 +913,7 @@ void Sqriptor::createUI()
     menu = menuBar()->addMenu(tr("&Help"));
 
     act = new QAction(tr("&About"), this);
-    connect(act, &QAction::triggered, [=](){
+    connect(act, &QAction::triggered, [this](){
         QString brag = tr(  "<html><h2>Sqriptor</h2><h4>Greatest&nbsp;and&nbsp;best&nbsp;TextEditor"
                             "&nbsp;in&nbsp;the&nbsp;world.</h4><h4 align=right>Tribute.</h4>"
                             "<hr><a href='https://github.com/luebking/sqriptor'>Code on github</a><br>"
@@ -928,7 +934,7 @@ void Sqriptor::createUI()
     menu->addAction(act);
     
     act = new QAction(tr("&Syntax detection"), this);
-    connect(act, &QAction::triggered, [=](){
+    connect(act, &QAction::triggered, [](){
         QString help =
         tr("<html><h2>Syntax Detection</h2>"
         "The automatic syntax selection is primarily based on the files <b>suffix</b>, "
@@ -951,7 +957,7 @@ void Sqriptor::createUI()
     menu->addAction(act);
     
     act = new QAction(tr("&Block selection"), this);
-    connect(act, &QAction::triggered, [=](){
+    connect(act, &QAction::triggered, [](){
         QString help =
         tr("<html><h2>Block selection</h2>"
         "Hold <b>Alt+Shift</b> while using the <b>arrow keys</b> or press "
@@ -968,7 +974,7 @@ void Sqriptor::createUI()
 
     static QDialog *shortcutHelp = nullptr;
     act = new QAction(tr("Scintilla &Shortcuts"), this);
-    connect(act, &QAction::triggered, [=](){
+    connect(act, &QAction::triggered, [_LCD_](){
         if (shortcutHelp) {
             shortcutHelp->show();
             return;
@@ -998,7 +1004,7 @@ void Sqriptor::createUI()
     menuBar()->addSeparator();
 
     m_previewAction = act = menuBar()->addAction(tr("Toggle Preview"));
-    connect(act, &QAction::triggered, [=]() {togglePreview();} );
+    connect(act, &QAction::triggered, [this]() {togglePreview();} );
     act->setShortcut(tr("Ctrl+P"));
     act->setToolTip(tr("Ctrl+P"));
     act->setVisible(false);
@@ -1012,7 +1018,7 @@ void Sqriptor::createUI()
     menu->addAction(act); */
 }
 
-void Sqriptor::findAll(QString text, bool rx, bool cs, bool wo)
+void Sqriptor::findAll(QString text, bool rx, bool cs, bool /* wo */)
 {
     QList<int> markers;
     QsciScintilla *doc = textEdit();
